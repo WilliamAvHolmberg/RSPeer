@@ -62,7 +62,7 @@ import com.nex.task.quests.RomeoAndJulietQuest;
 import com.nex.task.quests.tutorial.TutorialIsland;
 import com.nex.task.woodcutting.WoodcuttingTask;
 
-@ScriptMeta(desc = "Auto", developer = "William", name = "nex")
+@ScriptMeta(desc = "Autoz", developer = "William", name = "nex")
 public class Nex extends Script
 		implements RenderListener, ChatMessageListener, ObjectSpawnListener, LoginResponseListener {
 
@@ -82,6 +82,7 @@ public class Nex extends Script
 		this.removeBlockingEvent(new LoginScreen(this).getClass());
 		super.onStart();
 		TaskHandler.addPrioritizedTask(new TutorialIsland());
+		//TaskHandler.addPrioritizedTask(new RomeoAndJulietQuest());
 		Time.sleep(5000);
 		
 //		TaskHandler.addPrioritizedTask(new MiningTask(barbMine, null, new Integer[] {7486,7485}, new RSItem("Bronze pickaxe", 1265)));

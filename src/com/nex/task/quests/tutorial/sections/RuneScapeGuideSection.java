@@ -88,6 +88,7 @@ public final class RuneScapeGuideSection extends TutorialSection {
         }
     }
     
+    private String lastName = "asdasdasdasd";
     private void setDisplayName() {
         int configID = 1042;
         int configValue = getConfig(configID);
@@ -96,13 +97,22 @@ public final class RuneScapeGuideSection extends TutorialSection {
             case 0:
             case 1:
             	if(Nex.USERNAME != null) {
-            	if(interactIfNotVisible("What name woul","Look up name")) {
-                    Time.sleep(1000);
-            	}else if (!nameIsEntered(Nex.USERNAME)) {  		
-                    Keyboard.sendText(Nex.USERNAME);
-                    Time.sleep(2000);
-                    Keyboard.pressEnter();
-                }
+            		if (isVisible("not available") && lastName == Nex.USERNAME) {
+                        Log.fine("bad name, lets change");
+                        if(Nex.USERNAME.length() < 10) {
+                        	Nex.USERNAME = Nex.USERNAME + random(1, 9);
+                        }else {
+                        	Nex.USERNAME = Nex.USERNAME.substring(0, Nex.USERNAME.length()-1) + random(1,9);
+                        }
+                        Log.fine("New name:" + Nex.USERNAME);
+                    } else if(interactIfNotVisible("What name woul","Look up name")) {
+	                    Time.sleep(1000);
+	            	}else if (!nameIsEntered(Nex.USERNAME)) {  
+	            		lastName = Nex.USERNAME;
+	                    Keyboard.sendText(Nex.USERNAME);
+	                    Time.sleep(2000);
+	                    Keyboard.pressEnter();
+	                }
             	}
                 break;
             case 4:

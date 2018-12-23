@@ -93,16 +93,24 @@ public class BuyItemEvent {
 	}
 
 	private void handleExistingOffers(List<RSGrandExchangeOffer> offers) {
+		
 		for (RSGrandExchangeOffer offer : offers) {
-			if (offer.getProgress() == Progress.IN_PROGRESS) {
+			if (offer.getProgress() == Progress.FINISHED) {
+				GrandExchange.collectAll(false);
+			}else if (offer.getProgress() == Progress.IN_PROGRESS) {
 				if (offer.getItemId() == item.getItemID()) {
+					if(item.getItemPrice() > 5 * Exchange.getPrice(item.getItemID())) {
+						//send banned message
+						//in the future, send error message saying that this is bad and that we should remove item 
+						Log.fine("Sleeping because we are  buying over expensive item");
+						Time.sleep(60000);
+						break;
+					}
 					item.raiseItemPrice();
 					withdrawnMoney = false;
 				}
 				offer.abort();
-			} else if (offer.getProgress() == Progress.FINISHED) {
-				GrandExchange.collectAll(false);
-			}
+			} 
 		}
 		Log.fine("existing offers");
 	}

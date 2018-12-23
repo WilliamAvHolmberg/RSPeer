@@ -21,19 +21,15 @@ import com.nex.script.inventory.InventoryItem;
 import com.nex.script.inventory.NexInventory;
 import com.nex.script.items.RSItem;
 import com.nex.script.walking.WalkEvent;
-import com.nex.script.walking.WalkWithObstacle;
+import com.nex.script.walking.WalkToJuliet;
+import com.nex.script.walking.WalkToRomeo;
 import com.nex.task.QuestTask;
 
 public class RomeoAndJulietQuest extends QuestTask {
 
-	private final Position julietPosition = new Position(3158,3425,1);
-	private final Position basementStairs = new Position(3156,3435);
-	private final Position upperStairs = new Position(3152,3436,1);
-	private final Position romeoPosition = new Position(3213,3423,0);
-
-	private final WalkEvent walkToJulietEvent = new WalkWithObstacle(basementStairs, julietPosition, "Staircase");
-	private final WalkEvent walkToRomeoEvent = new WalkWithObstacle(upperStairs, romeoPosition, "Staircase");
-
+	private final WalkEvent walkToJulietEvent = new WalkToJuliet();
+	private final WalkEvent walkToRomeoEvent = new WalkToRomeo();
+	
 
 
 	private InventoryItem cadavaBerries = new InventoryItem(1, new RSItem("Cadava berries", 753), 1);
