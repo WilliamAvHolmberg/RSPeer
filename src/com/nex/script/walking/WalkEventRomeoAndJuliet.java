@@ -17,6 +17,6 @@ public abstract class WalkEventRomeoAndJuliet implements WalkEvent{
 	protected final Position entranceDoor = new Position(3165,3433,0);
 	
 	public SceneObject getObject(Position position) {
-		return SceneObjects.getNearest(p -> p.isPositionInteractable() && p.getPosition().equals(position));
+		return SceneObjects.getNearest(p -> p.distance() < 20 && p.isPositionInteractable() && p.getPosition().equals(position));
 	}
 }
