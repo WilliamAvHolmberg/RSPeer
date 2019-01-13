@@ -10,6 +10,8 @@ import org.rspeer.runetek.adapter.Interactable;
 import org.rspeer.runetek.adapter.component.InterfaceComponent;
 import org.rspeer.runetek.api.Varps;
 import org.rspeer.runetek.api.component.Interfaces;
+import org.rspeer.runetek.api.movement.position.Area;
+import org.rspeer.runetek.api.scene.Players;
 import org.rspeer.runetek.event.types.ChatMessageEvent;
 import org.rspeer.runetek.event.types.ObjectSpawnEvent;
 import org.rspeer.runetek.event.types.RenderEvent;
@@ -24,7 +26,7 @@ import com.nex.task.quests.tutorial.sections.*;
 
 
 public final class TutorialIsland extends QuestTask {
-
+	static Area WHOLE_ISLAND_AREA = Area.rectangular(3048, 3145, 3165, 3040);
     private final TutorialSection rsGuideSection = new RuneScapeGuideSection();
     private final TutorialSection survivalSection = new SurvivalSection();
     private final TutorialSection cookingSection = new CookingSection();
@@ -96,7 +98,7 @@ public final class TutorialIsland extends QuestTask {
     
 
     public static boolean isTutorialIslandCompleted() {
-        return 	getWidgetContainingText("Tutorial Island Progress") == null;
+        return 	!WHOLE_ISLAND_AREA.contains(Players.getLocal()) && getWidgetContainingText("Tutorial Island Progress") == null;
     }
     public boolean isFinished() {
     	return isTutorialIslandCompleted();

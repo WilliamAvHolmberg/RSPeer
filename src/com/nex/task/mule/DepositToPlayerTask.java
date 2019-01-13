@@ -5,9 +5,13 @@ import java.awt.Graphics2D;
 
 import org.rspeer.runetek.api.Worlds;
 import org.rspeer.runetek.api.commons.Time;
+import org.rspeer.runetek.api.component.Bank;
+import org.rspeer.runetek.api.component.GrandExchange;
 import org.rspeer.runetek.api.component.Trade;
 import org.rspeer.runetek.api.component.WorldHopper;
 import org.rspeer.runetek.api.component.tab.Inventory;
+import org.rspeer.runetek.api.movement.Movement;
+
 import com.nex.script.walking.WalkTo;
 import org.rspeer.runetek.api.scene.Players;
 import org.rspeer.runetek.event.types.ChatMessageEvent;
@@ -50,9 +54,15 @@ public class DepositToPlayerTask extends Mule {
 	public int loop(){
 		if(world > 0 && Worlds.getCurrent() != world) {
 			
+			if(Bank.isOpen()) {
+				Bank.close();
+			}else if(GrandExchange.isOpen()) {
+				Movement.walkTo(Players.getLocal().getPosition().randomize(5));
+			}else {
 			WorldHopper.hopTo(world);
 			Time.sleepUntil(() ->Worlds.getCurrent() == world, 15000);
 			Time.sleep(10000);
+			}
 		}
 		else if (!BuyItemHandler.getGEArea().contains(Players.getLocal())) {
 			WalkTo.execute(BuyItemHandler.getGEArea().getCenter());
