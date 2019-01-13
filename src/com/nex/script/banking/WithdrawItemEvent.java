@@ -56,6 +56,9 @@ public class WithdrawItemEvent extends BankEvent {
 				if(amount < 20000) {
 					amount = 20000;
 				}
+				if(amount > 30000) {
+					System.exit(1);
+				}
 				NexHelper.pushMessage(new MuleRequest("MULE_WITHDRAW:995:" + amount));
 				
 			} else {

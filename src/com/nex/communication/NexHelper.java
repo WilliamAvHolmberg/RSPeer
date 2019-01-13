@@ -30,7 +30,8 @@ import com.nex.script.handler.TaskHandler;
 
 public class NexHelper implements Runnable {
 	// private String ip = "192.168.10.127";
-	private String ip = "oxnetserver.ddns.net";
+	//private String ip = "oxnetserver.ddns.net";
+	private String ip = "213.136.78.120";
 	//private String ip = "nexus.no-ip.org";
 	private int port = 43594;
 	public static long lastLog = System.currentTimeMillis();
@@ -89,13 +90,18 @@ public class NexHelper implements Runnable {
 			whileShouldRun(out, in); // main loop, always run while script should be running
 
 		} catch (Exception e) {
-			Log.info(e.getMessage());
-			Log.info("FAILED TO INITIALIZE: LETS DC");
-		
-			messageQueue.add(new DisconnectMessage("Failed to initialize"));
-			System.exit(1);
+			Log.info("FAILED TO INITIALIZE: LETS TRY AGAIN");
+
+			
 		}
-		//System.exit(1);
+		try {
+			Thread.sleep(2000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		Log.fine("TRYING TO RE ESTABLISH CONNECTION");
+		//run();
 	}
 	
 	
@@ -111,8 +117,8 @@ public class NexHelper implements Runnable {
 			}
 			Thread.sleep(1000);
 		}
-		Nex.SHOULD_RUN = false;
-
+		//Nex.SHOULD_RUN = false;
+		
 	}
 
 	private void handleMessageQueue(PrintWriter out, BufferedReader in) throws InterruptedException, IOException {
@@ -209,7 +215,7 @@ public class NexHelper implements Runnable {
 
 	}
 	
-	public long secondsSinceLastLog() {
+	public static long secondsSinceLastLog() {
 		return (System.currentTimeMillis() - NexHelper.lastLog)/1000;
 	}
 

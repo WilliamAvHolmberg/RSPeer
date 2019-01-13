@@ -62,7 +62,7 @@ import com.nex.task.quests.RomeoAndJulietQuest;
 import com.nex.task.quests.tutorial.TutorialIsland;
 import com.nex.task.woodcutting.WoodcuttingTask;
 
-@ScriptMeta(desc = "Autoz", developer = "William", name = "nex")
+@ScriptMeta(desc = "Autozzzz", developer = "William", name = "nex")
 public class Nex extends Script
 		implements RenderListener, ChatMessageListener, ObjectSpawnListener, LoginResponseListener {
 
@@ -91,7 +91,7 @@ public class Nex extends Script
 
 	@Override
 	public int loop() {
-		if(failedWalk  >= 40 || !SHOULD_RUN) {
+		if(failedWalk  >= 40 || !SHOULD_RUN || NexHelper.secondsSinceLastLog() > 40) {
 			System.exit(1);
 		}
 		if (loggedIn()) {
@@ -149,7 +149,10 @@ public class Nex extends Script
 	}
 
 	private void getTask() {
-		if(!TutorialIsland.isTutorialIslandCompleted()) {
+		if(!loggedIn()) {
+			Log.fine("wait til we are logged in before getting task");
+			Time.sleep(1000);
+		}else if(!TutorialIsland.isTutorialIslandCompleted()) {
 			TaskHandler.addPrioritizedTask(new TutorialIsland());
 		}else if (TaskHandler.available_tasks.isEmpty()) {
 			nexHelper.getNewTask();
@@ -170,6 +173,8 @@ public class Nex extends Script
 	public void notify(RenderEvent event) {
 		Graphics g = event.getSource();
 		g.drawString("IP:" + NexHelper.getIP(), 200,50);
+		g.drawString("LAST LOG:" + NexHelper.secondsSinceLastLog(), 200,75);
+		g.drawString("BREAK AFTER 40", 200,100);
 		int y = 200;
 		if (TaskHandler.getCurrentTask() != null) {
 			TaskHandler.getCurrentTask().notify(event);
@@ -218,13 +223,13 @@ public class Nex extends Script
 	public void notify(LoginResponseEvent arg0) {
 		Log.fine(arg0.getResponse());
 		switch (arg0.getResponse()) {
+		case ACCOUNT_LOCKED:
+		case ACCOUNT_STOLEN:
 		case ACCOUNT_DISABLED:
 			NexHelper.pushMessage(new BannedMessage("We are banned"));
 			break;
 		case ACCOUNT_INACCESSIBLE:
-		case ACCOUNT_LOCKED:
 		case ACCOUNT_NOT_LOGGED_OUT:
-		case ACCOUNT_STOLEN:
 		case BAD_SESSION_ID:
 
 		case COMPUTER_ADDRESS_BLOCKED:

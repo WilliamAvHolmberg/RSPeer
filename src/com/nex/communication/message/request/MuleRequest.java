@@ -38,6 +38,7 @@ public class MuleRequest extends NexRequest {
 		String muleType = nextRequest[0].toLowerCase();
 		String itemID = nextRequest[1];
 		String amount = nextRequest[2];
+		
 		out.println("mule_request:" + itemID + ":" + amount + ":" + Players.getLocal().getName() + ":"
 				+ Worlds.getCurrent() + ":" + muleType);
 		String respond = in.readLine();
@@ -70,13 +71,13 @@ public class MuleRequest extends NexRequest {
 			newTask = new DepositToPlayerTask(Integer.parseInt(world), itemID, amount, (int) startAmount,
 					muleName.toLowerCase());
 
-			newTask.setBreakAfterTime(5);
+			newTask.setBreakAfterTime(10);
 			break;
 		case "mule_withdraw":
 			startAmount = (int) Inventory.getCount(true, itemID);
 			newTask = new WithdrawFromPlayerTask(Integer.parseInt(world), itemID, amount, (int) startAmount,
 					muleName.toLowerCase());
-			newTask.setBreakAfterTime(5);
+			newTask.setBreakAfterTime(10);
 			break;
 		}
 		if (newTask != null && (TaskHandler.getCurrentTask() instanceof PrepareForMuleDepositTask)) {

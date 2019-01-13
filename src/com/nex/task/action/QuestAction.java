@@ -128,7 +128,7 @@ public abstract class QuestAction extends Action{
 
 		
 		public static boolean interactInventory(String action, String name) {
-			Item item = Inventory.getFirst(name);
+			Item item = Inventory.getFirst(p->p.getName().equals(name) && !p.isNoted());
 			if(item == null) {
 				return false;
 			}
