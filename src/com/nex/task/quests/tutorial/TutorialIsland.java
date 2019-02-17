@@ -92,7 +92,11 @@ public final class TutorialIsland extends QuestTask {
         return 200;
     }
 
-    private int getTutorialSection() {
+    private boolean stuckContinueIsVisible() {
+		return getWidgetContainingText("Click to continue") != null;
+	}
+
+	private int getTutorialSection() {
         return Varps.get(406);
     }
     

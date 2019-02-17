@@ -30,10 +30,11 @@ import com.nex.script.banking.WithdrawItemEvent;
 import com.nex.script.items.RSItem;
 import com.nex.script.items.RequiredItem;
 import com.nex.script.items.WithdrawItem;
+import com.nex.task.IMoneyTask;
 import com.nex.task.SkillTask;
 import com.nex.task.woodcutting.actions.CutTreeAction;
 
-public class WoodcuttingTask extends SkillTask implements ChatMessageListener {
+public class WoodcuttingTask extends SkillTask implements ChatMessageListener, IMoneyTask {
 	String treeName;
 	RSItem axe;
 	int logID;
@@ -132,16 +133,35 @@ public class WoodcuttingTask extends SkillTask implements ChatMessageListener {
 		g.drawString("Logs chopped: " + logsChopped, 300, 350);
 		g.drawString("Ran for: " + getTimeRanMS(), 300, 375);
 		g.drawString("Logs per hour: " + getPerHour(logsChopped), 300, 400);
-		g.drawString("Money per hour: " + getPerHour(logsChopped) * logPrice, 300, 425);
+		g.drawString("Money per hour: " + getMoneyPerHour(), 300, 425);
 
 		
 
+	}
+	
+	@Override
+	public String getLog() {
+		String respond =  getTaskID();
+		respond += ":position;" + Players.getLocal().getPosition().getX() + ";" + Players.getLocal().getPosition().getY() + ";" + Players.getLocal().getPosition().getFloorLevel();
+		
+		
+		respond += ":xp;" + getExperiencePerHour();
+		
+		
+		respond += ":loot;" + getMoneyPerHour();
+
+		return respond;
 	}
 
 	@Override
 	public void removeTask() {
 		//TASK LOG TODO
 		
+	}
+
+	@Override
+	public int getMoneyPerHour() {
+		return (int) (getPerHour(logsChopped) * logPrice);
 	}
 
 

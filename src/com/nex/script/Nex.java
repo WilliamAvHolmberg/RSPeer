@@ -62,7 +62,7 @@ import com.nex.task.quests.RomeoAndJulietQuest;
 import com.nex.task.quests.tutorial.TutorialIsland;
 import com.nex.task.woodcutting.WoodcuttingTask;
 
-@ScriptMeta(desc = "Autozzzz", developer = "William", name = "nex")
+@ScriptMeta(desc = "Nex 2.0", developer = "William", name = "nex")
 public class Nex extends Script
 		implements RenderListener, ChatMessageListener, ObjectSpawnListener, LoginResponseListener {
 
@@ -91,7 +91,8 @@ public class Nex extends Script
 
 	@Override
 	public int loop() {
-		if(failedWalk  >= 40 || !SHOULD_RUN || NexHelper.secondsSinceLastLog() > 40) {
+		if(failedWalk  >= 40 || !SHOULD_RUN || NexHelper.secondsSinceLastLog() > 120) {
+			Log.fine("lets quit");
 			System.exit(1);
 		}
 		if (loggedIn()) {
@@ -156,7 +157,7 @@ public class Nex extends Script
 			TaskHandler.addPrioritizedTask(new TutorialIsland());
 		}else if (TaskHandler.available_tasks.isEmpty()) {
 			nexHelper.getNewTask();
-			Time.sleepUntil(() -> TaskHandler.getCurrentTask() != null ||!TaskHandler.available_tasks.isEmpty(), 20000);
+			Time.sleepUntil(() -> TaskHandler.getCurrentTask() != null ||!TaskHandler.available_tasks.isEmpty(), 60000);
 		} else {
 			TaskHandler.popTask();
 		}
@@ -265,6 +266,7 @@ public class Nex extends Script
 			break;
 
 		}
+		Log.fine("after dis");
 
 	}
 

@@ -15,6 +15,7 @@ import java.util.function.BooleanSupplier;
 import org.rspeer.runetek.api.Game;
 import org.rspeer.runetek.api.Login;
 import org.rspeer.runetek.api.Worlds;
+import org.rspeer.runetek.api.component.tab.Skill;
 import org.rspeer.ui.Log;
 
 import com.nex.communication.message.BannedMessage;
@@ -31,7 +32,7 @@ import com.nex.script.handler.TaskHandler;
 public class NexHelper implements Runnable {
 	// private String ip = "192.168.10.127";
 	//private String ip = "oxnetserver.ddns.net";
-	private String ip = "213.136.78.120";
+	private String ip = "oxnetserver.ddns.net";
 	//private String ip = "nexus.no-ip.org";
 	private int port = 43594;
 	public static long lastLog = System.currentTimeMillis();
@@ -79,7 +80,7 @@ public class NexHelper implements Runnable {
 			PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
 			BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));
-			for(int i = 0; i<15; i++) {
+			for(int i = 0; i<10; i++) {
 				if(Game.isLoggedIn()) {
 					break;
 				}
@@ -109,7 +110,7 @@ public class NexHelper implements Runnable {
 	private void whileShouldRun(PrintWriter out, BufferedReader in) throws IOException, InterruptedException {
 		//if last log more than 3 minutes, dc
 		Log.fine(secondsSinceLastLog());
-		while (Nex.SHOULD_RUN && secondsSinceLastLog() < 180) {
+		while (secondsSinceLastLog() < 180) {
 			logToServer(out, in);
 			//checkIfBanned(out, in);
 			if (!messageQueue.isEmpty()) {

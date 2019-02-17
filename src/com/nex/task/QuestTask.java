@@ -9,6 +9,7 @@ import org.rspeer.runetek.adapter.scene.SceneObject;
 import org.rspeer.runetek.api.Game;
 import org.rspeer.runetek.api.Varps;
 import org.rspeer.runetek.api.commons.Time;
+import org.rspeer.runetek.api.commons.math.Random;
 import org.rspeer.runetek.api.component.Dialog;
 import org.rspeer.runetek.api.component.Interfaces;
 import org.rspeer.runetek.api.component.tab.Inventory;
@@ -199,8 +200,9 @@ public abstract class QuestTask extends NexTask {
 		if(cantReach != null && cantReach.isVisible()) {
 			Mouse.click(371,426);
 		}else if(con != null) {
-			Log.fine("con exist");
-			Keyboard.pressEventKey(KeyEvent.VK_SPACE);
+			Log.fine("con exist..." + con.getX() +  "   " + con.getY());
+			Log.fine(Mouse.getX());
+			Mouse.click(con.getX(),con.getY());
 			return true;
 		}else {
 			Log.fine("not visible");

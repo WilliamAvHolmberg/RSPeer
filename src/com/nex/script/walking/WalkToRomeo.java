@@ -33,10 +33,10 @@ public class WalkToRomeo extends WalkEventRomeoAndJuliet {
 			getObject(entranceDoor).interact("Open");	
 		}else if(getObject(upperStairs) != null) {
 			getObject(upperStairs).interact("Climb-down");
-		}else if(getObject(upperFirstDoor) != null) {
-			getObject(upperSecondDoor).interact("Open");
 		}else if(getObject(upperSecondDoor) != null) {
 			getObject(upperSecondDoor).interact("Open");
+		}else if(getObject(upperFirstDoor) != null) {
+			getObject(upperFirstDoor).interact("Open");
 		}else {
 			failed = true;
 		}
