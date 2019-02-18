@@ -7,6 +7,7 @@ import java.util.Optional;
 import org.rspeer.runetek.adapter.component.InterfaceComponent;
 import org.rspeer.runetek.adapter.scene.SceneObject;
 import org.rspeer.runetek.api.commons.Time;
+import org.rspeer.runetek.api.commons.math.Random;
 import org.rspeer.runetek.api.component.tab.Inventory;
 import org.rspeer.runetek.api.component.tab.Tab;
 import org.rspeer.runetek.api.component.tab.Tabs;
@@ -56,9 +57,13 @@ public final class MiningSection extends TutorialSection {
 			break;
 		case 300:
 			mine(TIN);
+			if(Random.nextInt(0, 100) > 50)
+				mine(TIN);//Help prevent insta-banning
 			break;
 		case 310:
 			mine(COPPER);
+			if(Random.nextInt(0, 100) > 50)
+				mine(COPPER);//Help prevent insta-banning
 			break;
 		case 320:
 			if (Tabs.open(Tab.INVENTORY)) {
@@ -120,8 +125,10 @@ public final class MiningSection extends TutorialSection {
 	}
 
 	private void mine(int id) {
+		int count = Inventory.getCount(id);
 		SceneObject closestRock = SceneObjects.getNearest(id);
 		if (closestRock != null && closestRock.interact("Mine")) {
+			Time.sleepUntil(()->Inventory.getCount(id) != count, 6000, 600);
 			Time.sleepUntil(this::pendingContinue, 6000, 600);
 		}
 	}

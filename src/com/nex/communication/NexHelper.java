@@ -5,27 +5,19 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.net.MalformedURLException;
 import java.net.Socket;
 import java.net.URL;
-import java.util.Scanner;
 import java.util.Stack;
-import java.util.function.BooleanSupplier;
 
 import org.rspeer.runetek.api.Game;
-import org.rspeer.runetek.api.Login;
 import org.rspeer.runetek.api.Worlds;
-import org.rspeer.runetek.api.component.tab.Skill;
+import org.rspeer.runetek.api.commons.Time;
+import org.rspeer.runetek.api.scene.Players;
 import org.rspeer.ui.Log;
 
-import com.nex.communication.message.BannedMessage;
 import com.nex.communication.message.DisconnectMessage;
 import com.nex.communication.message.NexMessage;
-import com.nex.communication.message.TaskLog;
-import com.nex.communication.message.request.MuleRequest;
 import com.nex.communication.message.request.RequestTask;
-import com.nex.communication.message.respond.MuleRespond;
-import com.nex.communication.message.respond.WoodcuttingRespond;
 import com.nex.script.Nex;
 import com.nex.script.handler.TaskHandler;
 
@@ -63,7 +55,10 @@ public class NexHelper implements Runnable {
 		if(add) {
 			messageQueue.push(message);
 		}
-		
+	}
+	static boolean emptyNow = false;
+	public static void sendAllMessages(){
+		emptyNow = true;
 	}
 	public NexHelper(String username, String password) {
 		this.mail = username;
@@ -81,7 +76,7 @@ public class NexHelper implements Runnable {
 			BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));
 			for(int i = 0; i<10; i++) {
-				if(Game.isLoggedIn()) {
+				if(Game.isLoggedIn() || !messageQueue.empty()) {//If we have messages to send, lets send them. Especially if its a ban message
 					break;
 				}
 				Thread.sleep(1000);
@@ -91,9 +86,8 @@ public class NexHelper implements Runnable {
 			whileShouldRun(out, in); // main loop, always run while script should be running
 
 		} catch (Exception e) {
+			e.printStackTrace();//These saved my life
 			Log.info("FAILED TO INITIALIZE: LETS TRY AGAIN");
-
-			
 		}
 		try {
 			Thread.sleep(2000);
@@ -105,17 +99,18 @@ public class NexHelper implements Runnable {
 		//run();
 	}
 	
-	
 
 	private void whileShouldRun(PrintWriter out, BufferedReader in) throws IOException, InterruptedException {
 		//if last log more than 3 minutes, dc
 		Log.fine(secondsSinceLastLog());
-		while (secondsSinceLastLog() < 180) {
+		while ((Nex.SHOULD_RUN || (emptyNow && !messageQueue.isEmpty())) && secondsSinceLastLog() < 180) {
 			logToServer(out, in);
-			//checkIfBanned(out, in);
+			//	checkIfBanned(out, in);
 			if (!messageQueue.isEmpty()) {
 				handleMessageQueue(out, in);
+				if(emptyNow) continue;
 			}
+			emptyNow = false;
 			Thread.sleep(1000);
 		}
 		//Nex.SHOULD_RUN = false;
@@ -125,7 +120,7 @@ public class NexHelper implements Runnable {
 	private void handleMessageQueue(PrintWriter out, BufferedReader in) throws InterruptedException, IOException {
 		nextRequest = messageQueue.pop();
 		if (nextRequest != null) {
-			Log.fine("REQUEST:" +nextRequest);
+			Log.fine("REQUEST:" + nextRequest);
 			nextRequest.execute(out, in);
 		} else {
 			logToServer(out, in);
@@ -152,7 +147,9 @@ public class NexHelper implements Runnable {
 	}
 	
 	public String getName() {
-		return "bla";
+		if(Game.isLoggedIn())
+			return Players.getLocal().getName();
+		return "?";
 	}
 	
 	
@@ -178,13 +175,15 @@ public class NexHelper implements Runnable {
 	 */
 	private void logToServer(PrintWriter out, BufferedReader in) throws InterruptedException, IOException {
 		if (System.currentTimeMillis() - lastLog > 5000) { // only log every 5 sec
-			log = getLog();
-			out.println(log);
-			respond = in.readLine();
-			Log.fine((respond));
-			lastLog = System.currentTimeMillis();
+			logToServerNow(out, in);
 		}
-
+	}
+	public void logToServerNow(PrintWriter out, BufferedReader in) throws InterruptedException, IOException {
+		log = getLog();
+		out.println(log);
+		respond = in.readLine();
+		Log.fine((respond));
+		lastLog = System.currentTimeMillis();
 	}
 
 	public void getNewTask() {

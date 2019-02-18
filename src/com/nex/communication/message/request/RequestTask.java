@@ -3,20 +3,15 @@ package com.nex.communication.message.request;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Stack;
 
+import com.nex.communication.message.respond.*;
+import org.rspeer.runetek.api.commons.Time;
 import org.rspeer.runetek.api.component.tab.Skill;
 import org.rspeer.runetek.api.component.tab.Skills;
 import org.rspeer.ui.Log;
 
 import com.nex.communication.NexHelper;
 import com.nex.communication.message.DisconnectMessage;
-import com.nex.communication.message.NexMessage;
-import com.nex.communication.message.respond.CombatRespond;
-import com.nex.communication.message.respond.MiningRespond;
-import com.nex.communication.message.respond.MuleRespond;
-import com.nex.communication.message.respond.QuestRespond;
-import com.nex.communication.message.respond.WoodcuttingRespond;
 import com.nex.script.Quest;
 
 public class RequestTask extends NexRequest {
@@ -42,13 +37,28 @@ public class RequestTask extends NexRequest {
 		handleRespond(respond);
 	}
 
+	static long timeAskedToDC = 0;
+	static String lastTask;
 	private void handleRespond(String respond) {
 		if (respond.contains("TASK_RESPOND:0") || respond.contains("DISCONNECT")) {
+			if (lastTask != null && lastTask.startsWith("MULE"))
+			{
+				//If we are a mule, lets just hang around for 2 minutes incase another task is ready
+				if(timeAskedToDC == 0) {
+					timeAskedToDC = System.currentTimeMillis();
+					return;
+				}
+				else if(System.currentTimeMillis() - timeAskedToDC < 120000) {
+					Time.sleep(10000);
+					return;
+				}
+			}
 			NexHelper.pushMessage(new DisconnectMessage("Failed to get task"));
 		} else {
+			timeAskedToDC = 0;
 			String[] parsedRespond = respond.split(":");
 			String taskType = parsedRespond[2];
-
+			lastTask = taskType;
 			switch (taskType) {
 			case "MINING":
 				NexHelper.pushMessage(new MiningRespond(respond));
@@ -64,6 +74,9 @@ public class RequestTask extends NexRequest {
 				break;
 			case "MULE_DEPOSIT":
 				NexHelper.pushMessage(new MuleRespond(respond));
+				break;
+			case "TANNER":
+				NexHelper.pushMessage(new TannerRespond(respond));
 				break;
 			case "QUEST":
 				NexHelper.pushMessage(new QuestRespond(respond));

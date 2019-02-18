@@ -5,6 +5,7 @@ import java.util.logging.Logger;
 
 import javax.security.auth.login.LoginContext;
 
+import org.rspeer.RSPeer;
 import org.rspeer.runetek.adapter.Positionable;
 import org.rspeer.runetek.adapter.scene.Player;
 import org.rspeer.runetek.api.Game;
@@ -79,14 +80,13 @@ public class Nex extends Script
 		
 		Thread newThread = new Thread(nexHelper);
 		newThread.start();
-		this.removeBlockingEvent(new LoginScreen(this).getClass());
+		this.removeBlockingEvent(LoginScreen.class);//As suggested by Spencer
 		super.onStart();
 		TaskHandler.addPrioritizedTask(new TutorialIsland());
 		//TaskHandler.addPrioritizedTask(new RomeoAndJulietQuest());
-		Time.sleep(5000);
+		Time.sleep(3000);
 		
 //		TaskHandler.addPrioritizedTask(new MiningTask(barbMine, null, new Integer[] {7486,7485}, new RSItem("Bronze pickaxe", 1265)));
-
 	}
 
 	@Override
@@ -167,7 +167,6 @@ public class Nex extends Script
 		Log.fine("Is not logged in");
 		Login.enterCredentials(getAccount().getUsername(), getAccount().getPassword());
 		Mouse.click(279, 301);
-
 	}
 
 	@Override
@@ -227,7 +226,9 @@ public class Nex extends Script
 		case ACCOUNT_LOCKED:
 		case ACCOUNT_STOLEN:
 		case ACCOUNT_DISABLED:
+		case INVALID_CREDENTIALS:
 			NexHelper.pushMessage(new BannedMessage("We are banned"));
+			NexHelper.sendAllMessages();
 			break;
 		case ACCOUNT_INACCESSIBLE:
 		case ACCOUNT_NOT_LOGGED_OUT:
@@ -242,7 +243,6 @@ public class Nex extends Script
 		case ERROR_CONNECTING:
 		case ERROR_LOADING_PROFILE:
 		case INCORRECT_AUTH_CODE:
-		case INVALID_CREDENTIALS:
 		case INVALID_LOGIN_SERVER:
 		case LOGIN_LIMIT:
 		case LOGIN_SERVER_OFFLINE:
@@ -261,6 +261,7 @@ public class Nex extends Script
 		case VOTE_REQUIRED:
 		case WORLD_CLOSED_BETA:
 		case WORLD_FULL:
+			Time.sleep(1500);//Give us a quick glimpse of the result before shutting down
 			System.exit(1);
 		default:
 			break;

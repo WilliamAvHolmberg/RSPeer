@@ -27,9 +27,9 @@ public class WalkToJuliet extends WalkEventRomeoAndJuliet {
 	@Override
 	public void execute() {
 		boolean failed = false;
-		if(getObject(upperSecondDoor) != null) {
-			getObject(upperSecondDoor).interact("Open");
-		}else if(getObject(upperFirstDoor) != null) {
+		if(getObject(upperFirstDoor) != null) {
+			getObject(upperFirstDoor).interact("Open");
+		}else if(getObject(upperSecondDoor) != null) {
 			getObject(upperSecondDoor).interact("Open");
 		}else if(getObject(lowerStairs) != null) {
 			getObject(lowerStairs).interact("Climb-up");

@@ -15,7 +15,7 @@ public abstract class NexMessage {
 	
 	public NexMessage( String respond) {
 		this.respond = respond;
-		Log.info("new mess created: " + respond);
+		Log.info("New Message Created: " + respond);
 	}
 	public abstract void execute(PrintWriter out, BufferedReader in) throws IOException;
 	

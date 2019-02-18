@@ -4,12 +4,15 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.util.function.BooleanSupplier;
 
+import com.nex.script.walking.WalkTo;
 import org.rspeer.runetek.api.Worlds;
 import org.rspeer.runetek.api.commons.Time;
+import org.rspeer.runetek.api.commons.math.Random;
 import org.rspeer.runetek.api.component.Bank;
 import org.rspeer.runetek.api.component.GrandExchange;
 import org.rspeer.runetek.api.component.WorldHopper;
 import org.rspeer.runetek.api.movement.Movement;
+import org.rspeer.runetek.api.movement.position.Area;
 import org.rspeer.runetek.api.scene.Players;
 import org.rspeer.runetek.event.types.ChatMessageEvent;
 import org.rspeer.runetek.event.types.ObjectSpawnEvent;
@@ -21,8 +24,8 @@ import com.nex.task.actions.mule.WithdrawItemFromPlayer;
 public class WithdrawFromPlayerTask extends Mule {
 
 	protected WithdrawItemFromPlayer tradeWithSlave;
-	public WithdrawFromPlayerTask(int world, int itemID, int itemAmount, int startAmount, String tradeName) {
-		super(world, itemID, itemAmount, startAmount, tradeName);
+	public WithdrawFromPlayerTask(int world, int itemID, int itemAmount, String tradeName, Area playerPos) {
+		super(world, itemID, itemAmount, tradeName, playerPos);
 		tradeWithSlave = new WithdrawItemFromPlayer(tradeName, itemID, itemAmount);
 	}
 	
@@ -52,7 +55,16 @@ public class WithdrawFromPlayerTask extends Mule {
 					+ getMule(getTradeName()).getPosition().distance(Players.getLocal()));
 			return tradeWithSlave.execute();
 		}else {
-			Log.fine("mule name is not avialable");
+
+			if(itemID != 995 && this.playerPos != null) {//If we are trading items, lets walk to the mule
+				if (this.playerPos.getCenter().distance() > 7) {
+					Log.fine("Walking to mule " + getTradeName());
+					WalkTo.execute(this.playerPos.getCenter());
+					return Random.mid(800, 1500);
+				}
+			}
+
+			Log.fine("Cannot see mule " + getTradeName());
 		}
 		return 200;
 	}

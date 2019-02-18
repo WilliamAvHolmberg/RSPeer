@@ -10,6 +10,7 @@ import java.util.Optional;
 import org.rspeer.runetek.adapter.scene.Npc;
 import org.rspeer.runetek.adapter.scene.SceneObject;
 import org.rspeer.runetek.api.commons.Time;
+import org.rspeer.runetek.api.commons.math.Random;
 import org.rspeer.runetek.api.component.tab.Inventory;
 import org.rspeer.runetek.api.component.tab.Tab;
 import org.rspeer.runetek.api.component.tab.Tabs;
@@ -53,6 +54,8 @@ public final class SurvivalSection extends TutorialSection {
                 break;
             case 70:
                 chopTree();
+                for(int i = Random.nextInt(0, 3); i>=0; i--)
+                    chopTree();//Help prevent insta-banning
                 break;
             case 80:
             case 90:
@@ -91,9 +94,10 @@ public final class SurvivalSection extends TutorialSection {
     }
 
     private void chopTree() {
+        final int logCount = Inventory.getCount("Logs");
         SceneObject tree = SceneObjects.getNearest("Tree");
         if (tree != null && tree.interact("Chop down")) {
-            Time.sleepUntil(() -> Inventory.contains("Logs"), 10_000, 600);
+            Time.sleepUntil(() -> Inventory.getCount("Logs") != logCount, 10_000, 600);
         }
     }
 

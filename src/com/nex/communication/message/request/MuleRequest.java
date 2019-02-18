@@ -5,9 +5,12 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Stack;
 
+import com.nex.script.items.RequiredItem;
+import com.nex.task.SkillTask;
 import org.rspeer.runetek.api.Worlds;
 import org.rspeer.runetek.api.commons.Time;
 import org.rspeer.runetek.api.component.tab.Inventory;
+import org.rspeer.runetek.api.movement.position.Area;
 import org.rspeer.runetek.api.scene.Players;
 import org.rspeer.ui.Log;
 
@@ -33,26 +36,26 @@ public class MuleRequest extends NexRequest {
 	public void execute(PrintWriter out, BufferedReader in) throws IOException {
 		if ((TaskHandler.getCurrentTask() != null && !(TaskHandler.getCurrentTask() instanceof WithdrawFromPlayerTask)&& !(TaskHandler.getCurrentTask() instanceof DepositToPlayerTask)) || TaskHandler.getCurrentTask() == null) {
 
-		Log.fine("new mule requestelele");
-		String[] nextRequest = respond.split(":");
-		String muleType = nextRequest[0].toLowerCase();
-		String itemID = nextRequest[1];
-		String amount = nextRequest[2];
-		
-		out.println("mule_request:" + itemID + ":" + amount + ":" + Players.getLocal().getName() + ":"
-				+ Worlds.getCurrent() + ":" + muleType);
-		String respond = in.readLine();
-		Log.fine("mule respond: " + respond);
-		String[] parsedRespond = respond.split(":");
-		if (parsedRespond[0].equals("SUCCESSFUL_MULE_REQUEST")) {
-			handleSuccessfullMuleRespond(parsedRespond, Integer.parseInt(itemID), Integer.parseInt(amount));
-		} else if (parsedRespond[0].equals("MULE_BUSY")) {
-			Log.fine("mule is busy atm. lets sleep for 15sec and see if available");
-			Time.sleep(15000);
-		} else {
-			Log.fine("no mule available");
-			NexHelper.pushMessage(new DisconnectMessage(null));
-		}
+			Log.fine("Send a Mule Request");
+			String[] nextRequest = respond.split(":");
+			String muleType = nextRequest[0].toLowerCase();
+			String itemID = nextRequest[1];
+			String amount = nextRequest[2];
+
+			out.println("mule_request:" + itemID + ":" + amount + ":" + Players.getLocal().getName() + ":"
+					+ Worlds.getCurrent() + ":" + muleType);
+			String respond = in.readLine();
+			Log.fine("mule respond: " + respond);
+			String[] parsedRespond = respond.split(":");
+			if (parsedRespond[0].equals("SUCCESSFUL_MULE_REQUEST")) {
+				handleSuccessfullMuleRespond(parsedRespond, Integer.parseInt(itemID), Integer.parseInt(amount));
+			} else if (parsedRespond[0].equals("MULE_BUSY")) {
+				Log.fine("mule is busy atm. lets sleep for 15sec and see if available");
+				Time.sleep(15000);
+			} else {
+				Log.fine("no mule available");
+				NexHelper.pushMessage(new DisconnectMessage(null));
+			}
 		}
 
 	}
@@ -62,21 +65,19 @@ public class MuleRequest extends NexRequest {
 		String muleName = parsedRespond[1];
 		String world = parsedRespond[2];
 		String muleType = parsedRespond[3].toLowerCase();
-		int startAmount;
+
 		long currentTime = System.currentTimeMillis();
 		NexTask newTask = null;
 		switch (muleType) {
 		case "mule_deposit":
-			startAmount = (int) Inventory.getCount(true, itemID);
-			newTask = new DepositToPlayerTask(Integer.parseInt(world), itemID, amount, (int) startAmount,
-					muleName.toLowerCase());
+			newTask = new DepositToPlayerTask(Integer.parseInt(world), itemID, amount,
+					muleName.toLowerCase(), Area.surrounding(Players.getLocal().getPosition(), 7));
 
 			newTask.setBreakAfterTime(10);
 			break;
 		case "mule_withdraw":
-			startAmount = (int) Inventory.getCount(true, itemID);
-			newTask = new WithdrawFromPlayerTask(Integer.parseInt(world), itemID, amount, (int) startAmount,
-					muleName.toLowerCase());
+			newTask = new WithdrawFromPlayerTask(Integer.parseInt(world), itemID, amount,
+					muleName.toLowerCase(), Area.surrounding(Players.getLocal().getPosition(), 7));
 			newTask.setBreakAfterTime(10);
 			break;
 		}

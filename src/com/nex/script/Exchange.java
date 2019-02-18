@@ -14,16 +14,46 @@ import java.util.WeakHashMap;
 
 import com.nex.utils.json.JsonObject;
 import com.nex.utils.json.JsonObject.Member;
-
-
+import org.rspeer.ui.Log;
 
 
 public class Exchange {
 	private final static String RSBUDDY_URL = "https://rsbuddy.com/exchange/summary.json";
 	static String wikiUrl = "https://oldschool.runescape.wiki/w/Exchange:";
 	private static Map<Integer, Integer> myCache = Collections.synchronizedMap(new WeakHashMap<Integer, Integer>());
+	private static Map<Integer, String> names = Collections.synchronizedMap(new WeakHashMap<Integer, String>());
+
+	public static String getName(int item) {
+		if(item == 995) return "Coins";
+		String name = null;
+		if (names.containsKey(item)) {
+			return names.get(item);
+		}
+		try {
+			URL url = new URL(RSBUDDY_URL);
+			BufferedReader jsonFile = new BufferedReader(new InputStreamReader(url.openStream()));
+
+			JsonObject priceJSON = JsonObject.readFrom(jsonFile.readLine());
+			Iterator<Member> iterator = priceJSON.iterator();
+
+			while (iterator.hasNext()) {
+				JsonObject itemJSON = priceJSON.get(iterator.next().getName()).asObject();
+				int itemID = itemJSON.get("id").asInt();
+				if (item == itemID) {
+					name = itemJSON.get("name").asString();
+					break;
+				}
+			}
+			jsonFile.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		names.put(item, name);
+		return name;
+	}
 
 	public static int getPrice(int item) {
+		if(item == 995) return 0;
 		int price = 0;
 		if (myCache.containsKey(item)) {
 			return myCache.get(item);
@@ -38,8 +68,9 @@ public class Exchange {
 			while (iterator.hasNext()) {
 				JsonObject itemJSON = priceJSON.get(iterator.next().getName()).asObject();
 				int itemID = itemJSON.get("id").asInt();
-				String itemName = itemJSON.get("name").asString();
 				if (item == itemID) {
+					String itemName = itemJSON.get("name").asString();
+					names.put(item, itemName);
 					price = itemJSON.get("buy_average").asInt();
 					if (price == 0) {
 						price = getRealPrice(itemName);
@@ -48,6 +79,7 @@ public class Exchange {
 				}
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		myCache.put(item, price);
 		return price;

@@ -135,11 +135,8 @@ public class MiningTask extends SkillTask implements ChatMessageListener {
 		Graphics g = event.getSource();
 		g.drawString("Current Task: " + getSkill() + "->" + getWantedLevel(), 300, 300);
 		g.drawString("Ran for: " + getTimeRanMS(), 300, 375);
-		g.drawString("Logs per hour: " + getPerHour(oresMined), 300, 400);
+		g.drawString("Ores per hour: " + getPerHour(oresMined), 300, 400);
 		g.drawString("Money per hour: " + getPerHour(oresMined) * orePrice, 300, 425);
-
-		
-
 	}
 
 	@Override

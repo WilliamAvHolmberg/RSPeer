@@ -50,6 +50,11 @@ public class WithdrawItemEvent extends BankEvent {
 	public void execute() {
 		if (Bank.isOpen()) {
 			if (Bank.getCount(id) >= amount) {
+				if(amount > 28 && Bank.getWithdrawMode() != Bank.WithdrawMode.NOTE){
+					Bank.setWithdrawMode(Bank.WithdrawMode.NOTE);
+					if (!Time.sleepUntil(()->Bank.getWithdrawMode() == Bank.WithdrawMode.NOTE, 3000))
+						return;
+				}
 				Bank.withdraw(id, amount);
 				Time.sleepUntil(() -> Inventory.contains(id), 5000);
 			} else if (id == 995) {

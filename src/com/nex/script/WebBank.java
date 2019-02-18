@@ -38,7 +38,38 @@ public enum WebBank {
 		}
 		return Area.polygonal(newCoordinates);
     }
+	public static String convertCoordinates(Area area) {
 
+		String parsedCoordinates = "";
+		for (Position tile : area.getTiles()) {
+			if(parsedCoordinates.length() > 0)
+				parsedCoordinates += ",";
+			parsedCoordinates += String.format("{%d, %d}", tile.getX(), tile.getY());
+		}
+		return parsedCoordinates;
+	}
+
+	public static Position parseCoordinate(String parsedPosition) {
+    	try {
+			int index = 0;
+			if (parsedPosition.startsWith("position")) {
+				index += 1;
+			}
+			String[] parsedCoords = parsedPosition.split(";");
+			int coordinate1 = Integer.parseInt(parsedCoords[index]);
+			int coordinate2 = Integer.parseInt(parsedCoords[index + 1]);
+			int coordinate3 = Integer.parseInt(parsedCoords[index + 2]);
+			if (coordinate1 > 500 && coordinate2 > 500) {
+				Position newPos = new Position(coordinate1, coordinate2, coordinate3);
+				return newPos;
+			}
+		}catch (Exception ex) {}
+		return null;
+	}
+	public static String convertCoordinate(Position pos) {
+    	if(pos == null) return null;
+		return String.format("position;%d;%d;%d", pos.getX(), pos.getY(),  pos.getFloorLevel());
+	}
  
 
     public Area getArea() {

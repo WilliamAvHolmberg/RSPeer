@@ -23,7 +23,7 @@ import com.nex.task.quests.tutorial.sections.QuestSection;
 
 public class CheckIfWeShallSellItems extends Action {
 
-	private static ArrayList<String> untradeableItems = new ArrayList<String>(
+	public static ArrayList<String> untradeableItems = new ArrayList<String>(
 			Arrays.asList("Oak logs", "Shrimps", "Mind rune", "Air rune", "Fire rune", "Water rune", "Earth rune"));
 	// used to check when last time we checked items was
 	public static long last_check = 0;
@@ -70,7 +70,10 @@ public class CheckIfWeShallSellItems extends Action {
 
 	}
 
+	public static boolean dontSell = false;
 	public static long getTimeTilNextCheckInMinutes() {
+		if (dontSell)
+			return 120000;
 		return (getNextCheckInMilli() - System.currentTimeMillis()) / 60000;
 	}
 

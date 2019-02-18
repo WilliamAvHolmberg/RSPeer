@@ -17,12 +17,9 @@ import com.nex.task.actions.mule.PrepareForMuleDeposit;
 public class PrepareForMuleDepositTask extends Mule {
 	private PrepareForMuleDeposit prepareForMuleDepositNode = new PrepareForMuleDeposit();
 	public PrepareForMuleDepositTask() {
-		super(0, 0, 0, 0, null);
+		super(0, 0, 0, null, null);
 		this.setBreakAfterTime(10);
 	}
-	
-
-
 
 	@Override
 	public void notify(RenderEvent e) {
@@ -30,27 +27,21 @@ public class PrepareForMuleDepositTask extends Mule {
 		g.drawString("Preparing for mule deposit: ", 350,150);
 	}
 
-
-
 	@Override
 	public int loop(){
 		if(!BuyItemHandler.getGEArea().contains(Players.getLocal())) {
 			WalkTo.execute(BuyItemHandler.getGEArea().getCenter());
 			return 100;
 		}else {
-		return prepareForMuleDepositNode.execute();
+			return prepareForMuleDepositNode.execute();
 		}
 	}
-
 
 	@Override
 	public void notify(ChatMessageEvent arg0) {
 		// TODO Auto-generated method stub
 		
 	}
-
-
-
 
 	@Override
 	public void notify(ObjectSpawnEvent arg0) {
