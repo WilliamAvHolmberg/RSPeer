@@ -1,8 +1,6 @@
 package com.nex.script.items;
 
 
-import com.nex.script.Exchange;
-import com.nex.task.tanning.TanningTask;
 
 public class GESellItem {
 
@@ -11,25 +9,12 @@ public class GESellItem {
 	private boolean hasBeenSold = false; 
 	private int itemID;
 	private String itemName;
-
-	public GESellItem(RSItem item){
-		this(item, null);
-
-	}
-	public GESellItem(RSItem item, Boolean sellCheap) {
+	
+	public GESellItem(RSItem item) {
 		setItemID(item.getId());
 		setItemName(item.getName());
 		//setAmount(amount);
-		if(sellCheap == null)
-		{
-			sellCheap = true;
-			if (TanningTask.ANY_HIDE_NAME.test(item.getName()))
-				sellCheap = false;
-		}
-		if(sellCheap)
-			setItemPrice(itemPrice);
-		else
-			setItemPrice(Exchange.getPrice(item.getId()));
+		setItemPrice(itemPrice);
 	}
 	
 	public void setItemID(int id) {

@@ -39,13 +39,13 @@ public class CheckIfWeShallSellItems extends Action {
 					if(item.getId() == 995) {
 						totalPrice += Bank.getCount(995);
 					}else {
-						RSItem rsItem = RSItem.getItem(item.getName(), item.getId());
-						int itemValue = rsItem.getItemPrice() * Bank.getCount(item.getId());
-						Log.fine(rsItem.getName() + ":  price: " + itemValue);
-						if (itemValue > 3000 && TaskHandler.canSellItem(item) && (Quest.getQuestPoints() >= 7 || !untradeableItems.contains(item.getName()))) {
-							itemsToSell.add((new SellItemEvent(new GESellItem(rsItem))));
-							totalPrice += itemValue;
-						}
+					RSItem rsItem = RSItem.getItem(item.getName(), item.getId());
+					int itemValue = rsItem.getItemPrice() * Bank.getCount(item.getId());
+					Log.fine(rsItem.getName() + ":  price: " + itemValue);
+					if (itemValue > 5000 && TaskHandler.canSellItem(item) && (Quest.getQuestPoints() >= 7 || !untradeableItems.contains(item.getName()))) {
+						itemsToSell.add((new SellItemEvent(new GESellItem(rsItem))));
+						totalPrice += itemValue;
+					}
 					}
 				}
 				

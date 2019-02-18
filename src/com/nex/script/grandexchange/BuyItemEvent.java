@@ -3,7 +3,6 @@ package com.nex.script.grandexchange;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.nex.task.IHandlerTask;
 import org.rspeer.runetek.adapter.component.Item;
 import org.rspeer.runetek.adapter.scene.SceneObject;
 import org.rspeer.runetek.api.commons.Time;
@@ -28,21 +27,11 @@ import com.nex.script.items.GESellItem;
 import com.nex.script.items.RSItem;
 import com.nex.task.mule.WithdrawFromPlayerTask;
 
-public class BuyItemEvent implements IHandlerTask {
+public class BuyItemEvent {
 
 	private boolean checkedValueableItems = false;
 	public static boolean withdrawnMoney = false;
 	private GEItem item;
-
-	boolean finished = false;
-	@Override
-	public boolean isFinished(){
-		return finished;
-	}
-	protected long timeStarted = System.currentTimeMillis();
-	public long getTimeStarted() {
-		return timeStarted;
-	}
 
 	public BuyItemEvent(GEItem item) {
 		this.item = item;
@@ -66,7 +55,6 @@ public class BuyItemEvent implements IHandlerTask {
 				if (offers != null && !offers.isEmpty()) {
 					handleExistingOffers(offers);
 				} else if (Inventory.contains(item.getItemID()) || Inventory.contains(item.getItemName())) {
-					finished = true;
 					BuyItemHandler.removeItem(this);
 				} else {
 					buyItem();
@@ -90,10 +78,7 @@ public class BuyItemEvent implements IHandlerTask {
 			withdrawnMoney = false;
 		} else if (GrandExchangeSetup.isOpen()) {
 			int freeSlots = Inventory.getFreeSlots();
-			if(item.getItemName() == null)
-				GrandExchangeSetup.setItem(item.getItemName());
-			else
-				GrandExchangeSetup.setItem(item.getItemID());
+			GrandExchangeSetup.setItem(item.getItemName());
 			if(!Time.sleepUntil(() -> GrandExchangeSetup.getItem() != null, 500, 1500))
 				return;
 			GrandExchangeSetup.setPrice(item.getItemPrice());
@@ -165,7 +150,7 @@ public class BuyItemEvent implements IHandlerTask {
 					RSItem rsItem = RSItem.getItem(item.getName(), item.getId());
 					int itemValue = rsItem.getItemPrice() * Bank.getCount(item.getId());
 					Log.fine(rsItem.getName() + ":  price: " + itemValue);
-					if (TaskHandler.canSellItem(item) && itemValue > 3000) {
+					if (TaskHandler.canSellItem(item) && itemValue > 5000) {
 						SellItemHandler.addItem(new SellItemEvent(new GESellItem(rsItem)));
 					}
 				}

@@ -8,7 +8,6 @@ import org.rspeer.runetek.adapter.component.InterfaceComponent;
 import org.rspeer.runetek.adapter.scene.SceneObject;
 import org.rspeer.runetek.api.commons.Time;
 import org.rspeer.runetek.api.commons.math.Random;
-import org.rspeer.runetek.api.component.Production;
 import org.rspeer.runetek.api.component.tab.Inventory;
 import org.rspeer.runetek.api.component.tab.Tab;
 import org.rspeer.runetek.api.component.tab.Tabs;
@@ -115,10 +114,6 @@ public final class MiningSection extends TutorialSection {
 			QuestAction.interactInventory("Use", "Tin ore");
 		} else if (SceneObjects.getNearest("Furnace").interact("Use")) {
 			Time.sleepUntil(() -> Inventory.contains("Bronze bar"), 5000, 600);
-			if(Production.isOpen()) {
-				Production.initiate();
-				Time.sleepUntil(() -> Inventory.contains("Bronze bar"), 5000, 600);
-			}
 		}
 	}
 

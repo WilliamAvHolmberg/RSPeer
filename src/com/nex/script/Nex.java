@@ -1,12 +1,10 @@
 package com.nex.script;
 
 import java.awt.Graphics;
-import java.util.ArrayList;
 import java.util.logging.Logger;
 
 import javax.security.auth.login.LoginContext;
 
-import com.nex.task.IHandlerTask;
 import org.rspeer.RSPeer;
 import org.rspeer.runetek.adapter.Positionable;
 import org.rspeer.runetek.adapter.scene.Player;
@@ -121,41 +119,30 @@ public class Nex extends Script
 		return GoblinDiplomacyQuest.getThisQuest().isCompleted() && Game.isInCutscene() && SceneObjects.getNearest(16560) != null;
 	}
 
-
 	private boolean shouldDoHandler() {
-		IHandlerTask activeHandler = TaskHandler.getLatesthandler();
-		if(activeHandler != null) {
-			activeHandler.execute();
+		BankEvent depositEvent = BankHandler.getDepositEvent();
+		BankEvent withdrawEvent = BankHandler.getWithdrawEvent();
+		BuyItemEvent buyItemEvent = BuyItemHandler.getBuyItemEvent();
+		SellItemEvent sellItemEvent = SellItemHandler.getSellItemEvent();
+		if (sellItemEvent != null) {
+			SellItemHandler.execute(sellItemEvent);
 			return true;
-		}
-		else if(!GearHandler.itemsToEquip.isEmpty()) {
+		} else if (TaskHandler.getCurrentTask() != null && TaskHandler.getCurrentTask() instanceof Mule) {
+			TaskHandler.getCurrentTask().loop();
+			return true;
+		} else if (depositEvent != null) {
+			BankHandler.executeEvent(depositEvent);
+			return true;
+		} else if (buyItemEvent != null) {
+			BuyItemHandler.execute(buyItemEvent);
+			return true;
+		} else if (withdrawEvent != null) {
+			BankHandler.executeEvent(withdrawEvent);
+			return true;
+		} else if(!GearHandler.itemsToEquip.isEmpty()) {
 			GearHandler.execute();
 			return true;
 		}
-//		ArrayList<IHandlerTask> activeTasks = new ArrayList<>();
-//		BankEvent depositEvent = BankHandler.getDepositEvent();
-//		BankEvent withdrawEvent = BankHandler.getWithdrawEvent();
-//		BuyItemEvent buyItemEvent = BuyItemHandler.getBuyItemEvent();
-//		SellItemEvent sellItemEvent = SellItemHandler.getSellItemEvent();
-//		if (sellItemEvent != null) {
-//			SellItemHandler.execute(sellItemEvent);
-//			return true;
-//		} else if (TaskHandler.getCurrentTask() != null && TaskHandler.getCurrentTask() instanceof Mule) {
-//			TaskHandler.getCurrentTask().loop();
-//			return true;
-//		}else if (depositEvent != null) {
-//			BankHandler.executeEvent(depositEvent);
-//			return true;
-//		} else if (buyItemEvent != null) {
-//			BuyItemHandler.execute(buyItemEvent);
-//			return true;
-//		} else if (withdrawEvent != null) {
-//			BankHandler.executeEvent(withdrawEvent);
-//			return true;
-//		} else if(!GearHandler.itemsToEquip.isEmpty()) {
-//			GearHandler.execute();
-//			return true;
-//		}
 		return false;
 	}
 	private boolean taskIsCompleted() {
