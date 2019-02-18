@@ -46,6 +46,17 @@ public class WithdrawItemEvent extends BankEvent {
 		this.id = requiredItem.getItemID();
 	}
 
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) return  false;
+		if (!(obj instanceof WithdrawItemEvent)) return false;
+		WithdrawItemEvent other = (WithdrawItemEvent)obj;
+		if (other.buyAmount != buyAmount ||
+			other.id != id ||
+			other.amount != amount)
+			return false;
+		return true;
+	}
 
 	public void execute() {
 		if (Bank.isOpen()) {

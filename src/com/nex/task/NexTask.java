@@ -20,7 +20,7 @@ public abstract class NexTask implements RenderListener, ChatMessageListener, Ob
 	protected long timeStarted = System.currentTimeMillis();
 	protected long breakAfter;
 	private String taskID;
-	
+
 	public abstract int loop();
 	public abstract boolean isFinished();
 	public abstract void removeTask();
@@ -88,7 +88,4 @@ public abstract class NexTask implements RenderListener, ChatMessageListener, Ob
 		}
 		return "0";
 	}
-
-	
-
 }

@@ -1,9 +1,8 @@
 package com.nex.script.handler;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Stack;
+import java.util.*;
 
+import com.nex.task.IHandlerTask;
 import org.rspeer.runetek.adapter.component.Item;
 import org.rspeer.ui.Log;
 
@@ -13,6 +12,7 @@ import com.nex.task.NexTask;
 
 public class TaskHandler {
 	public static Stack<NexTask> available_tasks = new Stack<NexTask>();
+	public static Deque<IHandlerTask> handler_tasks = new ArrayDeque<>();//A dequeue offers items in a 3,2,1,0 when enumerated
 	public static Stack<NexTask> old_tasks = new Stack<NexTask>();
 
 	public static NexTask PREVIOUS_TASK;
@@ -20,6 +20,9 @@ public class TaskHandler {
 
 	public static void addTask(NexTask task) {
 		available_tasks.add(task);
+	}
+	public static void addHandler(IHandlerTask task){
+		handler_tasks.push(task);
 	}
 
 	/*
@@ -109,6 +112,19 @@ public class TaskHandler {
 	public static NexTask getCurrentTask() {
 		return CURRENT_TASK;
 	}
+	public static IHandlerTask getLatesthandler(){
+		IHandlerTask result = null;
+		for (IHandlerTask task : handler_tasks) {
+			if (!task.isFinished())
+				result = task;
+		}
+		if (CURRENT_TASK instanceof IHandlerTask){
+			IHandlerTask task = (IHandlerTask)CURRENT_TASK;
+			if(task.getTimeStarted() > result.getTimeStarted() && !task.isFinished())
+				result = task;
+		}
+		return result;
+	}
 
 	public static void removeTask() {
 		if (CURRENT_TASK != null) {
@@ -123,7 +139,9 @@ public class TaskHandler {
 			CURRENT_TASK.removeTask();
 			CURRENT_TASK = null;
 		}
-
+	}
+	public static void removeHandler(IHandlerTask task){
+		handler_tasks.remove(task);
 	}
 
 }
