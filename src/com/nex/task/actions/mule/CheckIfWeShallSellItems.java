@@ -23,7 +23,7 @@ import com.nex.task.quests.tutorial.sections.QuestSection;
 
 public class CheckIfWeShallSellItems extends Action {
 
-	private static ArrayList<String> untradeableItems = new ArrayList<String>(
+	public static ArrayList<String> untradeableItems = new ArrayList<String>(
 			Arrays.asList("Oak logs", "Shrimps", "Mind rune", "Air rune", "Fire rune", "Water rune", "Earth rune"));
 	// used to check when last time we checked items was
 	public static long last_check = 0;
@@ -39,13 +39,13 @@ public class CheckIfWeShallSellItems extends Action {
 					if(item.getId() == 995) {
 						totalPrice += Bank.getCount(995);
 					}else {
-					RSItem rsItem = RSItem.getItem(item.getName(), item.getId());
-					int itemValue = rsItem.getItemPrice() * Bank.getCount(item.getId());
-					Log.fine(rsItem.getName() + ":  price: " + itemValue);
-					if (itemValue > 5000 && TaskHandler.canSellItem(item) && (Quest.getQuestPoints() >= 7 || !untradeableItems.contains(item.getName()))) {
-						itemsToSell.add((new SellItemEvent(new GESellItem(rsItem))));
-						totalPrice += itemValue;
-					}
+						RSItem rsItem = RSItem.getItem(item.getName(), item.getId());
+						int itemValue = rsItem.getItemPrice() * Bank.getCount(item.getId());
+						Log.fine(rsItem.getName() + ":  price: " + itemValue);
+						if (itemValue > 3000 && TaskHandler.canSellItem(item) && (Quest.getQuestPoints() >= 7 || !untradeableItems.contains(item.getName()))) {
+							itemsToSell.add((new SellItemEvent(new GESellItem(rsItem))));
+							totalPrice += itemValue;
+						}
 					}
 				}
 				
@@ -70,7 +70,10 @@ public class CheckIfWeShallSellItems extends Action {
 
 	}
 
+	public static boolean dontSell = false;
 	public static long getTimeTilNextCheckInMinutes() {
+		if (dontSell)
+			return 120000;
 		return (getNextCheckInMilli() - System.currentTimeMillis()) / 60000;
 	}
 

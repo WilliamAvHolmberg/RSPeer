@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
+import com.nex.script.banking.WithdrawItemEvent;
+import com.nex.task.IHandlerTask;
 import org.rspeer.runetek.adapter.component.Item;
 import org.rspeer.runetek.adapter.scene.SceneObject;
 import org.rspeer.runetek.api.commons.Time;
@@ -23,15 +25,32 @@ import com.nex.script.items.GEItem;
 import com.nex.script.items.GESellItem;
 import com.nex.script.items.RSItem;
 
-public class SellItemEvent {
-
+public class SellItemEvent implements IHandlerTask {
 
 	private GESellItem item;
 	
 	public SellItemEvent(GESellItem item) {
 		this.item = item;
 	}
-	
+
+	boolean finished = false;
+	@Override
+	public boolean isFinished() {
+		return finished;
+	}
+	protected long timeStarted = System.currentTimeMillis();
+	public long getTimeStarted() {
+		return timeStarted;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) return  false;
+		if (!(obj instanceof SellItemEvent)) return false;
+		SellItemEvent other = (SellItemEvent)obj;
+		return item.equals(other.item);
+	}
+
 	public void execute() {
 		if(!item.hasBeenWithdrawnFromBank()) {
 			if(!Bank.isOpen()) {
@@ -48,6 +67,7 @@ public class SellItemEvent {
 				if(offers != null && !offers.isEmpty()) {
 					handleExistingOffers(offers);
 				}else if(Inventory.isEmpty()) {
+					finished = true;
 					SellItemHandler.removeItem(this);
 				}else {
 					sellItem(); 
@@ -60,7 +80,7 @@ public class SellItemEvent {
 				}
 			}
 		}
-		
+
 	}
 	private void sellItem() {
 		if(GrandExchangeSetup.isOpen()) {

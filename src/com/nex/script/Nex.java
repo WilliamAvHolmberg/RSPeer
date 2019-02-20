@@ -1,16 +1,21 @@
 package com.nex.script;
 
 import java.awt.Graphics;
+import java.util.ArrayList;
 import java.util.logging.Logger;
 
 import javax.security.auth.login.LoginContext;
 
+import com.nex.script.handler.RandomHandler;
+import com.nex.task.IHandlerTask;
+import org.rspeer.RSPeer;
 import org.rspeer.runetek.adapter.Positionable;
 import org.rspeer.runetek.adapter.scene.Player;
 import org.rspeer.runetek.api.Game;
 import org.rspeer.runetek.api.Login;
 import org.rspeer.runetek.api.commons.BankLocation;
 import org.rspeer.runetek.api.commons.Time;
+import org.rspeer.runetek.api.commons.math.Random;
 import org.rspeer.runetek.api.input.Mouse;
 import com.nex.script.walking.WalkTo;
 import org.rspeer.runetek.api.movement.position.Area;
@@ -79,14 +84,13 @@ public class Nex extends Script
 		
 		Thread newThread = new Thread(nexHelper);
 		newThread.start();
-		this.removeBlockingEvent(new LoginScreen(this).getClass());
+		this.removeBlockingEvent(LoginScreen.class);//As suggested by Spencer
 		super.onStart();
 		TaskHandler.addPrioritizedTask(new TutorialIsland());
 		//TaskHandler.addPrioritizedTask(new RomeoAndJulietQuest());
-		Time.sleep(5000);
+		Time.sleep(3000);
 		
 //		TaskHandler.addPrioritizedTask(new MiningTask(barbMine, null, new Integer[] {7486,7485}, new RSItem("Bronze pickaxe", 1265)));
-
 	}
 
 	@Override
@@ -106,6 +110,8 @@ public class Nex extends Script
 			}
 			else if (TaskHandler.getCurrentTask() == null) {
 				getTask();
+			} else if (RandomHandler.handleRandom()) {
+				return Random.nextInt(100, 500);
 			} else {
 				TaskHandler.getCurrentTask().loop();
 			}
@@ -119,7 +125,18 @@ public class Nex extends Script
 		return GoblinDiplomacyQuest.getThisQuest().isCompleted() && Game.isInCutscene() && SceneObjects.getNearest(16560) != null;
 	}
 
+
 	private boolean shouldDoHandler() {
+//		IHandlerTask activeHandler = TaskHandler.getLatesthandler();
+//		if(activeHandler != null) {
+//			activeHandler.execute();
+//			return true;
+//		}
+//		else if(!GearHandler.itemsToEquip.isEmpty()) {
+//			GearHandler.execute();
+//			return true;
+//		}
+		ArrayList<IHandlerTask> activeTasks = new ArrayList<>();
 		BankEvent depositEvent = BankHandler.getDepositEvent();
 		BankEvent withdrawEvent = BankHandler.getWithdrawEvent();
 		BuyItemEvent buyItemEvent = BuyItemHandler.getBuyItemEvent();
@@ -167,7 +184,6 @@ public class Nex extends Script
 		Log.fine("Is not logged in");
 		Login.enterCredentials(getAccount().getUsername(), getAccount().getPassword());
 		Mouse.click(279, 301);
-
 	}
 
 	@Override
@@ -227,7 +243,9 @@ public class Nex extends Script
 		case ACCOUNT_LOCKED:
 		case ACCOUNT_STOLEN:
 		case ACCOUNT_DISABLED:
+		case INVALID_CREDENTIALS:
 			NexHelper.pushMessage(new BannedMessage("We are banned"));
+			NexHelper.sendAllMessages();
 			break;
 		case ACCOUNT_INACCESSIBLE:
 		case ACCOUNT_NOT_LOGGED_OUT:
@@ -242,7 +260,6 @@ public class Nex extends Script
 		case ERROR_CONNECTING:
 		case ERROR_LOADING_PROFILE:
 		case INCORRECT_AUTH_CODE:
-		case INVALID_CREDENTIALS:
 		case INVALID_LOGIN_SERVER:
 		case LOGIN_LIMIT:
 		case LOGIN_SERVER_OFFLINE:
@@ -261,6 +278,7 @@ public class Nex extends Script
 		case VOTE_REQUIRED:
 		case WORLD_CLOSED_BETA:
 		case WORLD_FULL:
+			Time.sleep(1500);//Give us a quick glimpse of the result before shutting down
 			System.exit(1);
 		default:
 			break;

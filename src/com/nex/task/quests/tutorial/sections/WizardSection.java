@@ -13,6 +13,7 @@ import org.rspeer.runetek.api.component.tab.Spell;
 import org.rspeer.runetek.api.component.tab.Tab;
 import org.rspeer.runetek.api.component.tab.Tabs;
 import com.nex.script.walking.WalkTo;
+import org.rspeer.runetek.api.movement.Movement;
 import org.rspeer.runetek.api.movement.position.Area;
 import org.rspeer.runetek.api.movement.position.Position;
 import org.rspeer.runetek.api.scene.Npcs;
@@ -34,8 +35,7 @@ public final class WizardSection extends TutorialSection {
             new Position(3139, 3084), new Position(3141, 3084)
     );
 
- 
-    private static final Area CHICKEN_AREA = Area.rectangular(3139, 3091, 3140, 3090);
+    private static final Area CHICKEN_AREA = Area.rectangular(3139, 3090, 3140, 3091);
 
     public WizardSection() {
         super("Magic Instructor");
@@ -82,7 +82,8 @@ public final class WizardSection extends TutorialSection {
     }
 
     private boolean walkToChickenArea() {
-       return WalkTo.execute(CHICKEN_AREA.getCenter());
+        return Movement.setWalkFlagWithConfirm(CHICKEN_AREA.getCenter().randomize(1));//More accurate, less chance of walking outside
+       //return WalkTo.execute(CHICKEN_AREA.getCenter());
     }
 
     private boolean attackChicken() {

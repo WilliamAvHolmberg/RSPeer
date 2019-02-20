@@ -1,9 +1,8 @@
 package com.nex.script.banking;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Stack;
+import java.util.*;
 
+import com.nex.script.handler.TaskHandler;
 import org.rspeer.runetek.api.commons.BankLocation;
 import com.nex.script.walking.WalkTo;
 
@@ -15,11 +14,13 @@ import org.rspeer.ui.Log;
 import com.nex.task.actions.mule.CheckIfWeShallSellItems;
 
 public class BankHandler {
-	private static Stack<BankEvent> bankEvents = new Stack<BankEvent>();
+	private static Deque<BankEvent> bankEvents = new ArrayDeque<>();
+	//A dequeue offers items in a 3,2,1,0 when enumerated
 
 	public static void executeEvent(BankEvent bankEvent) {
 		if(bankEvent.isFinished()) {
 			bankEvents.remove(bankEvent);
+			TaskHandler.removeHandler(bankEvent);
 		}else if(!playerInBank(bankEvent) && Movement.buildPath(bankEvent.getBankArea().getCenter()) != null) {
 			WalkTo.execute(bankEvent.getBankArea().getCenter());
 			Log.fine("lets walk");
@@ -32,7 +33,8 @@ public class BankHandler {
 
 	public static void addBankEvent(BankEvent event) {
 		if (!bankEvents.contains(event)) {
-			bankEvents.push(event);
+			bankEvents.push(event);//Push adds to the end, and will be the next to be retrieved
+			TaskHandler.addHandler(event);
 		}
 	}
 

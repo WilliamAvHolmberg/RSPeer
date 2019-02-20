@@ -46,17 +46,22 @@ public abstract class TutorialSection extends QuestAction{
     }
 
     protected boolean pendingContinue() {
+        if(Dialog.canContinue()) return true;
+        if(Dialog.isProcessing()) return true;
         InterfaceComponent continueWidget = getContinueWidget();
         return continueWidget!= null && continueWidget.isVisible();
     }
 
     protected boolean selectContinue() {
-    	if(Interfaces.getContinue() == null) {
+        InterfaceComponent comp = getContinueWidget();
+    	if(comp == null) {
     		return false;
     	}else {
-    		return  Interfaces.getContinue().click();
+    	    if(Dialog.canContinue())
+                return Dialog.processContinue();
+    	    else
+                return comp.click();
     	}
-    
     }
     
     public int random(int lowerBound, int upperBound) {
@@ -64,6 +69,8 @@ public abstract class TutorialSection extends QuestAction{
     }
 
     private InterfaceComponent getContinueWidget() {
+        InterfaceComponent irregularContinue = Interfaces.getFirst(162, (i)->i.getText().contains("Click here to continue"));
+        if(irregularContinue != null) return irregularContinue;
         return Interfaces.getContinue();
     }
 }

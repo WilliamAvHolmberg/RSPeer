@@ -64,6 +64,7 @@ public class WoodcuttingRespond extends TaskRespond {
 		listOfParsedGear.add(parsedBoots);
 		listOfParsedGear.add(parsedRing);
 		listOfParsedGear.add(parsedAmmo);
+		
 		Gear gear = getGear(parsed, listOfParsedGear);
 		Area actionArea = WebBank.parseCoordinates(parsedActionArea);
 		Area bankArea = null;
@@ -73,6 +74,7 @@ public class WoodcuttingRespond extends TaskRespond {
 		
 		int axeID = Integer.parseInt(parsedAxeID);
 		RSItem axe = new RSItem(axeName, axeID);
+
 		SkillTask newTask = new WoodcuttingTask(actionArea, bankArea, treeName, axe);
 		newTask.setGear(gear);
 		newTask.setTaskID(currentTaskID);

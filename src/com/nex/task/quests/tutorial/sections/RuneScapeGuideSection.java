@@ -99,10 +99,16 @@ public final class RuneScapeGuideSection extends TutorialSection {
             	if(Nex.USERNAME != null) {
             		if (isVisible("not available") && lastName == Nex.USERNAME) {
                         Log.fine("bad name, lets change");
-                        if(Nex.USERNAME.length() < 10) {
-                        	Nex.USERNAME = Nex.USERNAME + random(1, 9);
-                        }else {
-                        	Nex.USERNAME = Nex.USERNAME.substring(0, Nex.USERNAME.length()-1) + random(1,9);
+                        InterfaceComponent suggestion = Interfaces.getComponent(558, 14);
+                        if(suggestion.getText().length() > 7 && suggestion.getText().length() <= 12)
+                        {
+                            Nex.USERNAME = suggestion.getText();
+                        } else {
+                            if (Nex.USERNAME.length() < 10) {
+                                Nex.USERNAME = Nex.USERNAME + random(1, 9);
+                            } else {
+                                Nex.USERNAME = Nex.USERNAME.substring(0, Nex.USERNAME.length() - 1) + random(1, 9);
+                            }
                         }
                         Log.fine("New name:" + Nex.USERNAME);
                     } else if(interactIfNotVisible("What name woul","Look up name")) {
