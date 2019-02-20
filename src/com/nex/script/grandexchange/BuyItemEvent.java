@@ -3,6 +3,7 @@ package com.nex.script.grandexchange;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.nex.task.IHandlerTask;
 import org.rspeer.runetek.adapter.component.Item;
 import org.rspeer.runetek.adapter.scene.SceneObject;
 import org.rspeer.runetek.api.commons.Time;
@@ -27,14 +28,31 @@ import com.nex.script.items.GESellItem;
 import com.nex.script.items.RSItem;
 import com.nex.task.mule.WithdrawFromPlayerTask;
 
-public class BuyItemEvent {
+public class BuyItemEvent implements IHandlerTask {
 
 	private boolean checkedValueableItems = false;
 	public static boolean withdrawnMoney = false;
 	private GEItem item;
 
+	boolean finished = false;
+	@Override
+	public boolean isFinished(){
+		return finished;
+	}
+	protected long timeStarted = System.currentTimeMillis();
+	public long getTimeStarted() {
+		return timeStarted;
+	}
+
 	public BuyItemEvent(GEItem item) {
 		this.item = item;
+	}
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) return  false;
+		if (!(obj instanceof BuyItemEvent)) return false;
+		BuyItemEvent other = (BuyItemEvent)obj;
+		return other.item.equals(this.item);
 	}
 
 	public void execute() {
@@ -55,6 +73,7 @@ public class BuyItemEvent {
 				if (offers != null && !offers.isEmpty()) {
 					handleExistingOffers(offers);
 				} else if (Inventory.contains(item.getItemID()) || Inventory.contains(item.getItemName())) {
+					finished = true;
 					BuyItemHandler.removeItem(this);
 				} else {
 					buyItem();
@@ -78,7 +97,10 @@ public class BuyItemEvent {
 			withdrawnMoney = false;
 		} else if (GrandExchangeSetup.isOpen()) {
 			int freeSlots = Inventory.getFreeSlots();
-			GrandExchangeSetup.setItem(item.getItemName());
+			if(item.getItemName() == null)
+				GrandExchangeSetup.setItem(item.getItemName());
+			else
+				GrandExchangeSetup.setItem(item.getItemID());
 			if(!Time.sleepUntil(() -> GrandExchangeSetup.getItem() != null, 500, 1500))
 				return;
 			GrandExchangeSetup.setPrice(item.getItemPrice());
@@ -119,6 +141,7 @@ public class BuyItemEvent {
 		Log.fine("existing offers");
 	}
 
+	static int withdrawAmount = Random.nextInt(100, 150) * 100;
 	private void withdrawMoney() {
 		if (!Bank.isOpen()) {
 			Bank.open();
@@ -130,8 +153,8 @@ public class BuyItemEvent {
 				Bank.withdrawAll(995);
 			} else {
 				int amount = item.getTotalPrice() - Inventory.getCount(true, 995);
-				if (amount < 20000) {
-					amount = 20000;
+				if (amount < withdrawAmount) {
+					amount = withdrawAmount;
 				}
 				Log.fine("AMOUNT:" + amount);
 				NexHelper.pushMessage(new MuleRequest("MULE_WITHDRAW:995:" + amount));
@@ -150,7 +173,7 @@ public class BuyItemEvent {
 					RSItem rsItem = RSItem.getItem(item.getName(), item.getId());
 					int itemValue = rsItem.getItemPrice() * Bank.getCount(item.getId());
 					Log.fine(rsItem.getName() + ":  price: " + itemValue);
-					if (TaskHandler.canSellItem(item) && itemValue > 5000) {
+					if (TaskHandler.canSellItem(item) && itemValue > 3000) {
 						SellItemHandler.addItem(new SellItemEvent(new GESellItem(rsItem)));
 					}
 				}

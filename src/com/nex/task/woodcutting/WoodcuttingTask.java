@@ -3,7 +3,11 @@ package com.nex.task.woodcutting;
 import java.awt.Graphics;
 import java.util.List;
 
+import com.nex.task.helper.InteractionHelper;
+import org.rspeer.runetek.adapter.scene.Player;
 import org.rspeer.runetek.adapter.scene.SceneObject;
+import org.rspeer.runetek.api.Worlds;
+import org.rspeer.runetek.api.component.WorldHopper;
 import org.rspeer.runetek.api.component.tab.Equipment;
 import org.rspeer.runetek.api.component.tab.Inventory;
 import org.rspeer.runetek.api.component.tab.Skill;
@@ -51,6 +55,9 @@ public class WoodcuttingTask extends SkillTask implements ChatMessageListener, I
 		this.startExperience = Skills.getExperience(getSkill());
 	}
 
+	int needToChangeWorld = 0;
+	long lastCountedPlayers = 0;
+
 	// TODO - More generic. Do not check if player is in area all the time.
 	@Override
 	public int loop() {
@@ -61,10 +68,36 @@ public class WoodcuttingTask extends SkillTask implements ChatMessageListener, I
 			BankHandler.addBankEvent(new WithdrawItemEvent(new WithdrawItem(axe, 1,1)).setBankArea(bankArea));
 		} else if (Inventory.isFull()) {
 			BankHandler.addBankEvent(new DepositAllExcept(axe.getName()).setBankArea(bankArea));
-		} else {
+		}
+		else {
+			if(checkChangeWorld())
+				return 0;
 			CutTreeAction.cutTree(actionArea, treeName);
 		}
 		return 0;
+	}
+
+	boolean checkChangeWorld(){
+		if(needToChangeWorld >= 4){
+			if(InteractionHelper.HopRandomWorld())
+				needToChangeWorld = 0;
+			return true;
+		}
+		if(System.currentTimeMillis() - lastCountedPlayers < 10000)
+			return false;
+		lastCountedPlayers = System.currentTimeMillis();
+		Player localPlayer = Players.getLocal();
+		if(localPlayer.isMoving() || !localPlayer.isAnimating()) return false;
+		SceneObject obj = InteractionHelper.getSceneObjectLookingAt(localPlayer, false);
+		if (obj != null && obj.getName() == treeName){
+			if (InteractionHelper.countPlayersOnMySceneObject(false) > 1)
+				needToChangeWorld++;
+			else
+				needToChangeWorld = 0;
+		}else needToChangeWorld = 0;
+		if(needToChangeWorld >= 4)
+			return checkChangeWorld();
+		return false;
 	}
 
 	private boolean playerNeedAxe() {
@@ -141,16 +174,7 @@ public class WoodcuttingTask extends SkillTask implements ChatMessageListener, I
 	
 	@Override
 	public String getLog() {
-		String respond =  getTaskID();
-		respond += ":position;" + Players.getLocal().getPosition().getX() + ";" + Players.getLocal().getPosition().getY() + ";" + Players.getLocal().getPosition().getFloorLevel();
-		
-		
-		respond += ":xp;" + getExperiencePerHour();
-		
-		
-		respond += ":loot;" + getMoneyPerHour();
-
-		return respond;
+		return getLog(getTaskID(), getExperiencePerHour(), getMoneyPerHour());
 	}
 
 	@Override

@@ -70,33 +70,35 @@ public class NexHelper implements Runnable {
 	@Override
 	public void run() {
 		Log.fine("started NexHelper 2.0 with selenium support");
-		try {
-			Socket socket = new Socket(ip, port);
-			PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-			BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-			BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));
-			for(int i = 0; i<10; i++) {
-				if(Game.isLoggedIn() || !messageQueue.empty()) {//If we have messages to send, lets send them. Especially if its a ban message
-					break;
+		for(int retry = 0; retry < 3; retry++) {
+			try {
+				Socket socket = new Socket(ip, port);
+				PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+				BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+				BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));
+				for (int i = 0; i < 10; i++) {
+					if (Game.isLoggedIn() || !messageQueue.empty()) {//If we have messages to send, lets send them. Especially if its a ban message
+						break;
+					}
+					Thread.sleep(1000);
 				}
-				Thread.sleep(1000);
-			}
-			initializeContactToSocket(out, in);
-			initialized = true;
-			whileShouldRun(out, in); // main loop, always run while script should be running
+				initialized = initializeContactToSocket(out, in);
+				whileShouldRun(out, in); // main loop, always run while script should be running
 
-		} catch (Exception e) {
-			e.printStackTrace();//These saved my life
-			Log.info("FAILED TO INITIALIZE: LETS TRY AGAIN");
+			} catch (Exception e) {
+				e.printStackTrace();//These saved my life
+				Log.info("FAILED TO INITIALIZE: LETS TRY AGAIN");
+			}
+			try {
+				Thread.sleep(2000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			if(!Nex.SHOULD_RUN)
+				break;
+			Log.fine("TRYING TO RE ESTABLISH CONNECTION");
 		}
-		try {
-			Thread.sleep(2000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		Log.fine("TRYING TO RE ESTABLISH CONNECTION");
-		//run();
 	}
 	
 
@@ -131,7 +133,7 @@ public class NexHelper implements Runnable {
 	/*
 	 * Initialize contact towards socket if connection fails, stop script
 	 */
-	private void initializeContactToSocket(PrintWriter out, BufferedReader in) throws IOException {
+	private boolean initializeContactToSocket(PrintWriter out, BufferedReader in) throws IOException {
 		out.println("script:1:" + getIP() + ":" + mail + ":" + password + ":"
 				+ getName() + ":" + Worlds.getCurrent());
 		respond = in.readLine();
@@ -140,9 +142,11 @@ public class NexHelper implements Runnable {
 				Nex.USERNAME = respond.split(":")[2];
 			}
 			Log.fine("NexHelper has been initialized towards Nexus");
+			return true;
 		} else {
 			Log.fine("Connection Towards Nexus failed");
 			messageQueue.push(new DisconnectMessage("failed to initialize contact"));
+			return false;
 		}
 	}
 	

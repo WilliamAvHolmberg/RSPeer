@@ -1,8 +1,11 @@
 package com.nex.script.grandexchange;
 
+import java.util.ArrayDeque;
 import java.util.Arrays;
+import java.util.Deque;
 import java.util.Stack;
 
+import com.nex.script.handler.TaskHandler;
 import org.rspeer.runetek.api.commons.BankLocation;
 import org.rspeer.runetek.api.component.Bank;
 import org.rspeer.runetek.api.component.tab.Inventory;
@@ -17,8 +20,9 @@ import com.nex.script.walking.WalkTo;
 
 
 public class SellItemHandler {
-	public static Stack<SellItemEvent> sellItemEvents = new Stack<SellItemEvent>();
-	
+	public static Deque<SellItemEvent> sellItemEvents = new ArrayDeque<>();
+	//A dequeue offers items in a 3,2,1,0 when enumerated
+
 	public static void execute(SellItemEvent sellItemEvent) {
 		if(playerAtGrandExchange()) {
 			sellItemEvent.execute();
@@ -37,18 +41,22 @@ public class SellItemHandler {
 	}
 
 	public static void addItem(SellItemEvent sellItemEvent) {
-		sellItemEvents.add(sellItemEvent);
+		if(!sellItemEvents.contains(sellItemEvent)) {
+			sellItemEvents.push(sellItemEvent);
+			TaskHandler.addHandler(sellItemEvent);
+		}
 	}
 
 	public static void removeItem(SellItemEvent sellItemEvent) {
 		sellItemEvents.remove(sellItemEvent);
+		TaskHandler.removeHandler(sellItemEvent);
 	}
 
 	public static SellItemEvent getSellItemEvent() {
-		if (sellItemEvents.isEmpty()) {
-			return null;
+		for (SellItemEvent item : sellItemEvents) {
+			return item;
 		}
-		return sellItemEvents.peek();
+		return null;
 	}
 
 	private static boolean playerAtGrandExchange() {

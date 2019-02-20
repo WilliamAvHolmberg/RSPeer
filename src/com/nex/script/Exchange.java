@@ -1,20 +1,27 @@
 package com.nex.script;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.attribute.FileTime;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import com.nex.utils.json.JsonObject;
 import com.nex.utils.json.JsonObject.Member;
+import org.rspeer.script.Script;
 import org.rspeer.ui.Log;
+
+import javax.net.ssl.HttpsURLConnection;
 
 
 public class Exchange {
@@ -60,7 +67,13 @@ public class Exchange {
 		}
 		try {
 			URL url = new URL(RSBUDDY_URL);
-			BufferedReader jsonFile = new BufferedReader(new InputStreamReader(url.openStream()));
+			Path filename = getRSBuddySummary();
+			InputStream stream;
+			if(filename != null)
+				stream = Files.newInputStream(filename);
+			else
+				stream = url.openStream();
+			BufferedReader jsonFile = new BufferedReader(new InputStreamReader(stream));
 
 			JsonObject priceJSON = JsonObject.readFrom(jsonFile.readLine());
 			Iterator<Member> iterator = priceJSON.iterator();
@@ -83,6 +96,45 @@ public class Exchange {
 		}
 		myCache.put(item, price);
 		return price;
+	}
+	static long getSecondsFromModification(File f) throws IOException {
+		Path attribPath = f.toPath();
+		BasicFileAttributes basicAttribs
+				= Files.readAttributes(attribPath, BasicFileAttributes.class);
+		return (System.currentTimeMillis()
+				- basicAttribs.lastModifiedTime().to(TimeUnit.MILLISECONDS))
+				/ 1000;
+	}
+	static String getSummaryJson(){
+		return Script.getDataDirectory().toString() + "/summary.json";
+	}
+	private static Path getRSBuddySummary() {
+		try {
+			String filename = getSummaryJson();
+			File file = new File(filename);
+			try {
+				if (file.exists() && getSecondsFromModification(file) < 20 * 60)
+					return file.toPath();
+			}catch (IOException ex) { }
+			HttpsURLConnection con = (HttpsURLConnection)new URL(RSBUDDY_URL).openConnection();
+			if(con.getResponseCode() != 200){
+				Log.info("response code " + con.getResponseCode());
+				return null;
+			}
+			BufferedReader reader = new BufferedReader(new InputStreamReader((InputStream) con.getContent()));
+			String out = reader.lines().collect(Collectors.joining());
+			reader.close();
+			con.disconnect();
+
+			Path path = Paths.get(filename);
+			try {
+				Files.write(path, out.getBytes());
+			}catch (IOException ex){}
+			return path;
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	

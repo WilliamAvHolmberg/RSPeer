@@ -40,14 +40,14 @@ public class WithdrawFromPlayerTask extends Mule {
 	public int loop() {
 		if(world > 0 && Worlds.getCurrent() != world) {
 			Log.fine("lets hop");
-			if(Bank.isOpen()) {
+			if (Bank.isOpen()) {
 				Bank.close();
-			}else if(GrandExchange.isOpen()) {
+			} else if (GrandExchange.isOpen()) {
 				Movement.walkTo(Players.getLocal().getPosition().randomize(5));
-			}else {
-			WorldHopper.hopTo(world);
-			Time.sleepUntil(() ->Worlds.getCurrent() == world, 15000);
-			Time.sleep(10000);
+			} else {
+				WorldHopper.hopTo(world);
+				Time.sleepUntil(() -> Worlds.getCurrent() == world, 15000);
+				Time.sleep(10000);
 			}
 		}
 		else if (getMule(getTradeName()) != null) {
@@ -56,13 +56,11 @@ public class WithdrawFromPlayerTask extends Mule {
 			return tradeWithSlave.execute();
 		}else {
 
-			if(itemID != 995 && this.playerPos != null) {//If we are trading items, lets walk to the mule
-				if (this.playerPos.getCenter().distance() > 7) {
-					Log.fine("Walking to mule " + getTradeName());
-					WalkTo.execute(this.playerPos.getCenter());
-					return Random.mid(800, 1500);
-				}
-			}
+            if (this.playerPos.getCenter().distance() > 7) {
+                Log.fine("Walking to mule " + getTradeName());
+                WalkTo.execute(this.playerPos.getCenter());
+                return Random.mid(800, 1500);
+            }
 
 			Log.fine("Cannot see mule " + getTradeName());
 		}

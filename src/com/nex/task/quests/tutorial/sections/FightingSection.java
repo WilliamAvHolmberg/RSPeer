@@ -128,9 +128,10 @@ public final class FightingSection extends TutorialSection {
 		}
 	}
 
-	private void wieldItem(String name) {
+	private boolean wieldItem(String name) {
 		if (QuestAction.interactInventory("Wield", name)) {
-			Time.sleepUntil(() -> Equipment.contains(name), 1500);
+			return Time.sleepUntil(() -> Equipment.contains(name), 1500);
 		}
+		return false;
 	}
 }

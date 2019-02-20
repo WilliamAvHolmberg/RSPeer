@@ -5,9 +5,12 @@ import java.util.List;
 
 import org.rspeer.runetek.adapter.component.InterfaceComponent;
 import org.rspeer.runetek.adapter.component.Item;
+import org.rspeer.runetek.api.commons.Time;
 import org.rspeer.runetek.api.component.InterfaceAddress;
 import org.rspeer.runetek.api.component.Interfaces;
 import org.rspeer.runetek.api.component.tab.Inventory;
+import org.rspeer.runetek.api.component.tab.Tab;
+import org.rspeer.runetek.api.component.tab.Tabs;
 import org.rspeer.ui.Log;
 
 public abstract class QuestAction extends Action{
@@ -132,7 +135,10 @@ public abstract class QuestAction extends Action{
 			if(item == null) {
 				return false;
 			}
-			
+			if(!Tabs.isOpen(Tab.INVENTORY)){
+				Tabs.open(Tab.INVENTORY);
+				Time.sleep(100, 200);
+			}
 			return item.interact(action);
 		}
 

@@ -69,7 +69,7 @@ public abstract class TutorialSection extends QuestAction{
     }
 
     private InterfaceComponent getContinueWidget() {
-        InterfaceComponent irregularContinue = Interfaces.getFirst(162, (i)->i.getText().contains("continue"));
+        InterfaceComponent irregularContinue = Interfaces.getFirst(162, (i)->i.getText().contains("Click here to continue"));
         if(irregularContinue != null) return irregularContinue;
         return Interfaces.getContinue();
     }

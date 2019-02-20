@@ -152,16 +152,13 @@ public class DepositToPlayerTask extends Mule {
 	@Override
 	public void removeTask() {
 		// TODO send mule done with info
-	
-		String respond = "mule_log:" + Players.getLocal().getName() + ":" + getItemAmount() + ":" + tradeName;
-		Log.fine("removing task and sending message." + respond);
-		NexHelper.pushMessage(new CustomLog(respond));
+
+		if(tradeIsCompleted) {
+			String respond = "mule_log:" + Players.getLocal().getName() + ":" + getItemAmount() + ":" + tradeName;
+			Log.fine("removing task and sending message." + respond);
+			NexHelper.pushMessage(new CustomLog(respond));
+		}
 	}
-	
-
-
-
-
 	@Override
 	public void notify(ChatMessageEvent e) {
 		if(e.getMessage().contains("Accepted trade")) {
@@ -170,9 +167,6 @@ public class DepositToPlayerTask extends Mule {
 		}
 		
 	}
-
-
-
 	@Override
 	public void notify(ObjectSpawnEvent arg0) {
 		// TODO Auto-generated method stub

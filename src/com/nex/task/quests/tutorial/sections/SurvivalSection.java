@@ -7,6 +7,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
+import org.rspeer.RSPeer;
 import org.rspeer.runetek.adapter.scene.Npc;
 import org.rspeer.runetek.adapter.scene.SceneObject;
 import org.rspeer.runetek.api.commons.Time;
@@ -30,6 +31,7 @@ public final class SurvivalSection extends TutorialSection {
         super("Survival Expert");
     }
 
+    int fishToCatch = Random.nextInt(1, 3);
     @Override
     public final void onLoop() {
         if (pendingContinue()) {
@@ -65,7 +67,7 @@ public final class SurvivalSection extends TutorialSection {
                 if (!Tabs.isOpen(Tab.INVENTORY)) {
                 	Log.fine("inv");
                     Tabs.open(Tab.INVENTORY);
-                } else if (!Inventory.contains("Shrimps") && Inventory.getCount("Raw shrimps") < 2) {
+                } else if (!Inventory.contains("Shrimps") && Inventory.getCount("Raw shrimps") < fishToCatch) {
                 	Log.fine("fish");
                     fish();
                 } else if (SceneObjects.getNearest("Fire") == null) {

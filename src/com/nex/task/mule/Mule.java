@@ -2,8 +2,10 @@ package com.nex.task.mule;
 
 import java.awt.Graphics2D;
 import java.util.function.BooleanSupplier;
+import java.util.logging.Handler;
 
 import com.nex.script.grandexchange.BuyItemHandler;
+import com.nex.task.IHandlerTask;
 import org.rspeer.runetek.adapter.scene.Player;
 import org.rspeer.runetek.api.movement.position.Area;
 import org.rspeer.runetek.api.scene.Players;
@@ -14,7 +16,7 @@ import com.nex.script.handler.TaskHandler;
 import com.nex.task.NexTask;
 
 
-public abstract class Mule extends NexTask{
+public abstract class Mule extends NexTask implements IHandlerTask {
 	
 	protected int world;
 	protected int itemID;
@@ -121,11 +123,14 @@ public abstract class Mule extends NexTask{
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
-	
 
-	
+	@Override
+	public long getTimeStarted() {
+		return  timeStarted;
+	}
 
-
-
+	@Override
+	public void execute() {
+		loop();
+	}
 }

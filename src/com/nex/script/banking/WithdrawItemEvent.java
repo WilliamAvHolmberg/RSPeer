@@ -46,6 +46,17 @@ public class WithdrawItemEvent extends BankEvent {
 		this.id = requiredItem.getItemID();
 	}
 
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) return  false;
+		if (!(obj instanceof WithdrawItemEvent)) return false;
+		WithdrawItemEvent other = (WithdrawItemEvent)obj;
+		if (other.buyAmount != buyAmount ||
+			other.id != id ||
+			other.amount != amount)
+			return false;
+		return true;
+	}
 
 	public void execute() {
 		if (Bank.isOpen()) {
@@ -58,8 +69,8 @@ public class WithdrawItemEvent extends BankEvent {
 				Bank.withdraw(id, amount);
 				Time.sleepUntil(() -> Inventory.contains(id), 5000);
 			} else if (id == 995) {
-				if(amount < 20000) {
-					amount = 20000;
+				if(amount < 10000) {
+					amount = 10000;
 				}
 				if(amount > 30000) {
 					System.exit(1);

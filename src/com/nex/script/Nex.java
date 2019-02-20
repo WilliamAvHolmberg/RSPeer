@@ -1,10 +1,13 @@
 package com.nex.script;
 
 import java.awt.Graphics;
+import java.util.ArrayList;
 import java.util.logging.Logger;
 
 import javax.security.auth.login.LoginContext;
 
+import com.nex.script.handler.RandomHandler;
+import com.nex.task.IHandlerTask;
 import org.rspeer.RSPeer;
 import org.rspeer.runetek.adapter.Positionable;
 import org.rspeer.runetek.adapter.scene.Player;
@@ -12,6 +15,7 @@ import org.rspeer.runetek.api.Game;
 import org.rspeer.runetek.api.Login;
 import org.rspeer.runetek.api.commons.BankLocation;
 import org.rspeer.runetek.api.commons.Time;
+import org.rspeer.runetek.api.commons.math.Random;
 import org.rspeer.runetek.api.input.Mouse;
 import com.nex.script.walking.WalkTo;
 import org.rspeer.runetek.api.movement.position.Area;
@@ -106,6 +110,8 @@ public class Nex extends Script
 			}
 			else if (TaskHandler.getCurrentTask() == null) {
 				getTask();
+			} else if (RandomHandler.handleRandom()) {
+				return Random.nextInt(100, 500);
 			} else {
 				TaskHandler.getCurrentTask().loop();
 			}
@@ -119,7 +125,18 @@ public class Nex extends Script
 		return GoblinDiplomacyQuest.getThisQuest().isCompleted() && Game.isInCutscene() && SceneObjects.getNearest(16560) != null;
 	}
 
+
 	private boolean shouldDoHandler() {
+//		IHandlerTask activeHandler = TaskHandler.getLatesthandler();
+//		if(activeHandler != null) {
+//			activeHandler.execute();
+//			return true;
+//		}
+//		else if(!GearHandler.itemsToEquip.isEmpty()) {
+//			GearHandler.execute();
+//			return true;
+//		}
+		ArrayList<IHandlerTask> activeTasks = new ArrayList<>();
 		BankEvent depositEvent = BankHandler.getDepositEvent();
 		BankEvent withdrawEvent = BankHandler.getWithdrawEvent();
 		BuyItemEvent buyItemEvent = BuyItemHandler.getBuyItemEvent();

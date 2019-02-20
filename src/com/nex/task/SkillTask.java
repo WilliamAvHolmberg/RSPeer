@@ -65,19 +65,21 @@ public abstract class SkillTask extends NexTask {
 	
 	@Override
 	public String getLog() {
-		String respond =  getTaskID();
+		return getLog(getTaskID(), getExperiencePerHour(), 0);
+	}
+
+	public static String getLog(String task_id, int xp, int loot) {
+		String respond = task_id;
 		respond += ":position;" + Players.getLocal().getPosition().getX() + ";" + Players.getLocal().getPosition().getY() + ";" + Players.getLocal().getPosition().getFloorLevel();
-		
-		
-		respond += ":xp;" + getExperiencePerHour();
-		
-		
-		respond += ":loot;" + 0;
+
+
+		respond += ":xp;" + xp;
+
+
+		respond += ":loot;" + loot;
 
 		return respond;
 	}
-
-
 	
 
 

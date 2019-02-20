@@ -30,8 +30,6 @@ public abstract class TradeAction extends Action{
 		this.itemID = itemID;
 		this.itemAmount = itemAmount;
 	}
-	
-	
 
 	public void initiateTrade(String name) {
 		Player target = getPlayer(name);
@@ -58,8 +56,8 @@ public abstract class TradeAction extends Action{
 	}
 	
 	public void acceptFirstScreen() {
-			Trade.accept();
-			Time.sleepUntil(() -> Trade.isOpen(true), 7500);
+		Trade.accept();
+		Time.sleepUntil(() -> Trade.isOpen(true), 7500);
 	}
 	
 	public void addItemToTrade(int itemID, int itemAmount) {

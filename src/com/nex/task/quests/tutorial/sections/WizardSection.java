@@ -35,8 +35,7 @@ public final class WizardSection extends TutorialSection {
             new Position(3139, 3084), new Position(3141, 3084)
     );
 
- 
-    private static final Area CHICKEN_AREA = Area.rectangular(3139, 3091, 3140, 3090);
+    private static final Area CHICKEN_AREA = Area.rectangular(3139, 3090, 3140, 3091);
 
     public WizardSection() {
         super("Magic Instructor");

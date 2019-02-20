@@ -9,10 +9,6 @@ import org.rspeer.ui.Log;
 
 public class DepositAll extends BankEvent{
 
-
-	
-
-
 	public void execute() {
 		if(Bank.isOpen()) {
 			Bank.depositInventory();

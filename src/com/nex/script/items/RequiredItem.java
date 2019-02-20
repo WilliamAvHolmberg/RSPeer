@@ -12,7 +12,20 @@ public abstract class RequiredItem  {
 		this.buyAmount = buyAmount;
 		this.itemName = itemName;
 	}
-	
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) return  false;
+		if (!(obj instanceof RequiredItem)) return false;
+		RequiredItem other = (RequiredItem)obj;
+		if(other.itemName == null || this.itemName == null) {
+			if(other.itemID != this.itemID)
+				return false;
+		}
+		else if(other.itemName != this.itemName) return false;
+		if(other.buyAmount != this.buyAmount) return false;
+		if(other.itemAmount != this.itemAmount) return false;
+		return true;
+	}
 	
 	public int getItemID() {
 		return itemID;
