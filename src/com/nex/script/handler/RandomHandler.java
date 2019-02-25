@@ -13,6 +13,8 @@ import org.rspeer.ui.Log;
 public class RandomHandler {
 
     public static boolean handleRandom() {
+        if(checkLamp())
+            return true;
         Npc event = Npcs.getNearest(npc -> npc.containsAction("Dismiss") && npc.getTarget() == Players.getLocal());
         if(event == null)
             return false;
@@ -52,7 +54,7 @@ public class RandomHandler {
         return true;
     }
 
-    static void checkLamp() {
+    static boolean checkLamp() {
         if (Inventory.contains("Lamp")) {
             if (!Interfaces.isOpen(134)) {
                 Inventory.getFirst("Lamp").interact("Rub");
@@ -70,6 +72,8 @@ public class RandomHandler {
                 Dialog.processContinue();
                 Time.sleep(200, 500);
             }
+            return true;
         }
+        return false;
     }
 }

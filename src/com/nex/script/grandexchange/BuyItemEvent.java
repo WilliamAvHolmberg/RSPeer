@@ -3,7 +3,9 @@ package com.nex.script.grandexchange;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.nex.script.Quest;
 import com.nex.task.IHandlerTask;
+import com.nex.task.actions.mule.CheckIfWeShallSellItems;
 import org.rspeer.runetek.adapter.component.Item;
 import org.rspeer.runetek.adapter.scene.SceneObject;
 import org.rspeer.runetek.api.commons.Time;
@@ -173,7 +175,7 @@ public class BuyItemEvent implements IHandlerTask {
 					RSItem rsItem = RSItem.getItem(item.getName(), item.getId());
 					int itemValue = rsItem.getItemPrice() * Bank.getCount(item.getId());
 					Log.fine(rsItem.getName() + ":  price: " + itemValue);
-					if (TaskHandler.canSellItem(item) && itemValue > 3000) {
+					if (itemValue > 3000 && TaskHandler.canSellItem(item) && (Quest.getQuestPoints() >= 7 || !CheckIfWeShallSellItems.untradeableItems.contains(item.getName()))) {
 						SellItemHandler.addItem(new SellItemEvent(new GESellItem(rsItem)));
 					}
 				}
