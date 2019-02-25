@@ -93,9 +93,9 @@ public class WoodcuttingTask extends SkillTask implements ChatMessageListener, I
 			if (InteractionHelper.countPlayersOnMySceneObject(false) > 1)
 				needToChangeWorld++;
 			else
-				needToChangeWorld = 0;
+				needToChangeWorld--;
 		}else needToChangeWorld = 0;
-		if(needToChangeWorld >= 4)
+		if(needToChangeWorld >= 3)
 			return checkChangeWorld();
 		return false;
 	}

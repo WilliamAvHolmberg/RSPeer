@@ -11,14 +11,14 @@ import com.nex.script.banking.BankEvent.Type;
 
 public class DepositAllExcept extends BankEvent{
 
-	private String itemToKeep;
+	private String[] itemsToKeep;
 	
-	public DepositAllExcept(String itemToKeep) {
-		this.itemToKeep = itemToKeep;
+	public DepositAllExcept(String ... itemsToKeep) {
+		this.itemsToKeep = itemsToKeep;
 	}
 	public void execute() {
 		if(Bank.isOpen()) {
-			Bank.depositAllExcept(itemToKeep);
+			Bank.depositAllExcept(itemsToKeep);
 		}else {
 			Bank.open();
 		}
@@ -30,11 +30,8 @@ public class DepositAllExcept extends BankEvent{
 	}
 	@Override
 	public boolean isFinished() {
-		for(Item item : Inventory.getItems()) {
-			if(!item.getName().equals(itemToKeep)) {
-				return false;
-			}
-		}
+		if (Inventory.containsAnyExcept(itemsToKeep))
+			return false;
 		return true;
 	}
 	

@@ -20,12 +20,14 @@ public class NexInventory {
 		items = new ArrayList<InventoryItem>();
 	}
 	
-	public NexInventory addItem(InventoryItem item) {	
+	public NexInventory addItem(InventoryItem item) {
+		items.removeIf(i->i.getItem().getId() == item.getItem().getId());
 		items.add(item);
 		return this;
 	}
 	
-	public NexInventory addItem(RSItem item, int amount) {	
+	public NexInventory addItem(RSItem item, int amount) {
+		items.removeIf(i->i.getItem().getId() == item.getId());
 		items.add(new InventoryItem(amount, item, 1));
 		return this;
 	}
