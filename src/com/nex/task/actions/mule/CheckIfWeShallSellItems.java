@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.TimeZone;
 
+import com.nex.communication.message.request.RequestAccountInfo;
 import org.rspeer.runetek.adapter.component.Item;
 import org.rspeer.runetek.api.commons.Time;
 import org.rspeer.runetek.api.component.Bank;
@@ -53,7 +54,7 @@ public class CheckIfWeShallSellItems extends Action {
 						}
 					}
 				}
-				
+
 				Log.fine("TOTAL PRICE:" + totalPrice);
 				int muleThreshold = Nex.MULE_THRESHOLD;
 				if(approachingBan())
@@ -87,7 +88,7 @@ public class CheckIfWeShallSellItems extends Action {
 
 	public static boolean dontSell = false;
 	public static long getTimeTilNextCheckInMinutes() {
-		if (dontSell)
+		if (dontSell || RequestAccountInfo.account_type == "MASTER_MULE")
 			return 120000;
 		return (getNextCheckInMilli() - System.currentTimeMillis()) / 60000;
 	}

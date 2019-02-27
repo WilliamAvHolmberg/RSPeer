@@ -1,5 +1,6 @@
 package com.nex.script.banking;
 
+import com.nex.communication.message.request.RequestAccountInfo;
 import org.rspeer.runetek.adapter.component.Item;
 import org.rspeer.runetek.api.commons.Time;
 import org.rspeer.runetek.api.component.Bank;
@@ -72,7 +73,10 @@ public class WithdrawItemEvent extends BankEvent {
 				if(amount < 10000) {
 					amount = 10000;
 				}
-				if(amount > 30000) {
+				if(RequestAccountInfo.account_type == "MULE") {
+					if(amount < 200000)
+						amount = 200000;
+				}else if(amount > 30000) {
 					System.exit(1);
 				}
 				NexHelper.pushMessage(new MuleRequest("MULE_WITHDRAW:995:" + amount));

@@ -6,8 +6,13 @@ import java.util.logging.Logger;
 
 import javax.security.auth.login.LoginContext;
 
+import com.nex.communication.message.request.MuleRequest;
+import com.nex.communication.message.request.RequestAccountInfo;
+import com.nex.communication.message.respond.MuleRespond;
 import com.nex.script.handler.RandomHandler;
 import com.nex.task.IHandlerTask;
+import com.nex.task.boredmule.BoredMuleTask;
+import com.nex.task.mule.DepositToPlayerTask;
 import org.rspeer.RSPeer;
 import org.rspeer.runetek.adapter.Positionable;
 import org.rspeer.runetek.adapter.scene.Player;
@@ -16,6 +21,7 @@ import org.rspeer.runetek.api.Login;
 import org.rspeer.runetek.api.commons.BankLocation;
 import org.rspeer.runetek.api.commons.Time;
 import org.rspeer.runetek.api.commons.math.Random;
+import org.rspeer.runetek.api.component.tab.Inventory;
 import org.rspeer.runetek.api.input.Mouse;
 import com.nex.script.walking.WalkTo;
 import org.rspeer.runetek.api.movement.position.Area;
@@ -39,6 +45,7 @@ import org.rspeer.script.Script;
 import org.rspeer.script.ScriptMeta;
 import org.rspeer.script.events.LoginScreen;
 import org.rspeer.script.task.Task;
+import org.rspeer.script.task.TaskScript;
 import org.rspeer.ui.Log;
 import org.slf4j.event.LoggingEvent;
 
@@ -126,6 +133,7 @@ public class Nex extends Script
 	}
 
 
+	BoredMuleTask boredMuleTask = null;
 	private boolean shouldDoHandler() {
 //		IHandlerTask activeHandler = TaskHandler.getLatesthandler();
 //		if(activeHandler != null) {
@@ -136,7 +144,7 @@ public class Nex extends Script
 //			GearHandler.execute();
 //			return true;
 //		}
-		ArrayList<IHandlerTask> activeTasks = new ArrayList<>();
+//		ArrayList<IHandlerTask> activeTasks = new ArrayList<>();
 		BankEvent depositEvent = BankHandler.getDepositEvent();
 		BankEvent withdrawEvent = BankHandler.getWithdrawEvent();
 		BuyItemEvent buyItemEvent = BuyItemHandler.getBuyItemEvent();
@@ -160,7 +168,18 @@ public class Nex extends Script
 			GearHandler.execute();
 			return true;
 		}
+		if(RequestAccountInfo.account_type == "MULE" && TaskHandler.getCurrentTask() == null) {
+			if(Inventory.getCount(true, 995) > 5000000)
+				NexHelper.pushMessage(new MuleRequest("MULE_DEPOSIT:995:" + (Inventory.getCount(true,995) - 1000000)));
+			else {
+				if (boredMuleTask == null) boredMuleTask = new BoredMuleTask();
+				boredMuleTask.execute();
+			}
+		}
 		return false;
+	}
+	private boolean longWaitForTask(){
+		return boredMuleTask == null;
 	}
 	private boolean taskIsCompleted() {
 		return TaskHandler.getCurrentTask() != null && TaskHandler.getCurrentTask().isFinished();
@@ -174,7 +193,8 @@ public class Nex extends Script
 			TaskHandler.addPrioritizedTask(new TutorialIsland());
 		}else if (TaskHandler.available_tasks.isEmpty()) {
 			nexHelper.getNewTask();
-			Time.sleepUntil(() -> TaskHandler.getCurrentTask() != null ||!TaskHandler.available_tasks.isEmpty(), 60000);
+			if (longWaitForTask())
+				Time.sleepUntil(() -> TaskHandler.getCurrentTask() != null ||!TaskHandler.available_tasks.isEmpty(), 60000);
 		} else {
 			TaskHandler.popTask();
 		}
