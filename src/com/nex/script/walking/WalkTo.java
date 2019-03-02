@@ -84,7 +84,7 @@ public class WalkTo {
 	}
 
 	public static void execute(SceneObject object) {
-		execute(object.getPosition());	
+		execute(object.getPosition());
 	}
 
 }

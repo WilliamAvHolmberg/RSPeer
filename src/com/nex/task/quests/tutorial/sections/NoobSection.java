@@ -1,7 +1,6 @@
 package com.nex.task.quests.tutorial.sections;
 
 import com.nex.task.CombatTask;
-import javafx.scene.shape.MoveTo;
 import org.rspeer.runetek.adapter.component.InterfaceComponent;
 import org.rspeer.runetek.adapter.scene.Npc;
 import org.rspeer.runetek.adapter.scene.Pickable;
