@@ -19,6 +19,7 @@ import java.io.PrintWriter;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 
 public class RequestAccountInfo extends NexRequest {
@@ -38,7 +39,7 @@ public class RequestAccountInfo extends NexRequest {
         String request = "account_info:1";
         out.println(request);
         String respond = in.readLine();
-        Log.fine("got account info from account_info:" + respond);
+        Log.fine("got account info - " + respond);
         handleRespond(respond);
     }
 
@@ -51,14 +52,20 @@ public class RequestAccountInfo extends NexRequest {
         account_type = parsedRespond[2];
         schema_name = parsedRespond[3];
         computer_name = parsedRespond[4];
+        Log.fine("Account ID: " + account_id);
+        Log.fine("Account Type: " + account_type);
+        Log.fine("Account Schema: " + schema_name);
+        Log.fine("Computer Name: " + computer_name);
         try {
             created_at = ZonedDateTime.parse(parsedRespond[5].replace('.', ':'),
                     DateTimeFormatter.RFC_1123_DATE_TIME);
+            long hoursAlive = ChronoUnit.MINUTES.between(created_at, ZonedDateTime.now());
+            Log.fine("We are " + Math.round(hoursAlive / 60.0f) + " hours old");
         }catch (Exception ex){
             Log.severe(ex);
         }
 
-        if(computer_name == "SERVER"){
+        if(computer_name.equals("SERVER")){
             java.util.Random r = new java.util.Random(Nex.USERNAME.hashCode());
             TutorialIsland.DO_NOOB_FIGHTING = r.nextDouble() > 0.5;
         }

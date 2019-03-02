@@ -33,6 +33,7 @@ public class BankHandler {
 
 	public static void addBankEvent(BankEvent event) {
 		if (!bankEvents.contains(event)) {
+			Log.fine("Bank event added");
 			bankEvents.push(event);//Push adds to the end, and will be the next to be retrieved
 			TaskHandler.addHandler(event);
 		}

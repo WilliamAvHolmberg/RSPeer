@@ -6,6 +6,7 @@ import java.util.logging.Logger;
 
 import javax.security.auth.login.LoginContext;
 
+import com.nex.communication.message.LockedMessage;
 import com.nex.communication.message.request.MuleRequest;
 import com.nex.communication.message.request.RequestAccountInfo;
 import com.nex.communication.message.respond.MuleRespond;
@@ -167,7 +168,7 @@ public class Nex extends Script
 			GearHandler.execute();
 			return true;
 		}
-		if(RequestAccountInfo.account_type == "MULE" && TaskHandler.getCurrentTask() == null) {
+		if(RequestAccountInfo.account_type == "MULE" && Inventory.getCount(true, 995) > 100000 && TaskHandler.getCurrentTask() == null) {
 			if(Inventory.getCount(true, 995) > 5000000)
 				NexHelper.pushMessage(new MuleRequest("MULE_DEPOSIT:995:" + (Inventory.getCount(true,995) - 1000000)));
 			else {

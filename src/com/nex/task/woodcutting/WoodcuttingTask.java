@@ -95,7 +95,7 @@ public class WoodcuttingTask extends SkillTask implements ChatMessageListener, I
 			else
 				needToChangeWorld--;
 		}else needToChangeWorld = 0;
-		if(needToChangeWorld >= 3)
+		if(needToChangeWorld >= 2)
 			return checkChangeWorld();
 		return false;
 	}
