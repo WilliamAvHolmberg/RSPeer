@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.nex.script.Exchange;
+import com.nex.script.banking.WithdrawItemEvent;
 
 public class RSItem {
 	public static List<RSItem> cachedItems = new ArrayList<RSItem>();
@@ -14,6 +15,17 @@ public class RSItem {
 		this.setName(name);
 		this.setId(id);
 		cachedItems.add(this);
+	}
+	public static RSItem fromName(String name){
+		return new RSItem(name, Exchange.getID(name));
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) return  false;
+		if (!(obj instanceof RSItem)) return false;
+		RSItem other = (RSItem)obj;
+		return other.id == id;
 	}
 
 	public String getName() {

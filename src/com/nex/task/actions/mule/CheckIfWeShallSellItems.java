@@ -1,7 +1,11 @@
 package com.nex.task.actions.mule;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
+import java.util.TimeZone;
 
 import org.rspeer.runetek.adapter.component.Item;
 import org.rspeer.runetek.api.commons.Time;
@@ -24,7 +28,8 @@ import com.nex.task.quests.tutorial.sections.QuestSection;
 public class CheckIfWeShallSellItems extends Action {
 
 	public static ArrayList<String> untradeableItems = new ArrayList<String>(
-			Arrays.asList("Oak logs", "Shrimps", "Mind rune", "Air rune", "Fire rune", "Water rune", "Earth rune"));
+			Arrays.asList("Oak logs", "Shrimps", "Mind rune", "Air rune", "Fire rune", "Water rune", "Earth rune", "Feather", "Raw shrimps"));
+
 	// used to check when last time we checked items was
 	public static long last_check = 0;
 
@@ -50,7 +55,10 @@ public class CheckIfWeShallSellItems extends Action {
 				}
 				
 				Log.fine("TOTAL PRICE:" + totalPrice);
-				if(totalPrice > Nex.MULE_THRESHOLD) {
+				int muleThreshold = Nex.MULE_THRESHOLD;
+				if(approachingBan())
+					muleThreshold *= 0.33;
+				if(totalPrice > muleThreshold) {
 					itemsToSell.forEach(event ->{
 						SellItemHandler.addItem(event);
 					});
@@ -63,6 +71,13 @@ public class CheckIfWeShallSellItems extends Action {
 			Time.sleepUntil(() -> Bank.isOpen(), 5000);
 		}
 
+	}
+
+	static boolean approachingBan(){
+		SimpleDateFormat gmtDateFormat = new SimpleDateFormat("HHmm");
+		gmtDateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+		int currentHourGMT = Integer.parseInt(gmtDateFormat.format(new Date()));
+		return (currentHourGMT > 645 && currentHourGMT < 740);
 	}
 
 	public static long getNextCheckInMilli() {

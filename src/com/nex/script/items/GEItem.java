@@ -10,6 +10,10 @@ public class GEItem extends RequiredItem {
 		super(requiredItem.getItemID(), requiredItem.getAmount(), requiredItem.getBuyAmount(), requiredItem.getItemName());
 		setItemPrice(Exchange.getPrice(getItemID()));
 	}
+	@Override
+	public boolean equals(Object obj) {
+		return super.equals(obj);
+	}
 
 	private void setItemPrice(int price) {
 		this.itemPrice = price;

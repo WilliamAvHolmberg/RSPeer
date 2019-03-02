@@ -1,5 +1,7 @@
 package com.nex.script.walking;
 
+import com.nex.script.grandexchange.BuyItemHandler;
+import javafx.geometry.Pos;
 import org.rspeer.runetek.adapter.scene.SceneObject;
 import org.rspeer.runetek.api.commons.Time;
 import com.nex.script.walking.WalkTo;
@@ -22,6 +24,7 @@ public class WalkTo {
 	static Area cowfield =  Area.rectangular(3135, 3310, 3204, 3339);
 	static Area Alkharid = Area.rectangular(3266, 3144, 3341, 3322);
 	static Area Riverbank = Area.rectangular(3083, 3328, 3151, 3392);
+	static Area FaladorSouthWall = Area.rectangular(3006, 3316, 3030, 3331);
 
 	static PathExecutor executor;
 	static Position lastPosition;
@@ -58,6 +61,9 @@ public class WalkTo {
 		if(Riverbank.contains(curPos) && position.getY() > curPos.getY()) {
 			position = new Position(3100, 3419);
 		}
+		if(FaladorSouthWall.contains(curPos) && BuyItemHandler.getGEArea().contains(position)){
+			position = new Position(3065, 3322);
+		}
 
 		//idiot special exception. get rid asap
 		if(curPos.distance(GoblinDiplomacyQuest.goblinPos) < 40) {
@@ -78,7 +84,7 @@ public class WalkTo {
 	}
 
 	public static void execute(SceneObject object) {
-		execute(object.getPosition());	
+		execute(object.getPosition());
 	}
 
 }

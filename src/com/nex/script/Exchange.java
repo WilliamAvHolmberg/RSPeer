@@ -27,8 +27,9 @@ import javax.net.ssl.HttpsURLConnection;
 public class Exchange {
 	private final static String RSBUDDY_URL = "https://rsbuddy.com/exchange/summary.json";
 	static String wikiUrl = "https://oldschool.runescape.wiki/w/Exchange:";
-	private static Map<Integer, Integer> myCache = Collections.synchronizedMap(new WeakHashMap<Integer, Integer>());
+	private static Map<Integer, Integer> prices = Collections.synchronizedMap(new WeakHashMap<Integer, Integer>());
 	private static Map<Integer, String> names = Collections.synchronizedMap(new WeakHashMap<Integer, String>());
+	private static Map<String, Integer> ids = Collections.synchronizedMap(new WeakHashMap<String, Integer>());
 
 	public static String getName(int item) {
 		if(item == 995) return "Coins";
@@ -37,10 +38,7 @@ public class Exchange {
 			return names.get(item);
 		}
 		try {
-			URL url = new URL(RSBUDDY_URL);
-			BufferedReader jsonFile = new BufferedReader(new InputStreamReader(url.openStream()));
-
-			JsonObject priceJSON = JsonObject.readFrom(jsonFile.readLine());
+			JsonObject priceJSON = getJSON();
 			Iterator<Member> iterator = priceJSON.iterator();
 
 			while (iterator.hasNext()) {
@@ -51,31 +49,48 @@ public class Exchange {
 					break;
 				}
 			}
-			jsonFile.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		names.put(item, name);
+		ids.put(name, item);
 		return name;
+	}
+
+	public static int getID(String itemName){
+		if(itemName == "Coins") return 995;
+		int itemID = 0;
+		if (ids.containsValue(itemName)) {
+			return ids.get(itemName);
+		}
+		try {
+			JsonObject priceJSON = getJSON();
+			Iterator<Member> iterator = priceJSON.iterator();
+
+			while (iterator.hasNext()) {
+				JsonObject itemJSON = priceJSON.get(iterator.next().getName()).asObject();
+				String name = itemJSON.get("name").asString();
+				if (name.equals(itemName)) {
+					itemID = itemJSON.get("id").asInt();
+					break;
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		names.put(itemID, itemName);
+		ids.put(itemName, itemID);
+		return itemID;
 	}
 
 	public static int getPrice(int item) {
 		if(item == 995) return 0;
 		int price = 0;
-		if (myCache.containsKey(item)) {
-			return myCache.get(item);
+		if (prices.containsKey(item)) {
+			return prices.get(item);
 		}
 		try {
-			URL url = new URL(RSBUDDY_URL);
-			Path filename = getRSBuddySummary();
-			InputStream stream;
-			if(filename != null)
-				stream = Files.newInputStream(filename);
-			else
-				stream = url.openStream();
-			BufferedReader jsonFile = new BufferedReader(new InputStreamReader(stream));
-
-			JsonObject priceJSON = JsonObject.readFrom(jsonFile.readLine());
+			JsonObject priceJSON = getJSON();
 			Iterator<Member> iterator = priceJSON.iterator();
 
 			while (iterator.hasNext()) {
@@ -94,9 +109,29 @@ public class Exchange {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		myCache.put(item, price);
+		prices.put(item, price);
 		return price;
 	}
+
+	static JsonObject getJSON(){
+		try {
+			URL url = new URL(RSBUDDY_URL);
+			Path filename = getRSBuddySummary();
+			InputStream stream;
+			if (filename != null)
+				stream = Files.newInputStream(filename);
+			else
+				stream = url.openStream();
+			BufferedReader jsonFile = new BufferedReader(new InputStreamReader(stream));
+
+			JsonObject json = JsonObject.readFrom(jsonFile.readLine());
+			return json;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
 	static long getSecondsFromModification(File f) throws IOException {
 		Path attribPath = f.toPath();
 		BasicFileAttributes basicAttribs
