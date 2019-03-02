@@ -1,6 +1,5 @@
 package com.nex.script.walking;
 
-import javafx.geometry.Pos;
 import org.rspeer.runetek.adapter.scene.SceneObject;
 import org.rspeer.runetek.api.commons.Time;
 import com.nex.script.walking.WalkTo;

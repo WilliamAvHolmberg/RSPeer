@@ -44,6 +44,7 @@ import org.slf4j.event.LoggingEvent;
 
 import com.nex.communication.NexHelper;
 import com.nex.communication.message.BannedMessage;
+import com.nex.communication.message.LockedMessage;
 import com.nex.handler.gear.Gear;
 import com.nex.handler.gear.GearHandler;
 import com.nex.handler.gear.GearItem;
@@ -67,7 +68,7 @@ import com.nex.task.quests.RomeoAndJulietQuest;
 import com.nex.task.quests.tutorial.TutorialIsland;
 import com.nex.task.woodcutting.WoodcuttingTask;
 
-@ScriptMeta(desc = "Nex 2.0", developer = "William", name = "nex")
+@ScriptMeta(desc = "Nex 2.2 - DEBUG", developer = "William", name = "nex")
 public class Nex extends Script
 		implements RenderListener, ChatMessageListener, ObjectSpawnListener, LoginResponseListener {
 
@@ -110,9 +111,7 @@ public class Nex extends Script
 			}
 			else if (TaskHandler.getCurrentTask() == null) {
 				getTask();
-			} else if (RandomHandler.handleRandom()) {
-				return Random.nextInt(100, 500);
-			} else {
+			}else {
 				TaskHandler.getCurrentTask().loop();
 			}
 		} else {
@@ -240,8 +239,6 @@ public class Nex extends Script
 	public void notify(LoginResponseEvent arg0) {
 		Log.fine(arg0.getResponse());
 		switch (arg0.getResponse()) {
-		case ACCOUNT_LOCKED:
-		case ACCOUNT_STOLEN:
 		case ACCOUNT_DISABLED:
 		case INVALID_CREDENTIALS:
 			NexHelper.pushMessage(new BannedMessage("We are banned"));
@@ -280,6 +277,14 @@ public class Nex extends Script
 		case WORLD_FULL:
 			Time.sleep(1500);//Give us a quick glimpse of the result before shutting down
 			System.exit(1);
+			break;
+		case ACCOUNT_LOCKED:
+		case ACCOUNT_STOLEN:
+			NexHelper.pushMessage(new LockedMessage("We are locked"));
+			NexHelper.sendAllMessages();
+			Time.sleep(1500);//Give us a quick glimpse of the result before shutting down
+
+			break;
 		default:
 			break;
 
