@@ -21,6 +21,8 @@ public class LockedMessage extends NexMessage {
 		Log.fine("Sent Locked Message");
 		out.println("locked:1");
 		Time.sleep(200);//Allow a small time for the message to definitely send
+		Nex.SHOULD_RUN = false;
+		System.exit(1);
 	}
 
 }

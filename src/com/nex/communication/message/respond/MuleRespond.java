@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 
+import com.nex.communication.message.request.RequestAccountInfo;
 import com.nex.script.WebBank;
 import com.nex.script.grandexchange.BuyItemHandler;
 import org.rspeer.runetek.api.component.tab.Inventory;
@@ -55,6 +56,11 @@ public class MuleRespond extends TaskRespond {
 		//Reversed order =)
 		case "mule_withdraw":
 			Log.fine("lets deposit to player");
+			if(itemID == 995 && RequestAccountInfo.account_type == "MASTER_MULE") {
+				int coins = Inventory.getCount(true, 995);
+				if(coins > 1000000) itemAmount = 200000;
+				else if(coins > 500000) itemAmount = 100000;
+			}
 			newTask = new DepositToPlayerTask(world, itemID, itemAmount, tradeName, actionArea);
 			currentTime = System.currentTimeMillis();
 			newTask.setBreakAfterTime(2);
