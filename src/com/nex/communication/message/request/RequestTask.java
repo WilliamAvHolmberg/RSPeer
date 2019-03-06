@@ -5,7 +5,10 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 import com.nex.communication.message.respond.*;
+import com.nex.script.handler.TaskHandler;
+import com.nex.task.mule.PrepareForMuleDepositTask;
 import org.rspeer.runetek.api.commons.Time;
+import org.rspeer.runetek.api.component.tab.Inventory;
 import org.rspeer.runetek.api.component.tab.Skill;
 import org.rspeer.runetek.api.component.tab.Skills;
 import org.rspeer.ui.Log;
@@ -43,6 +46,12 @@ public class RequestTask extends NexRequest {
 		if (respond.contains("TASK_RESPOND:0") || respond.contains("DISCONNECT")) {
 			if (lastTask != null && lastTask.startsWith("MULE"))
 			{
+				int coins = Inventory.getCount(true, 995);
+				if(RequestAccountInfo.account_type == "MULE" && coins > 100000 && TaskHandler.available_tasks.isEmpty()) {
+					Log.fine("Idle Mule");
+					if (coins > 6000000)
+						TaskHandler.addTaskAndResetStack(new PrepareForMuleDepositTask());
+				}
 				//If we are a mule, lets just hang around for 2 minutes incase another task is ready
 				if(timeAskedToDC == 0) {
 					timeAskedToDC = System.currentTimeMillis();

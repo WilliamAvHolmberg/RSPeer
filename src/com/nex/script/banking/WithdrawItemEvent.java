@@ -3,6 +3,7 @@ package com.nex.script.banking;
 import com.nex.communication.message.request.RequestAccountInfo;
 import org.rspeer.runetek.adapter.component.Item;
 import org.rspeer.runetek.api.commons.Time;
+import org.rspeer.runetek.api.commons.math.Random;
 import org.rspeer.runetek.api.component.Bank;
 import org.rspeer.runetek.api.component.tab.Inventory;
 import org.rspeer.ui.Log;
@@ -61,6 +62,7 @@ public class WithdrawItemEvent extends BankEvent {
 
 	public void execute() {
 		if (Bank.isOpen()) {
+			Time.sleepUntil(()->Bank.contains(id), Random.low(1000, 3000));
 			if (Bank.getCount(id) >= amount) {
 				if(amount > 28 && Bank.getWithdrawMode() != Bank.WithdrawMode.NOTE){
 					Bank.setWithdrawMode(Bank.WithdrawMode.NOTE);
@@ -79,7 +81,10 @@ public class WithdrawItemEvent extends BankEvent {
 				}else if(amount > 30000) {
 					System.exit(1);
 				}
+				Log.fine("We don't have enough coins, lets get from mule");
 				NexHelper.pushMessage(new MuleRequest("MULE_WITHDRAW:995:" + amount));
+				Time.sleepUntil(() -> TaskHandler.getCurrentTask() != null
+						&& TaskHandler.getCurrentTask() instanceof WithdrawFromPlayerTask, 16000);
 				
 			} else {
 				// TODO STOP SCRIPT
@@ -102,7 +107,7 @@ public class WithdrawItemEvent extends BankEvent {
 
 	@Override
 	public boolean isFinished() {
-		if (Inventory.getCount(id) >= amount) {
+		if (Inventory.getCount(true, id) >= amount) {
 			return true;
 		}
 		return false;

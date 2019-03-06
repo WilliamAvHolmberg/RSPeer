@@ -97,8 +97,10 @@ public class NexHelper implements Runnable {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			if(!Nex.SHOULD_RUN)
+			if(!Nex.SHOULD_RUN) {
+				System.exit(1);
 				break;
+			}
 			Log.fine("TRYING TO RE ESTABLISH CONNECTION");
 		}
 	}

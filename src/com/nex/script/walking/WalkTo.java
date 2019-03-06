@@ -24,7 +24,7 @@ public class WalkTo {
 	static Area cowfield =  Area.rectangular(3135, 3310, 3204, 3339);
 	static Area Alkharid = Area.rectangular(3266, 3144, 3341, 3322);
 	static Area Riverbank = Area.rectangular(3083, 3328, 3151, 3392);
-	static Area FaladorSouthWall = Area.rectangular(3006, 3316, 3030, 3331);
+	static Area FaladorSouthWall = Area.rectangular(3006, 3316, 3035, 3331);
 
 	static PathExecutor executor;
 	static Position lastPosition;

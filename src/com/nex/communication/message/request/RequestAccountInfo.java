@@ -8,6 +8,7 @@ import com.nex.script.Quest;
 import com.nex.task.quests.tutorial.TutorialIsland;
 import org.rspeer.runetek.api.commons.Time;
 import org.rspeer.runetek.api.commons.math.Random;
+import org.rspeer.runetek.api.component.tab.Inventory;
 import org.rspeer.runetek.api.component.tab.Skill;
 import org.rspeer.runetek.api.component.tab.Skills;
 import org.rspeer.runetek.api.scene.Players;
@@ -68,6 +69,8 @@ public class RequestAccountInfo extends NexRequest {
         if(computer_name.equals("SERVER")){
             java.util.Random r = new java.util.Random(Nex.USERNAME.hashCode());
             TutorialIsland.DO_NOOB_FIGHTING = r.nextDouble() > 0.5;
+            if(Inventory.getCount(true, 995) > 5000)
+                TutorialIsland.DO_NOOB_FIGHTING = false;
         }
     }
 

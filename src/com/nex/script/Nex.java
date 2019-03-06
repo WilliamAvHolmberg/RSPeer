@@ -14,6 +14,7 @@ import com.nex.script.handler.RandomHandler;
 import com.nex.task.IHandlerTask;
 import com.nex.task.boredmule.BoredMuleTask;
 import com.nex.task.mule.DepositToPlayerTask;
+import com.nex.task.mule.PrepareForMuleDepositTask;
 import org.rspeer.RSPeer;
 import org.rspeer.runetek.adapter.Positionable;
 import org.rspeer.runetek.adapter.scene.Player;
@@ -168,13 +169,11 @@ public class Nex extends Script
 			GearHandler.execute();
 			return true;
 		}
-		if(RequestAccountInfo.account_type == "MULE" && Inventory.getCount(true, 995) > 100000 && TaskHandler.getCurrentTask() == null) {
-			if(Inventory.getCount(true, 995) > 5000000)
-				NexHelper.pushMessage(new MuleRequest("MULE_DEPOSIT:995:" + (Inventory.getCount(true,995) - 1000000)));
-			else {
-				if (boredMuleTask == null) boredMuleTask = new BoredMuleTask();
-				boredMuleTask.execute();
-			}
+		int coins = Inventory.getCount(true, 995);
+		if(RequestAccountInfo.account_type == "MULE" && coins > 100000 && TaskHandler.available_tasks.isEmpty()) {
+			Log.fine("Idle Mule");
+			if (boredMuleTask == null) boredMuleTask = new BoredMuleTask();
+			boredMuleTask.execute();
 		}
 		return false;
 	}

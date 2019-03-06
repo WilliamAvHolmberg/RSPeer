@@ -100,7 +100,7 @@ public class BuyItemEvent implements IHandlerTask {
 			withdrawnMoney = false;
 		} else if (GrandExchangeSetup.isOpen()) {
 			int freeSlots = Inventory.getFreeSlots();
-			if(item.getItemName() == null)
+			if(item.getItemName() != null)
 				GrandExchangeSetup.setItem(item.getItemName());
 			else
 				GrandExchangeSetup.setItem(item.getItemID());
