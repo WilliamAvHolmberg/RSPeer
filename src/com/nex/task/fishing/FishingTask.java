@@ -1,4 +1,6 @@
-package com.nex.task.woodcutting;
+package com.nex.task.fishing;
+
+
 
 import java.awt.*;
 import java.util.HashSet;
@@ -59,6 +61,8 @@ public class FishingTask extends SkillTask implements ChatMessageListener, IMone
 
     RSItem equipment;
     RSItem bait;
+    
+    InventoryItem item;
 
     Fish selectedFish;
 
@@ -101,8 +105,8 @@ public class FishingTask extends SkillTask implements ChatMessageListener, IMone
         if(selectedFish.getBait().length() > 0) {
             bait = RSItem.fromName(selectedFish.getBait());
             Log.fine("Gonna use " + bait.getName() + ":" + bait.getId());
-            addRequiredItem(bait);
-            requiredInventory.addItem(new InventoryItem(1300, bait, 1300));
+            item = new InventoryItem(500, bait, 1300);
+            requiredInventory.addItem(item);
         }
         Log.fine("Going to fish for " + selectedFish.getRawName());
         this.priceEa = Exchange.getPrice(Exchange.getID(selectedFish.getRawName()));
@@ -150,12 +154,15 @@ public class FishingTask extends SkillTask implements ChatMessageListener, IMone
             Area bank = bankArea;
             if (bankArea.contains(BankLocation.PORT_SARIM_DB.getPosition()))
                 bank = Area.surrounding(BankLocation.DRAYNOR.getPosition(), 5);
-            if (playerNeedEquipment())
+            if (playerNeedEquipment()) {
                 BankHandler.addBankEvent(new WithdrawItemEvent(new WithdrawItem(equipment, 1,1)).setBankArea(bank));
-            if (playerNeedsBait())
-                BankHandler.addBankEvent(new WithdrawItemEvent(new WithdrawItem(bait, 1300,1300)).setBankArea(bank));
-            if (playerNeedsMoney())
+            }
+            if (playerNeedsBait()) {
+                BankHandler.addBankEvent(new WithdrawItemEvent(item).setBankArea(bank));
+            }
+            if (playerNeedsMoney()) {
                 BankHandler.addBankEvent(new WithdrawItemEvent(new WithdrawItem(new RSItem("Coins", 995), 1200,1200)).setBankArea(bank));
+            }
         }
         else if(!actionArea.contains(Players.getLocal())) {
             if(HandlePortSarimTo(actionArea))
@@ -233,7 +240,7 @@ public class FishingTask extends SkillTask implements ChatMessageListener, IMone
         return (!Inventory.contains(equipment.getName()));
     }
     boolean playerNeedsBait(){
-        return (bait != null && !Inventory.contains(bait.getName()));
+        return (bait != null && !Inventory.contains(bait.getId()));
     }
     boolean playerNeedsMoney(){
         if(KaramjaIsland.contains(Players.getLocal()))//Dont need money. We on the island.
