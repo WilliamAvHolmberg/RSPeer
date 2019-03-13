@@ -79,8 +79,9 @@ public class WithdrawItemEvent extends BankEvent {
 				
 			} else {
 				// TODO STOP SCRIPT
-				Log.fine("bank does not contain" + id + " lets stop");
+				Log.fine("bank does not contain" + id + " lets stop" + Bank.getCount(id));
 				BuyItemHandler.addItem(new BuyItemEvent(new GEItem(requiredItem)));
+				
 			}
 		}else {
 			Bank.open();
@@ -98,7 +99,7 @@ public class WithdrawItemEvent extends BankEvent {
 
 	@Override
 	public boolean isFinished() {
-		if (Inventory.getCount(id) >= amount) {
+		if (Inventory.getCount(id, 1) >= amount) {
 			return true;
 		}
 		return false;

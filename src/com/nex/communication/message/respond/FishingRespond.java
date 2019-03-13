@@ -18,7 +18,11 @@ import com.nex.script.WebBank;
 import com.nex.script.handler.TaskHandler;
 import com.nex.script.items.RSItem;
 import com.nex.task.SkillTask;
+<<<<<<< HEAD
 import com.nex.task.fishing.*;
+=======
+import com.nex.task.fishing.FishingTask;
+>>>>>>> 0ce787bb9da29892c7e47b463ddcabe354747a20
 import com.nex.task.woodcutting.WoodcuttingTask;
 
 public class FishingRespond extends TaskRespond {

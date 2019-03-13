@@ -86,9 +86,7 @@ public class TaskHandler {
 		}
 
 		if (PREVIOUS_TASK != null && PREVIOUS_TASK.getRequiredItems() != null) {
-			itemsToNotSell.forEach(item -> {
-				Log.fine("ITEM: " + item);
-			});
+			itemsToNotSell.addAll(PREVIOUS_TASK.getRequiredItems());
 		}
 		Log.fine("Items not to sell length: " + itemsToNotSell.size());
 		for (RSItem unsellableItem : itemsToNotSell) {

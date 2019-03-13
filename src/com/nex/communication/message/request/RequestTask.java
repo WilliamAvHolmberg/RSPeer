@@ -78,9 +78,9 @@ public class RequestTask extends NexRequest {
 			case "TANNER":
 				NexHelper.pushMessage(new TannerRespond(respond));
 				break;
-			//case "FISHING":
-			//NexHelper.pushMessage(new FishingRespond(respond));
-			//	break;
+			case "FISHING":
+				NexHelper.pushMessage(new FishingRespond(respond));
+				break;
 			case "QUEST":
 				NexHelper.pushMessage(new QuestRespond(respond));
 			break;
