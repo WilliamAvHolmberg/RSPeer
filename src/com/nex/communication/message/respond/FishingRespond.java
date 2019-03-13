@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.Stack;
 import java.util.function.BooleanSupplier;
 
-import com.nex.task.woodcutting.FishingTask;
 import org.rspeer.runetek.api.component.tab.EquipmentSlot;
 import org.rspeer.runetek.api.movement.position.Area;
 import org.rspeer.ui.Log;
@@ -19,6 +18,7 @@ import com.nex.script.WebBank;
 import com.nex.script.handler.TaskHandler;
 import com.nex.script.items.RSItem;
 import com.nex.task.SkillTask;
+import com.nex.task.fishing.*;
 import com.nex.task.woodcutting.WoodcuttingTask;
 
 public class FishingRespond extends TaskRespond {
