@@ -38,7 +38,7 @@ public class RequestAccountInfo extends NexRequest {
     @Override
     public void execute(PrintWriter out, BufferedReader in) throws IOException {
         String request = "account_info:1";
-        out.println(request);
+        println(out, request);
         String respond = in.readLine();
         Log.fine("got account info - " + respond);
         handleRespond(respond);

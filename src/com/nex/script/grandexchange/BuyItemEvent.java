@@ -122,7 +122,10 @@ public class BuyItemEvent implements IHandlerTask {
 	}
 
 	private void handleExistingOffers(List<RSGrandExchangeOffer> offers) {
-		
+		if(offers.stream().anyMatch(offer-> offer.getProgress() == Progress.IN_PROGRESS)) {
+			Time.sleepUntil(()-> GrandExchange.getOffers(offer->offer.getProgress() == Progress.FINISHED).length > 0, 1000, 6000);
+			offers = getNonEmptyOffers();
+		}
 		for (RSGrandExchangeOffer offer : offers) {
 			if (offer.getProgress() == Progress.FINISHED) {
 				GrandExchange.collectAll(false);

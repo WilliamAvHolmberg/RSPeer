@@ -84,6 +84,7 @@ public class NexHelper implements Runnable {
 					}
 					Thread.sleep(1000);
 				}
+				retry = 0;
 				initialized = initializeContactToSocket(out, in);
 				whileShouldRun(out, in); // main loop, always run while script should be running
 

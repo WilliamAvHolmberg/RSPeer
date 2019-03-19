@@ -25,7 +25,7 @@ public class PrepareForMuleDeposit extends Action {
 			withdrawMoney();
 		}else {
 			int depositAmount = Inventory.getCount(true, 995);
-			if (RequestAccountInfo.account_type.contains("MULE"))
+			if (RequestAccountInfo.account_type != null && RequestAccountInfo.account_type.contains("MULE"))
 				depositAmount = Math.max(100000, depositAmount - 2000000);
 			hasWithdrawnMoney = false;
 			NexHelper.pushMessage(new MuleRequest("MULE_DEPOSIT:995:" + depositAmount));

@@ -6,6 +6,7 @@ import java.util.logging.Logger;
 
 import javax.security.auth.login.LoginContext;
 
+import com.nex.communication.message.DisconnectMessage;
 import com.nex.communication.message.LockedMessage;
 import com.nex.communication.message.request.MuleRequest;
 import com.nex.communication.message.request.RequestAccountInfo;
@@ -120,7 +121,9 @@ public class Nex extends Script
 			}
 			else if (TaskHandler.getCurrentTask() == null) {
 				getTask();
-			}else {
+			} else if (RandomHandler.handleRandom()) {
+				return Random.nextInt(100, 500);
+			} else {
 				TaskHandler.getCurrentTask().loop();
 			}
 		} else {
@@ -295,6 +298,8 @@ public class Nex extends Script
 		case VOTE_REQUIRED:
 		case WORLD_CLOSED_BETA:
 		case WORLD_FULL:
+			NexHelper.pushMessage(new DisconnectMessage(arg0.getResponse().toString()));
+			NexHelper.sendAllMessages();
 			Time.sleep(1500);//Give us a quick glimpse of the result before shutting down
 			System.exit(1);
 			break;

@@ -19,7 +19,7 @@ public class TaskLog extends NexMessage {
 
 	@Override
 	public void execute(PrintWriter out, BufferedReader in) throws IOException {
-		out.println(currentTask.getLog());
+		println(out, currentTask.getLog());
 		in.readLine(); //will always return ok. Therefor nothing shall be done.
 		
 	}

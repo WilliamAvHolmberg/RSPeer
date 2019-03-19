@@ -18,5 +18,9 @@ public abstract class NexMessage {
 		Log.info("New Message Created: " + respond);
 	}
 	public abstract void execute(PrintWriter out, BufferedReader in) throws IOException, InterruptedException;
+	public void println(PrintWriter out, String message){
+		Log.info("SENT: " + message);
+		out.println(message);
+	}
 	
 }
