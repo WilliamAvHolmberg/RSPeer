@@ -3,6 +3,7 @@ package com.nex.task.mule;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 
+import com.nex.communication.message.request.RequestAccountInfo;
 import com.nex.communication.message.respond.TannerRespond;
 import com.nex.script.Exchange;
 import com.nex.script.items.GEItem;
@@ -47,6 +48,14 @@ public class DepositToPlayerTask extends Mule {
 	DepositItemToPlayer tradeWithMule;
 	public DepositToPlayerTask(int world, int itemID, int itemAmount, String tradeName, Area playerPos) {
 		super(world, itemID, itemAmount, tradeName, playerPos);
+
+		if(itemID == 995 && RequestAccountInfo.account_type == "MASTER_MULE") {
+			int coins = Inventory.getCount(true, 995);
+			if(coins > 10000000) itemAmount = 500000;
+			else if(coins > 1000000) itemAmount = 200000;
+			else if(coins > 500000) itemAmount = 100000;
+		}
+
 		tradeWithMule = new DepositItemToPlayer(tradeName, itemID, itemAmount);
 	}
 

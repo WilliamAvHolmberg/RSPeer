@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 
+import com.nex.communication.message.request.RequestAccountInfo;
 import com.nex.script.WebBank;
 import com.nex.script.grandexchange.BuyItemHandler;
 import org.rspeer.runetek.api.component.tab.Inventory;

@@ -3,6 +3,7 @@ package com.nex.task.actions.mule;
 
 
 
+import com.nex.communication.message.request.RequestAccountInfo;
 import org.rspeer.runetek.api.commons.Time;
 import org.rspeer.runetek.api.component.Bank;
 import org.rspeer.runetek.api.component.tab.Inventory;
@@ -23,9 +24,11 @@ public class PrepareForMuleDeposit extends Action {
 		if (!hasWithdrawnMoney) {
 			withdrawMoney();
 		}else {
+			int depositAmount = Inventory.getCount(true, 995);
+			if (RequestAccountInfo.account_type != null && RequestAccountInfo.account_type.contains("MULE"))
+				depositAmount = Math.max(100000, depositAmount - 2000000);
 			hasWithdrawnMoney = false;
-			NexHelper.pushMessage(new MuleRequest(
-					"MULE_DEPOSIT:995:" + Inventory.getCount(true,995)));
+			NexHelper.pushMessage(new MuleRequest("MULE_DEPOSIT:995:" + depositAmount));
 			Time.sleepUntil(() -> TaskHandler.getCurrentTask() != null && TaskHandler.getCurrentTask().getClass().equals(DepositToPlayerTask.class), 20000);
 			
 		}

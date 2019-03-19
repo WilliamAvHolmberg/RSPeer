@@ -1,7 +1,9 @@
 package com.nex.script.banking;
 
+import com.nex.communication.message.request.RequestAccountInfo;
 import org.rspeer.runetek.adapter.component.Item;
 import org.rspeer.runetek.api.commons.Time;
+import org.rspeer.runetek.api.commons.math.Random;
 import org.rspeer.runetek.api.component.Bank;
 import org.rspeer.runetek.api.component.tab.Inventory;
 import org.rspeer.ui.Log;
@@ -39,7 +41,7 @@ public class WithdrawItemEvent extends BankEvent {
 		Log.fine("REQ ITEM: " + requiredItem.getItemName() + ":" + requiredItem.getAmount());
 		this.id = item.getItem().getId();
 	}
-	
+
 	public WithdrawItemEvent(GearItem item) {
 		this.requiredItem = new WithdrawItem(item.getItem().getId(),1,item.getItem().getName(), 1);
 		this.amount = requiredItem.getAmount();
@@ -60,6 +62,7 @@ public class WithdrawItemEvent extends BankEvent {
 
 	public void execute() {
 		if (Bank.isOpen()) {
+			Time.sleepUntil(()->Bank.contains(id), Random.low(1000, 3000));
 			if (Bank.getCount(id) >= amount) {
 				if(amount > 28 && Bank.getWithdrawMode() != Bank.WithdrawMode.NOTE){
 					Bank.setWithdrawMode(Bank.WithdrawMode.NOTE);
@@ -72,16 +75,22 @@ public class WithdrawItemEvent extends BankEvent {
 				if(amount < 10000) {
 					amount = 10000;
 				}
-				if(amount > 30000) {
+				if(RequestAccountInfo.account_type == "MULE") {
+					if(amount < 200000)
+						amount = 200000;
+				}else if(amount > 30000) {
 					System.exit(1);
 				}
+				Log.fine("We don't have enough coins, lets get from mule");
 				NexHelper.pushMessage(new MuleRequest("MULE_WITHDRAW:995:" + amount));
-				
+				Time.sleepUntil(() -> TaskHandler.getCurrentTask() != null
+						&& TaskHandler.getCurrentTask() instanceof WithdrawFromPlayerTask, 16000);
+
 			} else {
 				// TODO STOP SCRIPT
 				Log.fine("bank does not contain" + id + " lets stop" + Bank.getCount(id));
 				BuyItemHandler.addItem(new BuyItemEvent(new GEItem(requiredItem)));
-				
+
 			}
 		}else {
 			Bank.open();

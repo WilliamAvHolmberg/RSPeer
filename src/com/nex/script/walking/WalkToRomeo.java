@@ -27,16 +27,17 @@ public class WalkToRomeo extends WalkEventRomeoAndJuliet {
 	@Override
 	public void execute() {
 		boolean failed = false;
+		SceneObject object = null;
 		if(Movement.buildPath(romeoPosition) != null) {
 			Movement.walkTo(romeoPosition);
-		}else if(getObject(entranceDoor) != null){
-			getObject(entranceDoor).interact("Open");
-		}else if(getObject(upperSecondDoor) != null) {
-			getObject(upperSecondDoor).interact("Open");
-		}else if(getObject(upperFirstDoor) != null) {
-			getObject(upperFirstDoor).interact("Open");
-		}else if(getObject(upperStairs) != null) {
-			getObject(upperStairs).interact("Climb-down");
+		}else if((object = getObject(entranceDoor)) != null){
+			object.interact("Open");
+		}else if((object = getObject(upperSecondDoor)) != null) {
+			object.interact("Open");
+		}else if((object = getObject(upperFirstDoor)) != null) {
+			object.interact("Open");
+		}else if((object = getObject(upperStairs)) != null) {
+			object.interact("Climb-down");
 		}else {
 			failed = true;
 		}

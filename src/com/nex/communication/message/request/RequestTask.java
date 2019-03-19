@@ -5,7 +5,11 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 import com.nex.communication.message.respond.*;
+import com.nex.script.handler.TaskHandler;
+import com.nex.task.actions.mule.CheckIfWeShallSellItems;
+import com.nex.task.mule.PrepareForMuleDepositTask;
 import org.rspeer.runetek.api.commons.Time;
+import org.rspeer.runetek.api.component.tab.Inventory;
 import org.rspeer.runetek.api.component.tab.Skill;
 import org.rspeer.runetek.api.component.tab.Skills;
 import org.rspeer.ui.Log;
@@ -20,21 +24,25 @@ public class RequestTask extends NexRequest {
 		super(respond);
 	}
 
+	static boolean alreadySent = false;
 	@Override
 	public void execute(PrintWriter out, BufferedReader in) throws IOException {
 		String string = "skills;";
 		for (Skill skill : Skill.values()) {
-			string += skill + "," + Skills.getCurrentLevel(skill) + ";";
+			int level = Skills.getCurrentLevel(skill);
+			if (level > 1 || !alreadySent)
+				string += skill + "," + level + ";";
 		}
 		String quests = "quests;";
 		for (Quest quest : Quest.values()) {
 			quests += quest.name() + "," + quest.isCompleted() + ";";
 		}
 		String request = "task_request:1:" + string + ":" + quests;
-		out.println(request);
+		println(out, request);
 		String respond = in.readLine();
 		Log.fine("got respond from task_request:" + respond);
 		handleRespond(respond);
+		alreadySent = true;
 	}
 
 	static long timeAskedToDC = 0;
@@ -43,6 +51,14 @@ public class RequestTask extends NexRequest {
 		if (respond.contains("TASK_RESPOND:0") || respond.contains("DISCONNECT")) {
 			if (lastTask != null && lastTask.startsWith("MULE"))
 			{
+				int coins = Inventory.getCount(true, 995);
+				if(RequestAccountInfo.account_type != null && RequestAccountInfo.account_type.equals("MULE") && coins > 100000 && TaskHandler.available_tasks.isEmpty()) {
+					Log.fine("Idle Mule");
+					if (coins > 4000000 || CheckIfWeShallSellItems.approachingBan() && coins > 2000000) {
+						TaskHandler.addTaskAndResetStack(new PrepareForMuleDepositTask());
+						return;
+					}
+				}
 				//If we are a mule, lets just hang around for 2 minutes incase another task is ready
 				if(timeAskedToDC == 0) {
 					timeAskedToDC = System.currentTimeMillis();

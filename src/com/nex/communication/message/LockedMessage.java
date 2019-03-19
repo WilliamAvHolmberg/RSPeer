@@ -17,10 +17,11 @@ public class LockedMessage extends NexMessage {
 	}
 
 	@Override
-	public void execute(PrintWriter out, BufferedReader in) throws IOException {
+	public void execute(PrintWriter out, BufferedReader in) throws IOException, InterruptedException {
 		Log.fine("Sent Locked Message");
-		out.println("locked:1");
-		Time.sleep(2000);//Allow a small time for the message to definitely send
+		println(out, "locked:1");
+		Nex.SHOULD_RUN = false;
+		Thread.sleep(200);//Allow a small time for the message to definitely send
 		System.exit(1);
 	}
 

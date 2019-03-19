@@ -97,7 +97,10 @@ public final class RuneScapeGuideSection extends TutorialSection {
             case 0:
             case 1:
             	if(Nex.USERNAME != null) {
-            		if (isVisible("not available") && lastName == Nex.USERNAME) {
+            	    InterfaceComponent nameComponent = Interfaces.getComponent(558, 11);
+            	    if(nameComponent != null)
+            	        lastName = nameComponent.getText().trim();
+            		if (isVisible("not available") && lastName.equalsIgnoreCase(Nex.USERNAME)) {
                         Log.fine("bad name, lets change");
                         InterfaceComponent suggestion = Interfaces.getComponent(558, 14);
                         if(suggestion.getText().length() > 7 && suggestion.getText().length() <= 12)
@@ -113,7 +116,8 @@ public final class RuneScapeGuideSection extends TutorialSection {
                         Log.fine("New name:" + Nex.USERNAME);
                     } else if(interactIfNotVisible("What name woul","Look up name")) {
 	                    Time.sleep(1000);
-	            	}else if (!nameIsEntered(Nex.USERNAME)) {  
+	            	}else if (lastName != Nex.USERNAME) {
+                        Time.sleep(1000);
 	            		lastName = Nex.USERNAME;
 	                    Keyboard.sendText(Nex.USERNAME);
 	                    Time.sleep(2000);

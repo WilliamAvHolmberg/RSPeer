@@ -27,14 +27,15 @@ public class WalkToJuliet extends WalkEventRomeoAndJuliet {
 	@Override
 	public void execute() {
 		boolean failed = false;
-		if(getObject(upperFirstDoor) != null) {
-			getObject(upperFirstDoor).interact("Open");
-		}else if(getObject(upperSecondDoor) != null) {
-			getObject(upperSecondDoor).interact("Open");
-		}else if(getObject(lowerStairs) != null) {
-			getObject(lowerStairs).interact("Climb-up");
-		}else if(getObject(entranceDoor) != null){
-			getObject(entranceDoor).interact("Open");	
+		SceneObject object = null;
+		if((object = getObject(upperFirstDoor)) != null) {
+			object.interact("Open");
+		}else if((object = getObject(upperSecondDoor)) != null) {
+			object.interact("Open");
+		}else if((object = getObject(lowerStairs)) != null) {
+			object.interact("Climb-up");
+		}else if((object = getObject(entranceDoor)) != null){
+			object.interact("Open");
 		}else if(Players.getLocal().getPosition().getFloorLevel() == 0) {
 			Movement.walkTo(outsideJulietHousePosition.getCenter());
 		}else if(Movement.buildPath(julietPosition) != null) {

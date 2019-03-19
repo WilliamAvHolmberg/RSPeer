@@ -30,7 +30,7 @@ import com.nex.task.quests.tutorial.sections.*;
 
 public final class TutorialIsland extends QuestTask {
 
-    static boolean DO_NOOB_FIGHTING = false;
+    public static boolean DO_NOOB_FIGHTING = false;
 
 	static Area WHOLE_ISLAND_AREA = Area.rectangular(3048, 3145, 3165, 3040);
 	static Area UNDERGROUND_ISLAND_AREA = Area.rectangular(3066, 9488, 3118, 9533);

@@ -9,6 +9,7 @@ import java.net.Socket;
 import java.net.URL;
 import java.util.Stack;
 
+import com.nex.communication.message.request.RequestAccountInfo;
 import org.rspeer.runetek.api.Game;
 import org.rspeer.runetek.api.Worlds;
 import org.rspeer.runetek.api.commons.Time;
@@ -65,6 +66,7 @@ public class NexHelper implements Runnable {
 		this.password = password;
 		this.name = username.split("@")[0];
 		messageQueue = new Stack<NexMessage>();
+		pushMessage(new RequestAccountInfo());
 	}
 
 	@Override
@@ -82,6 +84,7 @@ public class NexHelper implements Runnable {
 					}
 					Thread.sleep(1000);
 				}
+				retry = 0;
 				initialized = initializeContactToSocket(out, in);
 				whileShouldRun(out, in); // main loop, always run while script should be running
 
@@ -95,8 +98,10 @@ public class NexHelper implements Runnable {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			if(!Nex.SHOULD_RUN)
+			if(!Nex.SHOULD_RUN) {
+				System.exit(1);
 				break;
+			}
 			Log.fine("TRYING TO RE ESTABLISH CONNECTION");
 		}
 	}
@@ -190,7 +195,11 @@ public class NexHelper implements Runnable {
 		lastLog = System.currentTimeMillis();
 	}
 
+	long lastAskedForTask = 0;
 	public void getNewTask() {
+		if(System.currentTimeMillis() - lastAskedForTask < 6000)
+			return;
+		lastAskedForTask = System.currentTimeMillis();
 		pushMessage(new RequestTask("none"));
 	}
 

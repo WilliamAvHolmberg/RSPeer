@@ -17,11 +17,11 @@ public class BannedMessage extends NexMessage {
 	}
 
 	@Override
-	public void execute(PrintWriter out, BufferedReader in) throws IOException {
+	public void execute(PrintWriter out, BufferedReader in) throws IOException, InterruptedException {
 		Log.fine("Sent Banned Message");
-		out.println("banned:1");
-		Time.sleep(200);//Allow a small time for the message to definitely send
+		println(out, "banned:1");
 		Nex.SHOULD_RUN = false;
+		Thread.sleep(200);//Allow a small time for the message to definitely send
 		System.exit(1);
 	}
 

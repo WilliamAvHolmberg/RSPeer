@@ -16,6 +16,7 @@ public class DisconnectMessage extends NexMessage{
 
 	@Override
 	public void execute(PrintWriter out, BufferedReader in) throws IOException {
+		out.println("puts:" + respond);
 		Time.sleep(6000);//I like to see the reason, and be able to cancel a Disconnect
 		System.exit(1);
 	}

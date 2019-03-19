@@ -42,7 +42,7 @@ public class MuleRequest extends NexRequest {
 			String itemID = nextRequest[1];
 			String amount = nextRequest[2];
 
-			out.println("mule_request:" + itemID + ":" + amount + ":" + Players.getLocal().getName() + ":"
+			println(out, "mule_request:" + itemID + ":" + amount + ":" + Players.getLocal().getName() + ":"
 					+ Worlds.getCurrent() + ":" + muleType);
 			String respond = in.readLine();
 			Log.fine("mule respond: " + respond);

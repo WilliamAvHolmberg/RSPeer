@@ -3,6 +3,7 @@ package com.nex.script.grandexchange;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.nex.communication.message.request.RequestAccountInfo;
 import com.nex.script.Quest;
 import com.nex.task.IHandlerTask;
 import com.nex.task.actions.mule.CheckIfWeShallSellItems;
@@ -99,7 +100,7 @@ public class BuyItemEvent implements IHandlerTask {
 			withdrawnMoney = false;
 		} else if (GrandExchangeSetup.isOpen()) {
 			int freeSlots = Inventory.getFreeSlots();
-			if(item.getItemName() == null)
+			if(item.getItemName() != null)
 				GrandExchangeSetup.setItem(item.getItemName());
 			else
 				GrandExchangeSetup.setItem(item.getItemID());
@@ -121,7 +122,10 @@ public class BuyItemEvent implements IHandlerTask {
 	}
 
 	private void handleExistingOffers(List<RSGrandExchangeOffer> offers) {
-		
+		if(offers.stream().anyMatch(offer-> offer.getProgress() == Progress.IN_PROGRESS)) {
+			Time.sleepUntil(()-> GrandExchange.getOffers(offer->offer.getProgress() == Progress.FINISHED).length > 0, 1000, 6000);
+			offers = getNonEmptyOffers();
+		}
 		for (RSGrandExchangeOffer offer : offers) {
 			if (offer.getProgress() == Progress.FINISHED) {
 				GrandExchange.collectAll(false);
@@ -143,12 +147,13 @@ public class BuyItemEvent implements IHandlerTask {
 		Log.fine("existing offers");
 	}
 
-	static int withdrawAmount = Random.nextInt(100, 150) * 100;
+	static int withdrawAmount = Random.nextInt(12, 15) * 1000;
 	private void withdrawMoney() {
 		if (!Bank.isOpen()) {
 			Bank.open();
 		}else {
 			Time.sleepUntil(()->Bank.contains(995), Random.low(1000, 3000));
+			Log.fine("Withdrawing money to buy " + item.getBuyAmount() + " x " + item.getItemName());
 			if (Inventory.getCount(true, 995) >= item.getTotalPrice()) {
 				withdrawnMoney = true;
 			} else if (Bank.getCount(995) + Inventory.getCount(true, 995) >= item.getTotalPrice()) {
@@ -158,7 +163,10 @@ public class BuyItemEvent implements IHandlerTask {
 				if (amount < withdrawAmount) {
 					amount = withdrawAmount;
 				}
-				Log.fine("AMOUNT:" + amount);
+				if(RequestAccountInfo.account_type == "MULE" && amount < 80000)
+					amount = 50000;
+
+				Log.fine("Not enough money. Requesting " + amount);
 				NexHelper.pushMessage(new MuleRequest("MULE_WITHDRAW:995:" + amount));
 				Time.sleepUntil(() -> TaskHandler.getCurrentTask() != null
 						&& TaskHandler.getCurrentTask() instanceof WithdrawFromPlayerTask, 16000);
