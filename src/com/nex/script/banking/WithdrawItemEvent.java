@@ -41,7 +41,7 @@ public class WithdrawItemEvent extends BankEvent {
 		Log.fine("REQ ITEM: " + requiredItem.getItemName() + ":" + requiredItem.getAmount());
 		this.id = item.getItem().getId();
 	}
-	
+
 	public WithdrawItemEvent(GearItem item) {
 		this.requiredItem = new WithdrawItem(item.getItem().getId(),1,item.getItem().getName(), 1);
 		this.amount = requiredItem.getAmount();
@@ -85,11 +85,12 @@ public class WithdrawItemEvent extends BankEvent {
 				NexHelper.pushMessage(new MuleRequest("MULE_WITHDRAW:995:" + amount));
 				Time.sleepUntil(() -> TaskHandler.getCurrentTask() != null
 						&& TaskHandler.getCurrentTask() instanceof WithdrawFromPlayerTask, 16000);
-				
+
 			} else {
 				// TODO STOP SCRIPT
-				Log.fine("bank does not contain" + id + " lets stop");
+				Log.fine("bank does not contain" + id + " lets stop" + Bank.getCount(id));
 				BuyItemHandler.addItem(new BuyItemEvent(new GEItem(requiredItem)));
+
 			}
 		}else {
 			Bank.open();
@@ -107,7 +108,7 @@ public class WithdrawItemEvent extends BankEvent {
 
 	@Override
 	public boolean isFinished() {
-		if (Inventory.getCount(true, id) >= amount) {
+		if (Inventory.getCount(id, 1) >= amount) {
 			return true;
 		}
 		return false;

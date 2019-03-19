@@ -31,7 +31,7 @@ public class AttackAction {
 	}
 	
 	public static Npc getAvailableNpc(String monsterName, Area area) {
-		return Npcs.getNearest(p-> area.contains(p) && p.getName().contains(monsterName) && p.getTarget() == null);
+		return Npcs.getNearest(p-> area.contains(p) && p.getPosition().isPositionInteractable() && p.getPosition().isPositionWalkable() && p.getName().contains(monsterName) && p.getTarget() == null);
 	}
 	public static boolean playerIsAttacking() {
 		return Players.getLocal().getTarget() != null;

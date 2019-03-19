@@ -79,11 +79,14 @@ public class CombatRespond extends TaskRespond {
 			if (!parsedBankArea.equals("none")) {
 				bankArea = WebBank.parseCoordinates(parsedBankArea);
 			}
+			Log.fine("after bank");
+			Log.fine(parsedInventory);
 			currentTime = System.currentTimeMillis();
 			Area actionArea = WebBank.parseCoordinates(parsedActionArea);
 			NexInventory inv = new NexInventory();
 			inv = getInventory(parsedInventory);
 			CombatTask newTask;
+			Log.fine("after inv");
 			newTask = new CombatTask(actionArea, bankArea, monsterName, gear, food, inv,
 					Skill.valueOf(parsedSkill.toUpperCase()), lootThreshold);
 			newTask.setTaskID(currentTaskID);
