@@ -27,6 +27,7 @@ import com.nex.task.woodcutting.actions.CutTreeAction;
 import org.rspeer.runetek.adapter.component.Item;
 import org.rspeer.runetek.adapter.scene.Player;
 import org.rspeer.runetek.adapter.scene.SceneObject;
+import org.rspeer.runetek.api.Game;
 import org.rspeer.runetek.api.commons.BankLocation;
 import org.rspeer.runetek.api.component.tab.Equipment;
 import org.rspeer.runetek.api.component.tab.Inventory;
@@ -47,7 +48,7 @@ import com.nex.task.SkillTask;
 
 import javax.imageio.ImageIO;
 
-public class CustomTask extends SkillTask {
+public class CustomTask extends SkillTask implements RenderListener, ChatMessageListener {
 
     int totalCount;
     int profit;
@@ -111,11 +112,12 @@ public class CustomTask extends SkillTask {
 
     }
 
-    @Override
     public int getMoneyPerHour() {
         return (int) (getPerHour(profit));
     }
 
+    @Override
+    public void notify(ObjectSpawnEvent objectSpawnEvent) {
 
-
+    }
 }

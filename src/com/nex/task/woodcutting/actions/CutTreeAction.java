@@ -1,13 +1,16 @@
 package com.nex.task.woodcutting.actions;
 
+import java.util.List;
 import java.util.function.Predicate;
 
 import org.rspeer.runetek.adapter.scene.Player;
 import org.rspeer.runetek.adapter.scene.SceneObject;
 import org.rspeer.runetek.api.commons.Time;
+import org.rspeer.runetek.api.commons.math.Random;
 import org.rspeer.runetek.api.commons.predicate.Predicates;
 import com.nex.script.walking.WalkTo;
 import org.rspeer.runetek.api.movement.position.Area;
+import org.rspeer.runetek.api.movement.position.Position;
 import org.rspeer.runetek.api.scene.Players;
 import org.rspeer.runetek.api.scene.SceneObjects;
 import org.rspeer.runetek.event.listeners.ObjectSpawnListener;
@@ -22,6 +25,9 @@ public class CutTreeAction extends Action implements ObjectSpawnListener{
 	public static CutTreeAction instance = new CutTreeAction();
 	public static SceneObject currentTree;
 	
+
+	static Position targetPos = null;
+	static Area lastArea = null;
 
 	public static CutTreeAction get() {
 		return instance;

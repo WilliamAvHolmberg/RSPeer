@@ -5,6 +5,8 @@ import java.util.List;
 
 import com.nex.communication.message.request.RequestAccountInfo;
 import com.nex.script.Quest;
+import com.nex.script.inventory.InventoryItem;
+import com.nex.script.items.DepositItem;
 import com.nex.task.IHandlerTask;
 import com.nex.task.actions.mule.CheckIfWeShallSellItems;
 import org.rspeer.runetek.adapter.component.Item;
@@ -76,6 +78,7 @@ public class BuyItemEvent implements IHandlerTask {
 				if (offers != null && !offers.isEmpty()) {
 					handleExistingOffers(offers);
 				} else if (Inventory.contains(item.getItemID()) || Inventory.contains(item.getItemName())) {
+					exchangeIfNoted(item);
 					finished = true;
 					BuyItemHandler.removeItem(this);
 				} else {
@@ -83,6 +86,23 @@ public class BuyItemEvent implements IHandlerTask {
 				}
 			} else {
 				openGe();
+			}
+		}
+	}
+
+	void exchangeIfNoted(GEItem item){
+		Item invItem = Inventory.getFirst(item.getItemID());
+		if (invItem == null) invItem = Inventory.getFirst(item.getItemName());
+		if (invItem.isNoted() && invItem.getStackSize() < (28 - (Inventory.getCount() - 1))){
+			Bank.open();
+			if(Time.sleepUntil(()->Bank.isOpen(), 200, 2000))
+			{
+				int count = invItem.getStackSize();
+				String name = invItem.getName();
+				Bank.depositAll(invItem.getId());
+				Time.sleepUntil(()->Bank.getCount(name) > count, 200, 2000);
+				Bank.withdraw(invItem.getName(), count);
+				Time.sleepUntil(()->Inventory.getCount(name) > count, 200, 2000);
 			}
 		}
 	}
@@ -104,26 +124,30 @@ public class BuyItemEvent implements IHandlerTask {
 				GrandExchangeSetup.setItem(item.getItemName());
 			else
 				GrandExchangeSetup.setItem(item.getItemID());
-			if(!Time.sleepUntil(() -> GrandExchangeSetup.getItem() != null, 500, 1500))
+			if(!Time.sleepUntil(() -> GrandExchangeSetup.getItem() != null, 800, 1500))
 				return;
 			GrandExchangeSetup.setPrice(item.getItemPrice());
-			if(!Time.sleepUntil(() -> GrandExchangeSetup.getPricePerItem() == item.getItemPrice(), 500, 1500))
+			if(!Time.sleepUntil(() -> GrandExchangeSetup.getPricePerItem() == item.getItemPrice(), 800, 1500))
 				return;
-			GrandExchangeSetup.setQuantity(item.getBuyAmount());
-			if(!Time.sleepUntil(() -> GrandExchangeSetup.getQuantity() == item.getBuyAmount(), 500, 1500))
-				return;
+			if(GrandExchangeSetup.getQuantity() != item.getBuyAmount()) {
+				GrandExchangeSetup.setQuantity(item.getBuyAmount());
+				if (!Time.sleepUntil(() -> GrandExchangeSetup.getQuantity() == item.getBuyAmount(), 800, 1500))
+					return;
+			}
 			GrandExchangeSetup.confirm();
 			Time.sleepUntil(() -> Inventory.getFreeSlots() < freeSlots, 3500);
 
 		} else {
 			GrandExchange.createOffer(RSGrandExchangeOffer.Type.BUY);
-			Time.sleepUntil(GrandExchangeSetup::isOpen, 500, 1500);
+			Time.sleepUntil(GrandExchangeSetup::isOpen, 800, 1500);
 		}
 	}
 
+	long lastRaisedPrice = 0;
 	private void handleExistingOffers(List<RSGrandExchangeOffer> offers) {
+		int waitTime = Math.min(8, item.getTimesRaised() + 2) * 1000;
 		if(offers.stream().anyMatch(offer-> offer.getProgress() == Progress.IN_PROGRESS)) {
-			Time.sleepUntil(()-> GrandExchange.getOffers(offer->offer.getProgress() == Progress.FINISHED).length > 0, 1000, 6000);
+			Time.sleepUntil(()-> GrandExchange.getOffers(offer->offer.getProgress() == Progress.FINISHED).length > 0, 1000, waitTime);
 			offers = getNonEmptyOffers();
 		}
 		for (RSGrandExchangeOffer offer : offers) {
@@ -131,17 +155,22 @@ public class BuyItemEvent implements IHandlerTask {
 				GrandExchange.collectAll(false);
 			}else if (offer.getProgress() == Progress.IN_PROGRESS) {
 				if (offer.getItemId() == item.getItemID()) {
-					if(item.getItemPrice() > 5 * Exchange.getPrice(item.getItemID())) {
-						//send banned message
-						//in the future, send error message saying that this is bad and that we should remove item 
-						Log.fine("Sleeping because we are  buying over expensive item");
-						Time.sleep(60000);
-						break;
+					if(item.getItemPrice() > 5 * item.getOriginalItemPrice()) {
+						if(System.currentTimeMillis() - lastRaisedPrice < 60_000) {
+							Time.sleep(500);
+							return;
+						}
+//						//send banned message
+//						//in the future, send error message saying that this is bad and that we should remove item
+//						Log.fine("Sleeping because we are  buying over expensive item");
+//						Time.sleep(60000);
+//						break;
 					}
+					lastRaisedPrice = System.currentTimeMillis();
 					item.raiseItemPrice();
 					withdrawnMoney = false;
+					offer.abort();
 				}
-				offer.abort();
 			} 
 		}
 		Log.fine("existing offers");

@@ -17,6 +17,7 @@ import org.rspeer.runetek.adapter.scene.SceneObject;
 import org.rspeer.runetek.api.Game;
 import org.rspeer.runetek.api.Worlds;
 import org.rspeer.runetek.api.commons.math.Random;
+import org.rspeer.runetek.api.component.Trade;
 import org.rspeer.runetek.api.component.WorldHopper;
 import org.rspeer.runetek.api.component.tab.Equipment;
 import org.rspeer.runetek.api.component.tab.Inventory;
@@ -77,10 +78,14 @@ import com.nex.task.woodcutting.actions.CutTreeAction;
             BuyItemHandler.execute(buyer);
             return 200;
         }
+//        Game.getRemainingMembershipDays()
         buyer = null;
 
-        if(tradeAction != null)
+        if(tradeAction != null) {
+            if (Trade.isOpen(false) && Trade.getMyItems().length > 0 && Trade.getTheirItems().length == 0)
+                return Random.mid(90, 300);
             return tradeAction.execute();
+        }
         else if(tradeRequestedBy != null){
             Player randomPlayer = Players.getNearest(tradeRequestedBy);
             if(randomPlayer != null){
@@ -94,15 +99,18 @@ import com.nex.task.woodcutting.actions.CutTreeAction;
     }
 
     long lastSpammed = 0;
-    int spamInterval = Random.nextInt(4000, 7000);
+    int spamInterval = Random.mid(10000, 17000);
     boolean spam(){
         if(System.currentTimeMillis() - lastSpammed < spamInterval)
             return false;
         Item item = Inventory.getFirst(sellableItems);
         int count = Inventory.getCount(item.getId());
         String message = "Selling " + count + " " + item.getName();
-        SendText(message);
+        SendText(glitchString(message));
         lastSpammed = System.currentTimeMillis();
+        spamInterval = Random.mid(10000, 17000);
+        if(Random.nextInt(0, 100) < 10)
+            spamInterval *= 3;
         return true;
     }
     public static String glitchString(String text){

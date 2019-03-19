@@ -5,6 +5,7 @@ import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import com.nex.task.SkillTask;
 import org.rspeer.runetek.api.component.Dialog;
 import org.rspeer.runetek.api.movement.position.Area;
 import org.rspeer.runetek.event.types.ChatMessageEvent;
@@ -51,11 +52,8 @@ public class CooksAssistantQuest extends QuestTask {
 
 	@Override
 	public String getLog() {
-		// TODO Auto-generated method stub
-		return null;
+		return SkillTask.getLog(getTaskID(), 0, 0);
 	}
-
-
 
 	@Override
 	public void removeTask() {

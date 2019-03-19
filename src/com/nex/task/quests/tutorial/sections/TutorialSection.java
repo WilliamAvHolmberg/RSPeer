@@ -3,17 +3,24 @@ package com.nex.task.quests.tutorial.sections;
 
 
 import java.awt.event.KeyEvent;
+import java.util.function.Predicate;
 
 import org.rspeer.runetek.adapter.component.InterfaceComponent;
 import org.rspeer.runetek.adapter.scene.Npc;
+import org.rspeer.runetek.adapter.scene.SceneObject;
+import org.rspeer.runetek.api.Game;
 import org.rspeer.runetek.api.Varps;
 import org.rspeer.runetek.api.commons.Time;
 import org.rspeer.runetek.api.commons.math.Random;
 import org.rspeer.runetek.api.component.Dialog;
 import org.rspeer.runetek.api.component.Interfaces;
+import org.rspeer.runetek.api.movement.position.Position;
 import org.rspeer.runetek.api.scene.Npcs;
 
 import com.nex.task.action.QuestAction;
+import org.rspeer.runetek.api.scene.Players;
+import org.rspeer.runetek.api.scene.SceneObjects;
+import org.rspeer.ui.Log;
 
 public abstract class TutorialSection extends QuestAction{
 
@@ -37,7 +44,7 @@ public abstract class TutorialSection extends QuestAction{
 
     protected final void talkToInstructor() {
         if (!Dialog.isOpen() && getInstructor() != null && getInstructor().interact("Talk-to")) {
-            Time.sleepUntil(this::pendingContinue, 5000, 600);
+            Time.sleepUntil(this::pendingContinue, 800, 6000);
         }
     }
 
@@ -62,6 +69,35 @@ public abstract class TutorialSection extends QuestAction{
     	    else
                 return comp.click();
     	}
+    }
+
+    public void doDefault(){
+        Predicate<String> defaultAction = a -> true;
+        InterfaceComponent irregularContinue = Interfaces.getComponent(162, 37);
+        if (irregularContinue != null && irregularContinue.isVisible()) {
+            Interfaces.getComponent(182, 8).interact("Logout");
+        } else if (Dialog.canContinue()) {
+            Dialog.processContinue();
+        } else if (!Dialog.isProcessing()) {
+            switch (Game.getClient().getHintArrowType()) {
+                case 0:
+                    Log.info("no hint arrow");
+                    break;
+                case 1:
+                    Npcs.getAt(Game.getClient().getHintArrowNpcIndex()).interact(defaultAction);
+                    break;
+                case 2:
+                    Position hintPos = new Position(Game.getClient().getHintArrowX(), Game.getClient().getHintArrowY(), Players.getLocal().getFloorLevel());
+                    Log.info(hintPos.toString());
+                    for (SceneObject so : SceneObjects.getAt(hintPos)) {
+                        if (so.containsAction(defaultAction)) {
+                            so.interact(defaultAction);
+                            break;
+                        }
+                    }
+                    break;
+            }
+        }
     }
     
     public int random(int lowerBound, int upperBound) {

@@ -1,8 +1,10 @@
 package com.nex.task;
+import org.rspeer.runetek.adapter.scene.Player;
 import org.rspeer.runetek.api.commons.BankLocation;
 import org.rspeer.runetek.api.component.tab.Skill;
 import org.rspeer.runetek.api.component.tab.Skills;
 import org.rspeer.runetek.api.movement.position.Area;
+import org.rspeer.runetek.api.movement.position.Position;
 import org.rspeer.runetek.api.scene.Players;
 import org.rspeer.runetek.event.listeners.ChatMessageListener;
 import org.rspeer.runetek.event.listeners.ObjectSpawnListener;
@@ -70,11 +72,12 @@ public abstract class SkillTask extends NexTask {
 
 	public static String getLog(String task_id, int xp, int loot) {
 		String respond = task_id;
-		respond += ":position;" + Players.getLocal().getPosition().getX() + ";" + Players.getLocal().getPosition().getY() + ";" + Players.getLocal().getPosition().getFloorLevel();
-
+		Player player = Players.getLocal();
+		if(player == null) return null;
+		Position pos = player.getPosition();
+		respond += ":position;" + pos.getX() + ";" + pos.getY() + ";" + pos.getFloorLevel();
 
 		respond += ":xp;" + xp;
-
 
 		respond += ":loot;" + loot;
 

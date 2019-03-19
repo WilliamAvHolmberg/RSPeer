@@ -7,7 +7,11 @@ import org.rspeer.ui.Log;
 
 import com.nex.task.action.QuestAction;
 
+import javax.swing.plaf.nimbus.State;
+
 public class EnableFixedModeEvent {
+
+	public static boolean EXIT_ON_CREATE = true;
 
 	public static boolean isFixedModeEnabled() {
 		return !QuestAction.isVisible(164,29) || !QuestAction.isVisible("Options");
@@ -16,7 +20,7 @@ public class EnableFixedModeEvent {
 	public static void execute() {
 		Log.fine("resize");
 		if (QuestAction.interactAction("Fixed mode")) {
-			Time.sleepUntil(() -> isFixedModeEnabled(), 3000);
+			Time.sleepUntil(() -> isFixedModeEnabled(), 100,3000);
 		} else if (!QuestAction.isVisible("Fixed mode")) {
 			QuestAction.interactButton("Display");
 		}else if (QuestAction.isVisible("Options")) {
@@ -25,7 +29,7 @@ public class EnableFixedModeEvent {
 			}
 		} 
 
-		if (isFixedModeEnabled()) {
+		if (isFixedModeEnabled() && EXIT_ON_CREATE) {
 			System.exit(1);
 		}
 	}

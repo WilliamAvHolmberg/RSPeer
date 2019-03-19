@@ -29,7 +29,10 @@ public class WalkTo {
 	static PathExecutor executor;
 	static Position lastPosition;
 	public static boolean execute(Position position) {
-		position = position.randomize(2);
+		return execute(position, 2);
+	}
+	public static boolean execute(Position position, int random) {
+		position = position.randomize(random);
 
 		if(executor == null)
 			executor = new PathExecutor();

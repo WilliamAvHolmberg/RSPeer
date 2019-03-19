@@ -10,10 +10,12 @@ import java.net.URL;
 import java.util.Stack;
 
 import com.nex.communication.message.request.RequestAccountInfo;
+import com.nex.task.NexTask;
 import org.rspeer.runetek.api.Game;
 import org.rspeer.runetek.api.Worlds;
 import org.rspeer.runetek.api.commons.Time;
 import org.rspeer.runetek.api.scene.Players;
+import org.rspeer.runetek.providers.subclass.GameCanvas;
 import org.rspeer.ui.Log;
 
 import com.nex.communication.message.DisconnectMessage;
@@ -72,12 +74,15 @@ public class NexHelper implements Runnable {
 	@Override
 	public void run() {
 		Log.fine("started NexHelper 2.0 with selenium support");
-		for(int retry = 0; retry < 3; retry++) {
+		for(int retry = 0; retry < 6; retry++) {
 			try {
 				Socket socket = new Socket(ip, port);
 				PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
 				BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 				BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));
+				Log.fine("CONNECTED!");
+				System.out.println("SCRIPT CONNECTED TO NEX");
+				System.out.println(mail);
 				for (int i = 0; i < 10; i++) {
 					if (Game.isLoggedIn() || !messageQueue.empty()) {//If we have messages to send, lets send them. Especially if its a ban message
 						break;
@@ -99,7 +104,8 @@ public class NexHelper implements Runnable {
 				e.printStackTrace();
 			}
 			if(!Nex.SHOULD_RUN) {
-				System.exit(1);
+				if (!GameCanvas.isInputEnabled())
+					System.exit(1);
 				break;
 			}
 			Log.fine("TRYING TO RE ESTABLISH CONNECTION");
@@ -172,7 +178,8 @@ public class NexHelper implements Runnable {
 		 * position not null, += position coordinates
 		 */
 
-		if (TaskHandler.getCurrentTask() == null || TaskHandler.getCurrentTask().getLog() == null) {
+		NexTask curTask = TaskHandler.getCurrentTask();
+		if (curTask == null || curTask.getLog() == null) {
 			return "log:0";
 		}
 		String respond = "task_log:1:" + TaskHandler.getCurrentTask().getLog();
@@ -183,7 +190,7 @@ public class NexHelper implements Runnable {
 	 * Method to take care of every log
 	 */
 	private void logToServer(PrintWriter out, BufferedReader in) throws InterruptedException, IOException {
-		if (System.currentTimeMillis() - lastLog > 5000) { // only log every 5 sec
+		if (System.currentTimeMillis() - lastLog > 10_000) { // only log every 5 sec
 			logToServerNow(out, in);
 		}
 	}

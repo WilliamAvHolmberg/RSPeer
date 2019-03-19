@@ -99,7 +99,7 @@ public class Nex extends Script
 		super.onStart();
 		TaskHandler.addPrioritizedTask(new TutorialIsland());
 		//TaskHandler.addPrioritizedTask(new RomeoAndJulietQuest());
-		Time.sleep(3000);
+		Time.sleep(1900, 3000);
 		
 //		TaskHandler.addPrioritizedTask(new MiningTask(barbMine, null, new Integer[] {7486,7485}, new RSItem("Bronze pickaxe", 1265)));
 	}
@@ -172,12 +172,13 @@ public class Nex extends Script
 			GearHandler.execute();
 			return true;
 		}
-		int coins = Inventory.getCount(true, 995);
-		if(RequestAccountInfo.account_type == "MULE" && coins > 100000 && TaskHandler.available_tasks.isEmpty()) {
-			Log.fine("Idle Mule");
-			if (boredMuleTask == null) boredMuleTask = new BoredMuleTask();
-			boredMuleTask.execute();
-		}
+//		Log.fine("No handler tasks");
+//		int coins = Inventory.getCount(true, 995);
+//		if("MULE".equals(RequestAccountInfo.account_type) && (coins > 100000 || boredMuleTask != null) && TaskHandler.available_tasks.isEmpty()) {
+//			Log.fine("Idle Mule Task");
+//			if (boredMuleTask == null) boredMuleTask = new BoredMuleTask();
+//			boredMuleTask.execute();
+//		}
 		return false;
 	}
 	private boolean longWaitForTask(){
@@ -215,10 +216,11 @@ public class Nex extends Script
 		g.drawString("LAST LOG:" + NexHelper.secondsSinceLastLog(), 200,75);
 		g.drawString("BREAK AFTER 40", 200,100);
 		int y = 200;
-		if (TaskHandler.getCurrentTask() != null) {
-			TaskHandler.getCurrentTask().notify(event);
-			event.getSource().drawString("CURRENT_TASK:" + TaskHandler.getCurrentTask().getClass().getSimpleName(), 100, 300);
-			Gear gear = TaskHandler.getCurrentTask().getGear();
+		NexTask curTask = TaskHandler.getCurrentTask();
+		if (curTask != null) {
+			curTask.notify(event);
+			event.getSource().drawString("CURRENT_TASK:" + curTask.getClass().getSimpleName(), 100, 300);
+			Gear gear = curTask.getGear();
 			if(gear != null && !gear.gear.isEmpty()) {
 				event.getSource().drawString("Not empty", 10, 10);
 				int yz = 35;

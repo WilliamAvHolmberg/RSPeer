@@ -124,7 +124,7 @@ public final class FightingSection extends TutorialSection {
 		// noinspection unchecked
 		Npc giantRat = Npcs.getNearest(npc -> npc.getName().equals("Giant rat") && npc.getTarget() == null);
 		if (giantRat != null && giantRat.interact("Attack")) {
-			Time.sleepUntil(() -> Players.getLocal().isAnimating(), 5000, 600);
+			Time.sleepUntil(() -> Players.getLocal().isAnimating(), 800, 6000);
 		}
 	}
 

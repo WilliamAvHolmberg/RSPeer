@@ -63,19 +63,19 @@ public final class BankSection extends TutorialSection {
                 } else if (Dialog.isViewingChatOptions()) {
                     Dialog.process("Yes.");
                 } else if (SceneObjects.getNearest("Bank booth").interact("Use")) {
-                    Time.sleepUntil(this::pendingContinue, 5000, 600);
+                    Time.sleepUntil(this::pendingContinue, 800, 6000);
                 }
                 break;
             case 520:
                 if (Bank.isOpen()) {
                     Bank.close();
                 } else if (SceneObjects.getNearest("Poll booth").interact("Use")) {
-                    Time.sleepUntil(this::pendingContinue, 5000, 600);
+                    Time.sleepUntil(this::pendingContinue, 800, 6000);
                 }
                 break;
             case 525:
                 if (openDoorAtPosition(new Position(3125, 3124, 0))) {
-                    Time.sleepUntil(() -> getProgress() != 525, 5000, 600);
+                    Time.sleepUntil(() -> getProgress() != 525, 800, 6000);
                 }
                 break;
             case 530:
@@ -89,7 +89,7 @@ public final class BankSection extends TutorialSection {
                 break;
             case 540:
                 if (openDoorAtPosition(new Position(3130, 3124, 0))) {
-                    Time.sleepUntil(() -> getProgress() != 540, 5000, 600);
+                    Time.sleepUntil(() -> getProgress() != 540, 800, 6000);
                 }
                 break;
         }

@@ -64,8 +64,6 @@ public abstract class QuestAction extends Action{
 	    		return false;
 	    	}
 	    	
-	 
-	    	
 	    	if(comp.click()) {
 	    		Log.fine("click");
 	    		return true;

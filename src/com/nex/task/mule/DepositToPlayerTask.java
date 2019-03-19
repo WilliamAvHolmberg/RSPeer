@@ -51,9 +51,9 @@ public class DepositToPlayerTask extends Mule {
 
 		if(itemID == 995 && RequestAccountInfo.account_type == "MASTER_MULE") {
 			int coins = Inventory.getCount(true, 995);
-			if(coins > 10000000) itemAmount = 500000;
-			else if(coins > 1000000) itemAmount = 200000;
-			else if(coins > 500000) itemAmount = 100000;
+			if(coins > 10_000_000) itemAmount = 500_000;
+			else if(coins > 1_000_000) itemAmount = 200_000;
+			else if(coins > 500_000) itemAmount = 100_000;
 		}
 
 		tradeWithMule = new DepositItemToPlayer(tradeName, itemID, itemAmount);
@@ -137,7 +137,7 @@ public class DepositToPlayerTask extends Mule {
 			}else {
 				WorldHopper.hopTo(world);
 				Time.sleepUntil(() ->Worlds.getCurrent() == world, 15000);
-				Time.sleep(10000);
+				Time.sleep(2000, 4000);
 			}
 			return 200;
 		} else if (!Trade.isOpen() && Inventory.getCount(true, name) < getItemAmount()) {

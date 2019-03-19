@@ -69,7 +69,7 @@ public class CheckIfWeShallSellItems extends Action {
 			}
 		}else {
 			Bank.open();
-			Time.sleepUntil(() -> Bank.isOpen(), 5000);
+			Time.sleepUntil(() -> Bank.isOpen(), 200, 5000);
 		}
 
 	}

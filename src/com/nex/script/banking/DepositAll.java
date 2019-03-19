@@ -11,8 +11,10 @@ public class DepositAll extends BankEvent{
 
 	public void execute() {
 		if(Bank.isOpen()) {
-			Bank.depositInventory();
-			Time.sleepUntil(()-> Inventory.isEmpty(), 5000);
+			if(!Inventory.isEmpty()) {
+				Bank.depositInventory();
+				Time.sleepUntil(() -> Inventory.isEmpty(), 5000);
+			}
 		}else {
 			Bank.open();
 		}

@@ -35,7 +35,7 @@ public abstract class TradeAction extends Action{
 		Player target = getPlayer(name);
 		if(target != null) {
 			target.interact("Trade with");
-			Time.sleepUntil(() -> Trade.isOpen(), 25000);
+			Time.sleepUntil(() -> Trade.isOpen(), 100, 25000);
 		}
 		
 	}
@@ -57,7 +57,7 @@ public abstract class TradeAction extends Action{
 	
 	public void acceptFirstScreen() {
 		Trade.accept();
-		Time.sleepUntil(() -> Trade.isOpen(true), 7500);
+		Time.sleepUntil(() -> Trade.isOpen(true), 100, 7500);
 	}
 	
 	public void addItemToTrade(int itemID, int itemAmount) {
@@ -70,14 +70,14 @@ public abstract class TradeAction extends Action{
 					Log.fine(itemID + " Offer-X: " + itemAmount);
 					Trade.offer(itemID, p -> p.contains("Offer-X"));
 				}
-				if(Time.sleepUntil(()->Interfaces.isVisible(162, 44), 3000)) {
+				if(Time.sleepUntil(()->Interfaces.isVisible(162, 44), 200, 3000)) {
 					Log.fine("lets enter amount");
 					Keyboard.sendText(Integer.toString(itemAmount));
-					Time.sleep(1000);
+					Time.sleep(800, 2000);
 					Keyboard.pressEnter();
 				}
 			}
-			Time.sleepUntil(() -> getAmount(true, Exchange.getName(itemID), itemID) >= Math.min(count, itemAmount), 7500);
+			Time.sleepUntil(() -> getAmount(true, Exchange.getName(itemID), itemID) >= Math.min(count, itemAmount), 200, 7500);
 		}
 	}
 

@@ -12,7 +12,11 @@ import org.rspeer.ui.Log;
 
 public class RandomHandler {
 
+    public static boolean ENABLED = false;
+
     public static boolean handleRandom() {
+        if (!ENABLED)
+            return false;
         if(checkLamp())
             return true;
         Npc event = Npcs.getNearest(npc -> npc.containsAction("Dismiss") && npc.getTarget() == Players.getLocal());
@@ -58,7 +62,7 @@ public class RandomHandler {
         if (Inventory.contains("Lamp")) {
             if (!Interfaces.isOpen(134)) {
                 Inventory.getFirst("Lamp").interact("Rub");
-                Time.sleepUntil(() -> Interfaces.isOpen(134), 500, 10000);
+                Time.sleepUntil(() -> Interfaces.isOpen(134), 800, 10000);
             }
             if (Interfaces.isOpen(134)) {
                 InterfaceComponent prayer = Interfaces.getComponent(134, 9);//Get prayer XP from the lamp
@@ -66,7 +70,7 @@ public class RandomHandler {
                 prayer.interact("Advance Prayer");
                 Time.sleep(1000, 1500);
                 confirm.interact("Ok");
-                Time.sleepUntil(() -> !Interfaces.isOpen(134), 500, 10000);
+                Time.sleepUntil(() -> !Interfaces.isOpen(134), 800, 10000);
             }
             if (Dialog.canContinue()) {
                 Dialog.processContinue();
