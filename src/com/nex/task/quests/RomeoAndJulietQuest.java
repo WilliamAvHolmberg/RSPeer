@@ -5,11 +5,13 @@ import java.awt.Graphics2D;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import com.nex.task.SkillTask;
 import org.rspeer.runetek.api.commons.Time;
 import org.rspeer.runetek.api.component.Interfaces;
 import org.rspeer.runetek.api.component.tab.Inventory;
 import org.rspeer.runetek.api.input.Camera;
 import org.rspeer.runetek.api.movement.position.Position;
+import org.rspeer.runetek.api.scene.Players;
 import org.rspeer.runetek.event.types.ChatMessageEvent;
 import org.rspeer.runetek.event.types.ObjectSpawnEvent;
 import org.rspeer.runetek.event.types.RenderEvent;
@@ -53,7 +55,7 @@ public class RomeoAndJulietQuest extends QuestTask {
 			break;
 		case 30:
 			if(inCutScene()) {
-				Time.sleepUntil(() -> !inCutScene(), 50000);
+				Time.sleepUntil(() -> !inCutScene(), 200,50000);
 			}else{
 				walkAndTalkTo(new Position(3255, 3481, 0), "Father Lawrence");
 			}
@@ -89,8 +91,7 @@ public class RomeoAndJulietQuest extends QuestTask {
 
 	@Override
 	public String getLog() {
-		// TODO Auto-generated method stub
-		return null;
+		return SkillTask.getLog(getTaskID(), 0, 0);
 	}
 
 

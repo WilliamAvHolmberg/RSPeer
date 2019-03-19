@@ -69,7 +69,7 @@ public class CheckIfWeShallSellItems extends Action {
 			}
 		}else {
 			Bank.open();
-			Time.sleepUntil(() -> Bank.isOpen(), 5000);
+			Time.sleepUntil(() -> Bank.isOpen(), 200, 5000);
 		}
 
 	}
@@ -83,7 +83,6 @@ public class CheckIfWeShallSellItems extends Action {
 
 	public static long getNextCheckInMilli() {
 		return ((last_check + 1800 * 1000));
-
 	}
 
 	public static boolean dontSell = false;

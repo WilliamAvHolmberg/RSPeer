@@ -9,7 +9,7 @@ public class AttackStyleAction {
 	
 	public static void execute(Skill skill) {
 		Combat.select(getStyle(skill));
-		Time.sleepUntil(() -> isCorrect(skill), 5000);
+		Time.sleepUntil(() -> isCorrect(skill), 100, 5000);
 	}
 	
 	public static boolean isCorrect(Skill skill) {

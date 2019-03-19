@@ -1,27 +1,18 @@
 package com.nex.communication.message.request;
 
-import com.nex.communication.NexHelper;
-import com.nex.communication.message.DisconnectMessage;
-import com.nex.communication.message.respond.*;
 import com.nex.script.Nex;
-import com.nex.script.Quest;
+import com.nex.script.handler.RandomHandler;
+import com.nex.task.quests.events.EnableFixedModeEvent;
 import com.nex.task.quests.tutorial.TutorialIsland;
-import org.rspeer.runetek.api.commons.Time;
-import org.rspeer.runetek.api.commons.math.Random;
 import org.rspeer.runetek.api.component.tab.Inventory;
-import org.rspeer.runetek.api.component.tab.Skill;
-import org.rspeer.runetek.api.component.tab.Skills;
-import org.rspeer.runetek.api.scene.Players;
 import org.rspeer.ui.Log;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.Date;
 
 public class RequestAccountInfo extends NexRequest {
 
@@ -66,11 +57,22 @@ public class RequestAccountInfo extends NexRequest {
             Log.severe(ex);
         }
 
+        if (account_type == "MULE"){
+            Nex.MULE_THRESHOLD = 4_000_000;
+        }
+
         if(computer_name.equals("SERVER")){
-            java.util.Random r = new java.util.Random(Nex.USERNAME.hashCode());
-            TutorialIsland.DO_NOOB_FIGHTING = r.nextDouble() > 0.5;
-            if(Inventory.getCount(true, 995) > 5000)
-                TutorialIsland.DO_NOOB_FIGHTING = false;
+            RandomHandler.ENABLED = true;
+            EnableFixedModeEvent.EXIT_ON_CREATE = false;
+//            java.util.Random r = new java.util.Random(Nex.USERNAME.hashCode());
+//            TutorialIsland.DO_NOOB_FIGHTING = r.nextDouble() > 0.5;
+//            if(Inventory.getCount(true, 995) > 5000)
+//                TutorialIsland.DO_NOOB_FIGHTING = false;
+        }
+        else {
+            // Williams settings here :)
+            RandomHandler.ENABLED = false;
+            TutorialIsland.DO_NOOB_FIGHTING = false;
         }
     }
 

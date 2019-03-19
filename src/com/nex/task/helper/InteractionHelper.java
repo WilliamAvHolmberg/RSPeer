@@ -5,11 +5,15 @@ import org.rspeer.runetek.adapter.scene.SceneObject;
 import org.rspeer.runetek.api.Worlds;
 import org.rspeer.runetek.api.commons.Time;
 import org.rspeer.runetek.api.commons.math.Random;
+import org.rspeer.runetek.api.component.Dialog;
 import org.rspeer.runetek.api.component.WorldHopper;
 import org.rspeer.runetek.api.movement.position.Position;
 import org.rspeer.runetek.api.scene.Players;
 import org.rspeer.runetek.api.scene.SceneObjects;
 import org.rspeer.runetek.providers.RSWorld;
+
+import java.util.Arrays;
+import java.util.stream.Stream;
 
 public class InteractionHelper {
 
@@ -59,6 +63,8 @@ public class InteractionHelper {
     static int lastWorld;
     public static boolean HopRandomWorld(){
         if(!WorldHopper.isOpen()) {
+            if(Dialog.isOpen())
+                Dialog.processContinue();
             WorldHopper.open();
             if (!Time.sleepUntil(()->WorldHopper.isOpen(), 2000))
                 return false;
@@ -68,17 +74,53 @@ public class InteractionHelper {
         boolean members = curWorld.isMembers();
         boolean deadman = curWorld.isDeadman();
         if(WorldHopper.randomHop( (w)->w.isMembers() == members && w.isDeadman() == deadman )){
-            Time.sleepWhile(()->Worlds.getCurrent() == curWorld.getId(), 5000);
+            Time.sleepWhile(()->Worlds.getCurrent() == curWorld.getId(), 800, 5000);
             if(hasSwappedWorld()) return true;
         }
         return false;
     }
+    public static boolean HopToWorld(RSWorld world){
+        targetWorld = world;
+        return DoHop();
+    }
+    static RSWorld targetWorld;
+    static boolean DoHop(){
+        if(!WorldHopper.isOpen()) {
+            if(Dialog.isOpen())
+                Dialog.processContinue();
+            WorldHopper.open();
+            if (!Time.sleepUntil(()->WorldHopper.isOpen(), 2000))
+                return false;
+        }
+        if(hasSwappedWorld()) return true;
+        if(WorldHopper.hopTo(targetWorld)){
+            Time.sleepUntil(InteractionHelper::hasSwappedWorld, 800,5000);
+            if (hasSwappedWorld()) return true;
+        }
+        return false;
+    }
+    public static RSWorld GetPopularWorld(){
+        if(!WorldHopper.isOpen()) {
+            if(Dialog.isOpen())
+                Dialog.processContinue();
+            WorldHopper.open();
+            if (!Time.sleepUntil(()->WorldHopper.isOpen(), 200,2000))
+                return null;
+        }
+        RSWorld curWorld = Worlds.get(Worlds.getCurrent());
+        boolean members = curWorld.isMembers();
+        boolean deadman = curWorld.isDeadman();
+        RSWorld[] popularWorlds = Stream.of(Worlds.getLoaded())
+                .filter((w)->w.isMembers() == members && w.isDeadman() == deadman)
+                .sorted((w1, w2) -> Integer.compare(w2.getPopulation(), w1.getPopulation()))
+                .limit(4)
+                .toArray(RSWorld[]::new);
+        return popularWorlds[Random.nextInt(0, popularWorlds.length - 1)];
+    }
 
     static boolean hasSwappedWorld(){
         int curWorldIndex = Worlds.getCurrent();
-        if(lastWorld == 0) lastWorld = curWorldIndex;
-        if(lastWorld != curWorldIndex) return true;
-        return false;
+        return curWorldIndex == targetWorld.getId();
     }
 
 }

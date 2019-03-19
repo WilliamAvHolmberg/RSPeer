@@ -86,7 +86,7 @@ public final class SurvivalSection extends TutorialSection {
                 SceneObject gate = SceneObjects.getNearest("Gate");
                 if (gate != null && gate.distance() < 10) {
                     if (gate.interact("Open")) {
-                        Time.sleepUntil(() -> getProgress() == 130, 5000, 600);
+                        Time.sleepUntil(() -> getProgress() == 130, 800, 6000);
                     }
                 } else {
                     WalkTo.execute(GATE_POSITION);
@@ -99,7 +99,7 @@ public final class SurvivalSection extends TutorialSection {
         final int logCount = Inventory.getCount("Logs");
         SceneObject tree = SceneObjects.getNearest("Tree");
         if (tree != null && tree.interact("Chop down")) {
-            Time.sleepUntil(() -> Inventory.getCount("Logs") != logCount, 10_000, 600);
+            Time.sleepUntil(() -> Inventory.getCount("Logs") != logCount, 600, 10000);
         }
     }
 
@@ -107,7 +107,7 @@ public final class SurvivalSection extends TutorialSection {
         Npc fishingSpot = Npcs.getNearest("Fishing spot");
         if (fishingSpot != null && fishingSpot.interact("Net")) {
             long rawShrimpCount = Inventory.getCount("Raw shrimps");
-            Time.sleepUntil(() -> Inventory.getCount("Raw shrimps") > rawShrimpCount, 10_000, 600);
+            Time.sleepUntil(() -> Inventory.getCount("Raw shrimps") > rawShrimpCount, 600, 10000);
         }
     }
 
@@ -121,7 +121,7 @@ public final class SurvivalSection extends TutorialSection {
             Inventory.getFirst("Tinderbox").interact("Use");
         } else if (Inventory.getFirst("Logs").interact("Use")) {
             Position playerPos = Players.getLocal().getPosition();
-            Time.sleepUntil(() -> !Players.getLocal().getPosition().equals(playerPos), 10_000, 600);
+            Time.sleepUntil(() -> !Players.getLocal().getPosition().equals(playerPos), 600, 10000);
         }
     }
 
@@ -152,7 +152,7 @@ public final class SurvivalSection extends TutorialSection {
             SceneObject fire = SceneObjects.getNearest("Fire");
             if (fire != null && fire.interact("Use")) {
                 long rawShrimpCount = Inventory.getCount("Raw shrimps");
-                Time.sleepUntil(() -> Inventory.getCount("Raw shrimps") < rawShrimpCount, 5000, 600);
+                Time.sleepUntil(() -> Inventory.getCount("Raw shrimps") < rawShrimpCount, 800, 6000);
             }
         }
     }

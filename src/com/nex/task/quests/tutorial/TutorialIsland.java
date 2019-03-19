@@ -6,6 +6,7 @@ import java.awt.Graphics2D;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
+import com.nex.task.SkillTask;
 import org.rspeer.runetek.adapter.Interactable;
 import org.rspeer.runetek.adapter.component.InterfaceComponent;
 import org.rspeer.runetek.api.Varps;
@@ -14,6 +15,7 @@ import org.rspeer.runetek.api.component.Interfaces;
 import org.rspeer.runetek.api.component.tab.Skill;
 import org.rspeer.runetek.api.component.tab.Skills;
 import org.rspeer.runetek.api.movement.position.Area;
+import org.rspeer.runetek.api.movement.position.Position;
 import org.rspeer.runetek.api.scene.Players;
 import org.rspeer.runetek.event.types.ChatMessageEvent;
 import org.rspeer.runetek.event.types.ObjectSpawnEvent;
@@ -55,7 +57,7 @@ public final class TutorialIsland extends QuestTask {
     	if(!EnableFixedModeEvent.isFixedModeEnabled()) {
             EnableFixedModeEvent.execute();
         }
-        if(!WHOLE_ISLAND_AREA.contains(Players.getLocal()) && !UNDERGROUND_ISLAND_AREA.contains(Players.getLocal())) {
+        if(DO_NOOB_FIGHTING && !WHOLE_ISLAND_AREA.contains(Players.getLocal()) && !UNDERGROUND_ISLAND_AREA.contains(Players.getLocal())) {
             noobSection.onLoop();
             return Random.nextInt(200,600);
         }
@@ -121,8 +123,7 @@ public final class TutorialIsland extends QuestTask {
 
 	@Override
 	public String getLog() {
-		// TODO Auto-generated method stub
-		return null;
+        return SkillTask.getLog("", 0, 0);
 	}
 
 

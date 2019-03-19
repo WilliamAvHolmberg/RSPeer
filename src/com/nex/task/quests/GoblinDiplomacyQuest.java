@@ -6,6 +6,7 @@ import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import com.nex.task.SkillTask;
 import org.rspeer.runetek.api.component.tab.Inventory;
 import org.rspeer.runetek.api.movement.position.Position;
 import org.rspeer.runetek.event.types.ChatMessageEvent;
@@ -71,8 +72,7 @@ public class GoblinDiplomacyQuest extends QuestTask {
 
 	@Override
 	public String getLog() {
-		// TODO Auto-generated method stub
-		return null;
+		return SkillTask.getLog(getTaskID(), 0, 0);
 	}
 
 

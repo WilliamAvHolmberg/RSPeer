@@ -72,7 +72,7 @@ public final class NoobSection extends TutorialSection {
         if(!item.interact("Take"))
             return  false;
         int count = Inventory.getCount(true, name);
-        Time.sleepUntil(()->count != Inventory.getCount(true, name), 2000);
+        Time.sleepUntil(()->count != Inventory.getCount(true, name), 200, 2000);
         return true;
     }
 
@@ -117,13 +117,13 @@ public final class NoobSection extends TutorialSection {
         // noinspection unchecked
         Npc giantRat = Npcs.getNearest(npc -> npc.getName().equals(chosenMonster) && npc.getTarget() == null);
         if (giantRat != null && giantRat.interact("Attack")) {
-            Time.sleepUntil(() -> Players.getLocal().isAnimating(), 5000, 600);
+            Time.sleepUntil(() -> Players.getLocal().isAnimating(), 800, 6000);
         }
     }
 
     private void wieldItem(String name) {
         if (QuestAction.interactInventory("Wield", name)) {
-            Time.sleepUntil(() -> Equipment.contains(name), 1500);
+            Time.sleepUntil(() -> Equipment.contains(name), 800,2500);
         }
     }
 }

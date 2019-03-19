@@ -64,21 +64,21 @@ public class WoodcuttingTask extends SkillTask implements ChatMessageListener, I
 		GearItem itemToEquip = requiredGear.getItemToEquip();
 		if(itemToEquip != null) {
 			GearHandler.addItem(itemToEquip);
-		}else if (playerNeedAxe()) {
+		} else if (playerNeedAxe()) {
 			BankHandler.addBankEvent(new WithdrawItemEvent(new WithdrawItem(axe, 1,1)).setBankArea(bankArea));
 		} else if (Inventory.isFull()) {
 			BankHandler.addBankEvent(new DepositAllExcept(axe.getName()).setBankArea(bankArea));
+		} else if(checkChangeWorld()) {
 		}
 		else {
-			if(checkChangeWorld())
-				return 0;
 			CutTreeAction.cutTree(actionArea, treeName);
 		}
 		return 0;
 	}
 
+	static int jumpThreadhold = 2;
 	boolean checkChangeWorld(){
-		if(needToChangeWorld >= 4){
+		if(needToChangeWorld >= jumpThreadhold){
 			if(InteractionHelper.HopRandomWorld())
 				needToChangeWorld = 0;
 			return true;
@@ -94,8 +94,8 @@ public class WoodcuttingTask extends SkillTask implements ChatMessageListener, I
 				needToChangeWorld++;
 			else
 				needToChangeWorld--;
-		}else needToChangeWorld = 0;
-		if(needToChangeWorld >= 2)
+		}
+		if(needToChangeWorld >= jumpThreadhold)
 			return checkChangeWorld();
 		return false;
 	}
@@ -148,9 +148,7 @@ public class WoodcuttingTask extends SkillTask implements ChatMessageListener, I
 				event.getMessage().contains("You get")) {
 			Log.fine("We get log");
 			logsChopped ++;
-			
 		}
-		
 	}
 
 	@Override
@@ -167,8 +165,6 @@ public class WoodcuttingTask extends SkillTask implements ChatMessageListener, I
 		g.drawString("Ran for: " + getTimeRanMS(), 300, 375);
 		g.drawString("Logs per hour: " + getPerHour(logsChopped), 300, 400);
 		g.drawString("Money per hour: " + getMoneyPerHour(), 300, 425);
-
-		
 
 	}
 	

@@ -54,7 +54,7 @@ public class RequestTask extends NexRequest {
 				int coins = Inventory.getCount(true, 995);
 				if(RequestAccountInfo.account_type != null && RequestAccountInfo.account_type.equals("MULE") && coins > 100000 && TaskHandler.available_tasks.isEmpty()) {
 					Log.fine("Idle Mule");
-					if (coins > 4000000 || CheckIfWeShallSellItems.approachingBan() && coins > 2000000) {
+					if (coins > 4_000_000 || (CheckIfWeShallSellItems.approachingBan() && coins > 2_000_000)) {
 						TaskHandler.addTaskAndResetStack(new PrepareForMuleDepositTask());
 						return;
 					}
@@ -69,7 +69,10 @@ public class RequestTask extends NexRequest {
 					return;
 				}
 			}
-			NexHelper.pushMessage(new DisconnectMessage("Failed to get task"));
+			if (respond.contains("DISCONNECT"))
+				NexHelper.pushMessage(new DisconnectMessage("Told to Disconnect"));
+			else
+				NexHelper.pushMessage(new DisconnectMessage("No task supplied"));
 		} else {
 			timeAskedToDC = 0;
 			String[] parsedRespond = respond.split(":");
@@ -96,6 +99,9 @@ public class RequestTask extends NexRequest {
 				break;
 			case "FISHING":
 				NexHelper.pushMessage(new FishingRespond(respond));
+				break;
+			case "CUSTOM":
+				NexHelper.pushMessage(new CustomTaskRespond(respond));
 				break;
 			case "QUEST":
 				NexHelper.pushMessage(new QuestRespond(respond));

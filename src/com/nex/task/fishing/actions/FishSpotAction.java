@@ -43,7 +43,7 @@ public class FishSpotAction extends Action {
         } else {
             if (fishSpot != null && !Players.getLocal().isAnimating()) {
                 fishSpot.interact(fish.getAction());
-                Time.sleepUntil(() -> Players.getLocal().isAnimating() || Dialog.isOpen(), 1000);
+                Time.sleepUntil(() -> Players.getLocal().isAnimating() || Dialog.isOpen(), 200, 1000);
             }
 
         }

@@ -114,10 +114,10 @@ public final class MiningSection extends TutorialSection {
 		if (Inventory.getSelectedItem() == null) {
 			QuestAction.interactInventory("Use", "Tin ore");
 		} else if (SceneObjects.getNearest("Furnace").interact("Use")) {
-			Time.sleepUntil(() -> Inventory.contains("Bronze bar"), 5000, 600);
+			Time.sleepUntil(() -> Inventory.contains("Bronze bar"), 800, 30000);
 			if(Production.isOpen()) {
 				Production.initiate();
-				Time.sleepUntil(() -> Inventory.contains("Bronze bar"), 5000, 600);
+				Time.sleepUntil(() -> Inventory.contains("Bronze bar"), 800, 30000);
 			}
 		}
 	}
@@ -125,7 +125,7 @@ public final class MiningSection extends TutorialSection {
 	private void prospect(int id) {
 		SceneObject closestRock = SceneObjects.getNearest(id);
 		if (closestRock != null && closestRock.interact("Prospect")) {
-			Time.sleepUntil(this::pendingContinue, 6000, 600);
+			Time.sleepUntil(this::pendingContinue, 600, 6000);
 		}
 	}
 
@@ -133,8 +133,8 @@ public final class MiningSection extends TutorialSection {
 		int count = Inventory.getCount(id);
 		SceneObject closestRock = SceneObjects.getNearest(id);
 		if (closestRock != null && closestRock.interact("Mine")) {
-			Time.sleepUntil(()->Inventory.getCount(id) != count, 6000, 600);
-			Time.sleepUntil(this::pendingContinue, 6000, 600);
+			Time.sleepUntil(()->Inventory.getCount(id) != count, 600, 6000);
+			Time.sleepUntil(this::pendingContinue, 600, 6000);
 		}
 	}
 

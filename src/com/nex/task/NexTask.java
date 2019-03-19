@@ -75,7 +75,7 @@ public abstract class NexTask implements RenderListener, ChatMessageListener, Ob
 		
 	}
 	public void setTaskID(String currentTaskID) {
-		this.taskID= currentTaskID;	
+		this.taskID = currentTaskID;
 	}
 	
 	public long getTimeLeft() {
@@ -86,6 +86,6 @@ public abstract class NexTask implements RenderListener, ChatMessageListener, Ob
 		if(taskID != null) {
 			return taskID;
 		}
-		return "0";
+		return "";
 	}
 }

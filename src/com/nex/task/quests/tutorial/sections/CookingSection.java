@@ -54,7 +54,7 @@ public class CookingSection extends TutorialSection {
         if (Inventory.getSelectedItem() == null) {
         	QuestAction.interactInventory("Use", "Pot of flour");
         } else if (QuestAction.interactInventory("Use", "Bucket of water")) {
-            Time.sleepUntil(() -> Inventory.contains("Bread dough"), 3000, 600);
+            Time.sleepUntil(() -> Inventory.contains("Bread dough"), 300, 6000);
         }
     }
 
@@ -62,7 +62,7 @@ public class CookingSection extends TutorialSection {
         if (Inventory.getSelectedItem() == null) {
             QuestAction.interactInventory("Use", "Bread dough");
         } else if (SceneObjects.getNearest("Range").click()) {
-            Time.sleepUntil(() -> Inventory.contains("Bread"), 5000, 600);
+            Time.sleepUntil(() -> Inventory.contains("Bread"), 800, 6000);
         }
     }
 }

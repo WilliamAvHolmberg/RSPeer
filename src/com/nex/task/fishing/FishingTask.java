@@ -180,13 +180,13 @@ public class FishingTask extends SkillTask implements ChatMessageListener, IMone
         if (Players.getLocal().getPosition().getFloorLevel() == 1) {
             if(Dialog.isOpen()) {
                 Dialog.processContinue();
-                Time.sleepWhile(()->Dialog.isOpen(), 100);
+                Time.sleepWhile(Dialog::isOpen, 200, 2100);
             }
             SceneObject gangplank = SceneObjects.getNearest("Gangplank");
             if (gangplank != null) {
                 gangplank.interact("Cross");
                 Time.sleep(800, 1200);
-                Time.sleepWhile(()->Players.getLocal().isMoving() || Players.getLocal().isAnimating(), 3000);
+                Time.sleepWhile(()->Players.getLocal().isMoving() || Players.getLocal().isAnimating(), 200, 3000);
             }
         }
         return false;
@@ -215,9 +215,9 @@ public class FishingTask extends SkillTask implements ChatMessageListener, IMone
         }
         if(!sailor.interact("Pay-fare"))
             return true;
-        if(!Time.sleepWhile(()->Players.getLocal().isMoving(), 6000))
+        if(!Time.sleepWhile(()->Players.getLocal().isMoving(), 200, 6000))
             return true;
-        if(!Time.sleepUntil(()-> Dialog.isOpen(), 6000))
+        if(!Time.sleepUntil(()-> Dialog.isOpen(), 200, 6000))
             return true;
         while(Dialog.isOpen()){
             if(Dialog.isProcessing()){}

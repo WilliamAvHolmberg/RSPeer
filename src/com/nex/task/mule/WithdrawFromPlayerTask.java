@@ -47,7 +47,7 @@ public class WithdrawFromPlayerTask extends Mule {
 			} else {
 				WorldHopper.hopTo(world);
 				Time.sleepUntil(() -> Worlds.getCurrent() == world, 15000);
-				Time.sleep(10000);
+				Time.sleep(2000, 4000);
 			}
 		}
 		else if (getMule(getTradeName()) != null) {

@@ -5,6 +5,8 @@ import com.nex.script.Exchange;
 public class GEItem extends RequiredItem {
 
 	private int itemPrice;
+	private int originalItemPrice;
+	private int timesRaised = 0;
 	
 	public GEItem(RequiredItem requiredItem) {
 		super(requiredItem.getItemID(), requiredItem.getAmount(), requiredItem.getBuyAmount(), requiredItem.getItemName());
@@ -17,6 +19,8 @@ public class GEItem extends RequiredItem {
 
 	private void setItemPrice(int price) {
 		this.itemPrice = price;
+		if(originalItemPrice == 0)
+			originalItemPrice = price;
 	}
 	
 	public int getTotalPrice() {
@@ -29,9 +33,16 @@ public class GEItem extends RequiredItem {
 		}
 		return itemPrice;
 	}
+	public int getOriginalItemPrice(){
+		return originalItemPrice;
+	}
+	public int getTimesRaised(){
+		return timesRaised;
+	}
 
 	public void raiseItemPrice() {
 		this.itemPrice = (int) (this.itemPrice * 1.25) + 1;
+		timesRaised++;
 	}
 
 	

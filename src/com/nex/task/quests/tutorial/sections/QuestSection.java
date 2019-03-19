@@ -58,7 +58,7 @@ public final class QuestSection extends TutorialSection {
                 break;
             case 250:
                 if (SceneObjects.getNearest("Ladder").interact("Climb-down")) {
-                    Time.sleepUntil(() -> getProgress() != 250, 5000, 600);
+                    Time.sleepUntil(() -> getProgress() != 250, 800, 6000);
                 }
                 break;
         }
