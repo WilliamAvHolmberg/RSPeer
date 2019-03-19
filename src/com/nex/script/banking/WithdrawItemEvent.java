@@ -108,7 +108,7 @@ public class WithdrawItemEvent extends BankEvent {
 
 	@Override
 	public boolean isFinished() {
-		if (Inventory.getCount(id, 1) >= amount) {
+		if (Inventory.getCount(true, id) >= amount) {
 			return true;
 		}
 		return false;
