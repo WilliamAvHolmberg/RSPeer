@@ -75,7 +75,7 @@ public class CombatTask extends SkillTask {
 		// player has gear
 		// player has inv
 		Log.fine("in combatloop");
-		return 0;
+		return 600;
 	}
 
 	private boolean shallDepositItem() {

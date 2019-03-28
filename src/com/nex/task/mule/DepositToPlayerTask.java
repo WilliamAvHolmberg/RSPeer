@@ -48,14 +48,6 @@ public class DepositToPlayerTask extends Mule {
 	DepositItemToPlayer tradeWithMule;
 	public DepositToPlayerTask(int world, int itemID, int itemAmount, String tradeName, Area playerPos) {
 		super(world, itemID, itemAmount, tradeName, playerPos);
-
-		if(itemID == 995 && RequestAccountInfo.account_type == "MASTER_MULE") {
-			int coins = Inventory.getCount(true, 995);
-			if(coins > 10_000_000) itemAmount = 500_000;
-			else if(coins > 1_000_000) itemAmount = 200_000;
-			else if(coins > 500_000) itemAmount = 100_000;
-		}
-
 		tradeWithMule = new DepositItemToPlayer(tradeName, itemID, itemAmount);
 	}
 

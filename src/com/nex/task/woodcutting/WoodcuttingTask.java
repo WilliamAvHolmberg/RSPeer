@@ -7,6 +7,7 @@ import com.nex.task.helper.InteractionHelper;
 import org.rspeer.runetek.adapter.scene.Player;
 import org.rspeer.runetek.adapter.scene.SceneObject;
 import org.rspeer.runetek.api.Worlds;
+import org.rspeer.runetek.api.component.Bank;
 import org.rspeer.runetek.api.component.WorldHopper;
 import org.rspeer.runetek.api.component.tab.Equipment;
 import org.rspeer.runetek.api.component.tab.Inventory;
@@ -44,8 +45,9 @@ public class WoodcuttingTask extends SkillTask implements ChatMessageListener, I
 	int logID;
 	int logsChopped;
 	int logPrice;
+	CutTreeAction cutTreeAction = new CutTreeAction();
 
-	public WoodcuttingTask(Area actionArea, Area bankArea, String treeName,RSItem axe) {
+	public WoodcuttingTask(Area actionArea, Area bankArea, String treeName, RSItem axe) {
 		setActionArea(actionArea);
 		setBankArea(bankArea);
 		setTreeName(treeName);
@@ -66,14 +68,15 @@ public class WoodcuttingTask extends SkillTask implements ChatMessageListener, I
 			GearHandler.addItem(itemToEquip);
 		} else if (playerNeedAxe()) {
 			BankHandler.addBankEvent(new WithdrawItemEvent(new WithdrawItem(axe, 1,1)).setBankArea(bankArea));
-		} else if (Inventory.isFull()) {
+		}
+		else if (Inventory.isFull()) {
 			BankHandler.addBankEvent(new DepositAllExcept(axe.getName()).setBankArea(bankArea));
 		} else if(checkChangeWorld()) {
 		}
 		else {
-			CutTreeAction.cutTree(actionArea, treeName);
+			return cutTreeAction.cutTree(actionArea, treeName);
 		}
-		return 0;
+		return 600;
 	}
 
 	static int jumpThreadhold = 2;
@@ -153,7 +156,7 @@ public class WoodcuttingTask extends SkillTask implements ChatMessageListener, I
 
 	@Override
 	public void notify(ObjectSpawnEvent spawnEvent) {
-		CutTreeAction.get().notify(spawnEvent);
+		cutTreeAction.notify(spawnEvent);
 	}
 	
 	@Override
@@ -162,7 +165,7 @@ public class WoodcuttingTask extends SkillTask implements ChatMessageListener, I
 		g.drawString("Current Task: " + getSkill() + "->" + getWantedLevel(), 300, 300);
 		g.drawString("Log price: " + logPrice, 300, 325);
 		g.drawString("Logs chopped: " + logsChopped, 300, 350);
-		g.drawString("Ran for: " + getTimeRanMS(), 300, 375);
+		g.drawString("Ran for: " + getTimeRanString(), 300, 375);
 		g.drawString("Logs per hour: " + getPerHour(logsChopped), 300, 400);
 		g.drawString("Money per hour: " + getMoneyPerHour(), 300, 425);
 

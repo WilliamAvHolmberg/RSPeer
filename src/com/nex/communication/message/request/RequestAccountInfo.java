@@ -5,6 +5,8 @@ import com.nex.script.handler.RandomHandler;
 import com.nex.task.quests.events.EnableFixedModeEvent;
 import com.nex.task.quests.tutorial.TutorialIsland;
 import org.rspeer.runetek.api.component.tab.Inventory;
+import org.rspeer.runetek.api.component.tab.Skill;
+import org.rspeer.runetek.api.component.tab.Skills;
 import org.rspeer.ui.Log;
 
 import java.io.BufferedReader;
@@ -57,17 +59,21 @@ public class RequestAccountInfo extends NexRequest {
             Log.severe(ex);
         }
 
-        if (account_type == "MULE"){
+        boolean isMule = "MULE".equalsIgnoreCase(account_type);
+        boolean isSlave = "SLAVE".equalsIgnoreCase(account_type);
+        if (isMule){
             Nex.MULE_THRESHOLD = 4_000_000;
+            Nex.MONEY_NEEDED = 1_500_000;
         }
 
-        if(computer_name.equals("SERVER")){
+        if("SERVER".equalsIgnoreCase(computer_name) || "SERVER2".equalsIgnoreCase(computer_name)){
             RandomHandler.ENABLED = true;
             EnableFixedModeEvent.EXIT_ON_CREATE = false;
-//            java.util.Random r = new java.util.Random(Nex.USERNAME.hashCode());
-//            TutorialIsland.DO_NOOB_FIGHTING = r.nextDouble() > 0.5;
-//            if(Inventory.getCount(true, 995) > 5000)
-//                TutorialIsland.DO_NOOB_FIGHTING = false;
+            java.util.Random r = new java.util.Random(Nex.USERNAME.length());
+            Log.fine("Time since big ban " + Nex.timeSinceBanWave());
+            TutorialIsland.DO_NOOB_FIGHTING = isSlave && Nex.isHoursAfterBan();
+            if(Inventory.getCount(true, 995) > 100 || Skills.getLevel(Skill.WOODCUTTING) > 1)
+                TutorialIsland.DO_NOOB_FIGHTING = false;
         }
         else {
             // Williams settings here :)

@@ -6,7 +6,8 @@ import org.rspeer.runetek.api.Varps;
 public enum Quest {
 
    RESTLESS_GHOST(107,5), ERNEST_THE_CHICKEN(32,3),ROMEO_JULIET(144, 100),
-    GOBLIN_DIPLOMACY(62,6), TUTORIAL_ISLAND(281,1000), COOKS_ASSISTANT(29,2);
+    GOBLIN_DIPLOMACY(62,6), TUTORIAL_ISLAND(281,1000), COOKS_ASSISTANT(29,2),
+    DORICS_QUEST(31,100), IMP_CATCHER(160,2), SHEEP_SHEARER(179,21);
 
     private final int varpId;
 	private int completedValue;

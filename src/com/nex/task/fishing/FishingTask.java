@@ -173,7 +173,7 @@ public class FishingTask extends SkillTask implements ChatMessageListener, IMone
         else {
             FishSpotAction.fish(selectedFish);
         }
-        return 0;
+        return 600;
     }
 
     private boolean getOffBoat() {
@@ -277,7 +277,7 @@ public class FishingTask extends SkillTask implements ChatMessageListener, IMone
 
     @Override
     public void notify(ObjectSpawnEvent spawnEvent) {
-        CutTreeAction.get().notify(spawnEvent);
+        //CutTreeAction.get().notify(spawnEvent);
     }
 
     @Override
@@ -287,7 +287,7 @@ public class FishingTask extends SkillTask implements ChatMessageListener, IMone
         g.drawString("Current Task: " + getSkill() + "->" + getWantedLevel(), 300, y+=25);
         g.drawString("Fish price: " + priceEa, 300, y+=25);
         g.drawString("Fish caught: " + fishCaught, 300, y+=25);
-        g.drawString("Ran for: " + getTimeRanMS(), 300, y+=25);
+        g.drawString("Ran for: " + getTimeRanString(), 300, y+=25);
         g.drawString("Fish per hour: " + getPerHour(fishCaught), 300, y+=25);
         g.drawString("Money per hour: " + getMoneyPerHour(), 300, y+=25);
     }

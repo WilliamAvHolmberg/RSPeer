@@ -14,14 +14,19 @@ public class RandomHandler {
 
     public static boolean ENABLED = false;
 
+    static long lastCheckedRandoms = 0;
     public static boolean handleRandom() {
         if (!ENABLED)
+            return false;
+        if(System.currentTimeMillis() - lastCheckedRandoms < 5000)
             return false;
         if(checkLamp())
             return true;
         Npc event = Npcs.getNearest(npc -> npc.containsAction("Dismiss") && npc.getTarget() == Players.getLocal());
-        if(event == null)
+        if(event == null) {
+            lastCheckedRandoms = System.currentTimeMillis();
             return false;
+        }
 
         String eventName = event.getName();
         if ((eventName.equals("Genie") || eventName.equals("Drunken Dwarf") || eventName.equals("Dr Jekyll") || eventName.equals("Rick Turpentine")) && event.isPositionWalkable()) {

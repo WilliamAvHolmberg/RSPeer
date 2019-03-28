@@ -58,7 +58,7 @@ public class Exchange {
 	}
 
 	public static int getID(String itemName){
-		if(itemName == "Coins") return 995;
+		if(itemName.equals("Coins")) return 995;
 		int itemID = 0;
 		if (ids.containsValue(itemName)) {
 			return ids.get(itemName);

@@ -77,7 +77,7 @@ public abstract class TaskRespond extends NexMessage {
 		String unParsedItem;
 		String itemName;
 		int itemID;
-		for(int i = 0; i<EquipmentSlot.values().length; i++) {
+		for(int i = 0; i < EquipmentSlot.values().length; i++) {
 			unParsedItem = listOfParsedGear.get(i);
 			if(!unParsedItem.toLowerCase().equals("none")) {
 				itemName = unParsedItem.split(",")[0];

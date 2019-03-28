@@ -46,7 +46,6 @@ public class CooksAssistantQuest extends QuestTask {
 			talkToNpc("Cook");
 		}
 
-
 		return 200;
 	}
 

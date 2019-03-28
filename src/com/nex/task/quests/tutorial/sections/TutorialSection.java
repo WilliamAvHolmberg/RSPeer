@@ -5,6 +5,7 @@ package com.nex.task.quests.tutorial.sections;
 import java.awt.event.KeyEvent;
 import java.util.function.Predicate;
 
+import com.nex.script.walking.WalkTo;
 import org.rspeer.runetek.adapter.component.InterfaceComponent;
 import org.rspeer.runetek.adapter.scene.Npc;
 import org.rspeer.runetek.adapter.scene.SceneObject;
@@ -43,7 +44,12 @@ public abstract class TutorialSection extends QuestAction{
  
 
     protected final void talkToInstructor() {
-        if (!Dialog.isOpen() && getInstructor() != null && getInstructor().interact("Talk-to")) {
+        Npc instructor = getInstructor();
+        if(instructor == null) return;
+        if (!instructor.isPositionInteractable()) {
+            WalkTo.execute(instructor.getPosition());
+        }
+        else if (!Dialog.isOpen() && instructor != null && instructor.interact("Talk-to")) {
             Time.sleepUntil(this::pendingContinue, 800, 6000);
         }
     }

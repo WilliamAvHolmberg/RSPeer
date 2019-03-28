@@ -45,44 +45,44 @@ public class RomeoAndJulietQuest extends QuestTask {
 	public int loop() {
 		Log.fine("ROMEO");
 		switch (getCurrentSection()) {
-		case 0:
-			
-			walkAndTalkTo(walkToJulietEvent, "Juliet", new NexInventory().addItem(cadavaBerries),
-					"I guess I could look for him for you.");
-			break;
-		case 20:
-			walkAndTalkTo(walkToRomeoEvent, "Romeo", "I guess I could look for him for you.");
-			break;
-		case 30:
-			if(inCutScene()) {
-				Time.sleepUntil(() -> !inCutScene(), 200,50000);
-			}else{
-				walkAndTalkTo(new Position(3255, 3481, 0), "Father Lawrence");
-			}
-			break;
-		case 40:
-			walkAndTalkTo(new Position(3195, 3404, 0), "Apothecary", "Talk about something else.", "Talk about Romeo & Juliet.", "Ok, thanks.");
-			break;
-		case 50:
-			if (!Inventory.contains("Cadava potion")) {
-				walkAndTalkTo(new Position(3195, 3404, 0), "Apothecary", new NexInventory().addItem(cadavaBerries), "Talk about something else.", "Talk about Romeo & Juliet.","Ok, thanks.");
-				Time.sleep(1000);
-			}else {
-				walkAndTalkTo(walkToJulietEvent, "Juliet", new NexInventory().addItem(cadavaPotion));
-				return 2500;
-			}
-			break;
-		case 60:
-			if(inCutScene()) { //cutscene
-				if(pendingContinue()) {
-					selectContinue();
+			case 0:
+
+				walkAndTalkTo(walkToJulietEvent, "Juliet", new NexInventory().addItem(cadavaBerries),
+						"I guess I could look for him for you.");
+				break;
+			case 20:
+				walkAndTalkTo(walkToRomeoEvent, "Romeo", "I guess I could look for him for you.");
+				break;
+			case 30:
+				if (inCutScene()) {
+					Time.sleepUntil(() -> !inCutScene(), 200, 50000);
+				} else {
+					walkAndTalkTo(new Position(3255, 3481, 0), "Father Lawrence");
 				}
-			}else {
-			walkAndTalkTo(walkToRomeoEvent, "Romeo");
-			}
+				break;
+			case 40:
+				walkAndTalkTo(new Position(3195, 3404, 0), "Apothecary", "Talk about something else.", "Talk about Romeo & Juliet.", "Ok, thanks.");
+				break;
+			case 50:
+				if (!Inventory.contains("Cadava potion")) {
+					walkAndTalkTo(new Position(3195, 3404, 0), "Apothecary", new NexInventory().addItem(cadavaBerries), "Talk about something else.", "Talk about Romeo & Juliet.", "Ok, thanks.");
+					Time.sleep(1000);
+				} else {
+					walkAndTalkTo(walkToJulietEvent, "Juliet", new NexInventory().addItem(cadavaPotion));
+					return 2500;
+				}
+				break;
+			case 60:
+				if (inCutScene()) { //cutscene
+					if (pendingContinue()) {
+						selectContinue();
+					}
+				} else {
+					walkAndTalkTo(walkToRomeoEvent, "Romeo");
+				}
 		}
 
-		return 1000;
+		return 600;
 	}
 
 	public int getQuestConfig() {

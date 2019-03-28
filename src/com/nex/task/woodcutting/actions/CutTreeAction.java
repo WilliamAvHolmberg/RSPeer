@@ -13,39 +13,46 @@ import org.rspeer.runetek.api.movement.position.Area;
 import org.rspeer.runetek.api.movement.position.Position;
 import org.rspeer.runetek.api.scene.Players;
 import org.rspeer.runetek.api.scene.SceneObjects;
+import org.rspeer.runetek.event.listeners.AnimationListener;
 import org.rspeer.runetek.event.listeners.ObjectSpawnListener;
+import org.rspeer.runetek.event.types.AnimationEvent;
 import org.rspeer.runetek.event.types.ObjectSpawnEvent;
 import org.rspeer.ui.Log;
 
 import com.nex.task.action.Action;
 
-public class CutTreeAction extends Action implements ObjectSpawnListener{
+public class CutTreeAction extends Action implements ObjectSpawnListener {
 
-	private static final String CUT_ACTION = "Chop down";
-	public static CutTreeAction instance = new CutTreeAction();
-	public static SceneObject currentTree;
+	private final String CUT_ACTION = "Chop down";
+	//public static CutTreeAction instance = new CutTreeAction();
+	public SceneObject currentTree;
 	
 
-	static Position targetPos = null;
-	static Area lastArea = null;
+	Position targetPos = null;
+	Area lastArea = null;
 
-	public static CutTreeAction get() {
-		return instance;
-	}
-	public static void cutTree(Area actionArea, String treeName) {
-		if(actionArea.contains(Players.getLocal())) {
+	public int cutTree(Area actionArea, String treeName) {
+		if(lastArea != actionArea)
+			targetPos = null;
+		lastArea = actionArea;
+		if(actionArea.contains(Players.getLocal()) || (targetPos != null && targetPos.distance() < 15)) {
 			interactWithTree(actionArea, treeName);
-		}else {
-			WalkTo.execute(actionArea.getCenter());
+			return 600;
+		} else {
+
+			targetPos = actionArea.getCenter();
+			WalkTo.execute(targetPos, 4);
+			return 600;
 		}
 	}
-	private static void interactWithTree(Area actionArea, String treeName) {
+	private boolean interactWithTree(Area actionArea, String treeName) {
 		if(currentTree == null || shouldCut()) {
 			currentTree = SceneObjects.getNearest(getAvailableTrees(actionArea, treeName));
 			if(currentTree != null) {
-				currentTree.interact(CUT_ACTION);
-			}	
+				return currentTree.interact(CUT_ACTION);
+			}
 		}
+		return false;
 	}
 	
 	private static boolean shouldCut() {

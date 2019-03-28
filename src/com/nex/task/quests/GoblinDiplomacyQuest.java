@@ -6,9 +6,13 @@ import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import com.nex.script.walking.WalkTo;
 import com.nex.task.SkillTask;
+import org.rspeer.runetek.api.Game;
 import org.rspeer.runetek.api.component.tab.Inventory;
 import org.rspeer.runetek.api.movement.position.Position;
+import org.rspeer.runetek.api.scene.Players;
+import org.rspeer.runetek.api.scene.SceneObjects;
 import org.rspeer.runetek.event.types.ChatMessageEvent;
 import org.rspeer.runetek.event.types.ObjectSpawnEvent;
 import org.rspeer.runetek.event.types.RenderEvent;
@@ -18,6 +22,7 @@ import com.nex.script.inventory.InventoryItem;
 import com.nex.script.inventory.NexInventory;
 import com.nex.script.items.RSItem;
 import com.nex.task.QuestTask;
+import org.rspeer.ui.Log;
 
 
 public class GoblinDiplomacyQuest extends QuestTask {
@@ -31,9 +36,17 @@ public class GoblinDiplomacyQuest extends QuestTask {
 	private InventoryItem orangeGoblinMail = new InventoryItem(1, new RSItem("Orange goblin mail", 286), 1);
 	private InventoryItem blueGoblinMail = new InventoryItem(1, new RSItem("Blue goblin mail", 287), 1);
 
+	@Override
+	public boolean isFinished() {
+		return Quest.GOBLIN_DIPLOMACY.isCompleted() && !(Game.isInCutscene() && SceneObjects.getNearest(16560) != null);
+	}
 
 	@Override
 	public int loop() {
+		if(Quest.GOBLIN_DIPLOMACY.isCompleted()) {
+			Log.fine("stuck");
+			WalkTo.execute(Players.getLocal().getPosition().randomize(3));
+		}
 
 		switch (getCurrentSection()) {
 		case 0:

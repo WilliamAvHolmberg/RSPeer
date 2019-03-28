@@ -4,11 +4,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.nex.communication.message.request.RequestAccountInfo;
+import com.nex.handler.gear.Gear;
+import com.nex.handler.gear.GearHandler;
+import com.nex.handler.gear.GearItem;
 import com.nex.script.Quest;
+import com.nex.script.banking.BankEvent;
+import com.nex.script.banking.BankHandler;
+import com.nex.script.banking.WithdrawItemEvent;
 import com.nex.script.inventory.InventoryItem;
 import com.nex.script.items.DepositItem;
 import com.nex.task.IHandlerTask;
+import com.nex.task.NexTask;
 import com.nex.task.actions.mule.CheckIfWeShallSellItems;
+import com.nex.task.woodcutting.WoodcuttingTask;
 import org.rspeer.runetek.adapter.component.Item;
 import org.rspeer.runetek.adapter.scene.SceneObject;
 import org.rspeer.runetek.api.commons.Time;
@@ -116,6 +124,38 @@ public class BuyItemEvent implements IHandlerTask {
 	}
 
 	private void buyItem() {
+
+		try {
+			if(item.getItemPrice() > 1000) {
+				Log.fine("Item is expensive - Num Tasks:" + TaskHandler.available_tasks.size());
+				NexTask task = TaskHandler.getCurrentTask();
+				Log.fine("Task is " + task.getClass());
+				if (task != null && task instanceof WoodcuttingTask) {
+					Gear gear = task.getGear();
+					if (gear != null) {
+						for (GearItem gearItem : gear.getGear().values()) {
+							if (gearItem == null || gearItem.getItem() == null) continue;
+							//Log.fine("is " + gearItem.getItem().getName() + " = " + item.getItemName());
+							if (gearItem.getItem().getId() == item.getItemID() ||
+									gearItem.getItem().getName() == item.getItemName()) {
+								Log.fine("YES! Lets not buy " + item.getItemName());
+								gear.clearSlot(gearItem.getSlot());
+								finished = true;
+								BuyItemHandler.removeItem(this);
+								GearHandler.removeItem(gearItem);
+								WithdrawItemEvent withdrawEvent = (WithdrawItemEvent)BankHandler.getWithdrawEvent();
+								if(withdrawEvent != null && withdrawEvent.getRequiredItem().getItemID() == item.getItemID())
+									BankHandler.removeBankEvent(withdrawEvent);
+								return;
+							}
+						}
+					}
+				}
+			}
+		}catch (Exception ex){
+			Log.severe(ex);
+		}
+
 		if (Inventory.getCount(true, 995) < item.getTotalPrice()) {
 			withdrawnMoney = false;
 		} else if (GrandExchangeSetup.isOpen()) {
@@ -148,6 +188,7 @@ public class BuyItemEvent implements IHandlerTask {
 		int waitTime = Math.min(8, item.getTimesRaised() + 2) * 1000;
 		if(offers.stream().anyMatch(offer-> offer.getProgress() == Progress.IN_PROGRESS)) {
 			Time.sleepUntil(()-> GrandExchange.getOffers(offer->offer.getProgress() == Progress.FINISHED).length > 0, 1000, waitTime);
+			GrandExchange.collectAll(false);
 			offers = getNonEmptyOffers();
 		}
 		for (RSGrandExchangeOffer offer : offers) {
@@ -176,7 +217,7 @@ public class BuyItemEvent implements IHandlerTask {
 		Log.fine("existing offers");
 	}
 
-	static int withdrawAmount = Random.nextInt(12, 15) * 1000;
+	int withdrawAmount = Nex.MIN_WITHDRAW + (Random.nextInt(2, 5) * 1000);
 	private void withdrawMoney() {
 		if (!Bank.isOpen()) {
 			Bank.open();
@@ -192,8 +233,10 @@ public class BuyItemEvent implements IHandlerTask {
 				if (amount < withdrawAmount) {
 					amount = withdrawAmount;
 				}
-				if(RequestAccountInfo.account_type == "MULE" && amount < 80000)
-					amount = 50000;
+				if("MULE".equalsIgnoreCase(RequestAccountInfo.account_type)) {
+					if(amount < 100000)
+						amount = 100000;
+				}
 
 				Log.fine("Not enough money. Requesting " + amount);
 				NexHelper.pushMessage(new MuleRequest("MULE_WITHDRAW:995:" + amount));

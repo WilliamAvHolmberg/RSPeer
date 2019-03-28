@@ -1,6 +1,7 @@
 package com.nex.task;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.rspeer.runetek.api.component.tab.Skill;
 import org.rspeer.runetek.event.listeners.ChatMessageListener;
@@ -44,6 +45,9 @@ public abstract class NexTask implements RenderListener, ChatMessageListener, Ob
 	protected void addRequiredItem(RSItem item) {
 		requiredItems.add(item);
 	}
+	protected void removeRequiredItem(RSItem item) {
+		requiredItems.remove(item);
+	}
 	public List<RSItem> getRequiredItems(){
 		List<RSItem> reqItems = requiredItems;
 		if(requiredInventory != null && requiredInventory.getItems().size() > 0) {
@@ -62,6 +66,36 @@ public abstract class NexTask implements RenderListener, ChatMessageListener, Ob
 	
 	public long getTimeRanMS() {
 		return System.currentTimeMillis() - timeStarted;
+	}
+	public String getTimeRanString() {
+		return FormatTime(System.currentTimeMillis() - timeStarted);
+	}
+	public static String FormatTime(long r){
+		long hours = TimeUnit.MILLISECONDS.toHours(r);
+		long minutes = TimeUnit.MILLISECONDS.toMinutes(r) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(r));
+		long seconds = TimeUnit.MILLISECONDS.toSeconds(r) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(r));
+		String res = "";
+
+		//Pretty Print the time so it will always be in this format 00:00:00
+		if( hours < 10 ){
+			res = res + "0" + hours + ":";
+		}
+		else{
+			res = res + hours + ":";
+		}
+		if(minutes < 10){
+			res = res + "0" + minutes + ":";
+		}
+		else{
+			res = res + minutes + ":";
+		}
+		if(seconds < 10){
+			res = res + "0" + seconds;
+		}
+		else{
+			res = res + seconds;
+		}
+		return res;
 	}
 	
 	public long getPerHour(long amount) {

@@ -3,6 +3,7 @@ package com.nex.task.quests.tutorial.sections;
 
 import org.rspeer.runetek.adapter.component.InterfaceComponent;
 import org.rspeer.runetek.api.commons.Time;
+import org.rspeer.runetek.api.commons.math.Random;
 import org.rspeer.runetek.api.component.Dialog;
 import org.rspeer.runetek.api.component.Interfaces;
 import org.rspeer.runetek.api.component.tab.Tab;
@@ -22,7 +23,6 @@ import javax.swing.plaf.basic.BasicTabbedPaneUI.TabSelectionHandler;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Random;
 import java.util.stream.Collectors;
 
 public final class RuneScapeGuideSection extends TutorialSection {
@@ -81,6 +81,7 @@ public final class RuneScapeGuideSection extends TutorialSection {
             	    doDefault();
                 break;
             case 3:
+                Tabs.open(Tab.OPTIONS);
                 if(startedOpeningOptions == 0) startedOpeningOptions = System.currentTimeMillis();
                 if(System.currentTimeMillis() - startedOpeningOptions > 10000) {
                     talkToInstructor();
@@ -90,9 +91,6 @@ public final class RuneScapeGuideSection extends TutorialSection {
                 }
                 if (!EnableFixedModeEvent.isFixedModeEnabled()) {
                     EnableFixedModeEvent.execute();
-                } else {
-                    if (!Tabs.isOpen(Tab.OPTIONS))
-                	    Tabs.open(Tab.OPTIONS);
                 }
                 break;
             case 7:
@@ -108,7 +106,9 @@ public final class RuneScapeGuideSection extends TutorialSection {
             	
         }
     }
-    
+
+    boolean usedSuggestion = false;
+    boolean flippedString = false;
     private String lastName = "asdasdasdasd";
     private void setDisplayName() {
         int configID = 1042;
@@ -119,20 +119,23 @@ public final class RuneScapeGuideSection extends TutorialSection {
             case 1:
             	if(Nex.USERNAME != null) {
             	    InterfaceComponent nameComponent = Interfaces.getComponent(558, 11);
-            	    if(nameComponent != null)
-            	        lastName = nameComponent.getText().trim();
+            	    if(nameComponent != null) {
+                        lastName = nameComponent.getText().trim();
+                    }
             		if (isVisible("not available") && lastName.equalsIgnoreCase(Nex.USERNAME)) {
                         Log.fine("bad name, lets change");
                         InterfaceComponent suggestion = Interfaces.getComponent(558, 14);
-                        if(suggestion.getText().length() > 7 && suggestion.getText().length() <= 12)
+                        if(!usedSuggestion && suggestion.getText().length() > 7 && suggestion.getText().length() <= 12)
                         {
                             Nex.USERNAME = suggestion.getText();
-                        } else {
-                            if (Nex.USERNAME.length() < 10) {
-                                Nex.USERNAME = Nex.USERNAME + random(1, 9);
-                            } else {
-                                Nex.USERNAME = Nex.USERNAME.substring(0, Nex.USERNAME.length() - 1) + random(1, 9);
-                            }
+                            usedSuggestion = true;
+                        }
+                        else if(!flippedString) {
+                            Nex.USERNAME = new StringBuilder(lastName).reverse().toString();
+                            flippedString = true;
+                        }
+                        else {
+                            Nex.USERNAME = generateRandomName();
                         }
                         Log.fine("New name:" + Nex.USERNAME);
                     } else if(interactIfNotVisible("What name woul","Look up name")) {
@@ -156,8 +159,36 @@ public final class RuneScapeGuideSection extends TutorialSection {
         
        
     }
-    
 
+
+    public static String generateRandomName(){
+        StringBuilder sb = new StringBuilder();
+        int length = Random.nextInt(8, 12);
+        char lastChar = ' ';
+        for(int i = 0; i < length; ) {
+            char ascii;
+            if(isVowel(lastChar) || lastChar == ' ')
+                ascii = (char)Random.nextInt('_', 'z');
+            else
+                ascii = "aeiou ".charAt(Random.nextInt(0, 6));
+            if (ascii < 'a')
+                ascii = ' ';
+            if((i < 2 || i >= length - 2) && ascii == ' ')
+                continue;
+            if (lastChar == ' ') {
+                if(ascii == ' ') continue;
+                else ascii += 'A' - 'a';
+            } else if (ascii == ' ' && sb.charAt(i - 2) == ' ')
+                continue;
+            sb.append(ascii);
+            lastChar = ascii;
+            i++;
+        }
+        return sb.toString();
+    }
+    public static boolean isVowel(char c) {
+        return "AEIOUaeiou".indexOf(c) != -1;
+    }
 
     private boolean isCreationScreenVisible() {
         return isVisible("Head");
@@ -167,7 +198,7 @@ public final class RuneScapeGuideSection extends TutorialSection {
         // letting all the widgets show up
         Time.sleep(1800, 3200);
 
-        if (new Random().nextInt(2) == 1) {
+        if (Random.nextInt(0, 100) > 50) {
             interactButton("Female");
         }
 
@@ -199,11 +230,11 @@ public final class RuneScapeGuideSection extends TutorialSection {
     }
 
     private void clickRandomTimes(final InterfaceComponent widget) throws InterruptedException {
-        int clickCount = new Random().nextInt(4);
+        int clickCount = Random.nextInt(1, 4);
 
         for (int i = 0; i < clickCount; i++) {
             if (widget.click()) {
-                Time.sleep(150);
+                Time.sleep(20);
             }
         }
     }

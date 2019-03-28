@@ -24,13 +24,18 @@ public class PrepareForMuleDeposit extends Action {
 		if (!hasWithdrawnMoney) {
 			withdrawMoney();
 		}else {
-			int depositAmount = Inventory.getCount(true, 995);
-			if (RequestAccountInfo.account_type != null && RequestAccountInfo.account_type.contains("MULE"))
-				depositAmount = Math.max(100_000, depositAmount - 2_000_000);
+			int depositAmount = Inventory.getCount(true, 995) - Nex.MONEY_NEEDED;
+			if (RequestAccountInfo.account_type != null && RequestAccountInfo.account_type.contains("MULE")) {
+				if(depositAmount < 150_000)
+					depositAmount = 0;
+			}
 			hasWithdrawnMoney = false;
-			NexHelper.pushMessage(new MuleRequest("MULE_DEPOSIT:995:" + depositAmount));
-			Time.sleepUntil(() -> TaskHandler.getCurrentTask() != null && TaskHandler.getCurrentTask().getClass().equals(DepositToPlayerTask.class), 20000);
-			
+			if(depositAmount >= 1000) {
+				NexHelper.pushMessage(new MuleRequest("MULE_DEPOSIT:995:" + depositAmount));
+				Time.sleepUntil(() -> TaskHandler.getCurrentTask() != null && TaskHandler.getCurrentTask().getClass().equals(DepositToPlayerTask.class), 20000);
+			}else{
+				TaskHandler.removeTask();
+			}
 		}
 		return 200;
 	}

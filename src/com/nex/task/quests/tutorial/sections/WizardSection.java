@@ -6,7 +6,9 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.rspeer.runetek.adapter.scene.Npc;
+import org.rspeer.runetek.adapter.scene.SceneObject;
 import org.rspeer.runetek.api.commons.Time;
+import org.rspeer.runetek.api.commons.math.Random;
 import org.rspeer.runetek.api.component.Dialog;
 import org.rspeer.runetek.api.component.tab.Magic;
 import org.rspeer.runetek.api.component.tab.Spell;
@@ -18,6 +20,7 @@ import org.rspeer.runetek.api.movement.position.Area;
 import org.rspeer.runetek.api.movement.position.Position;
 import org.rspeer.runetek.api.scene.Npcs;
 import org.rspeer.runetek.api.scene.Players;
+import org.rspeer.runetek.api.scene.SceneObjects;
 
 public final class WizardSection extends TutorialSection {
 
@@ -35,7 +38,7 @@ public final class WizardSection extends TutorialSection {
             new Position(3139, 3084), new Position(3141, 3084)
     );
 
-    private static final Area CHICKEN_AREA = Area.rectangular(3139, 3090, 3140, 3091);
+    private static final Area CHICKEN_AREA = Area.rectangular(3139, 3090, 3141, 3091);
 
     public WizardSection() {
         super("Magic Instructor");
@@ -82,14 +85,17 @@ public final class WizardSection extends TutorialSection {
     }
 
     private boolean walkToChickenArea() {
-        return Movement.setWalkFlagWithConfirm(CHICKEN_AREA.getCenter().randomize(1));//More accurate, less chance of walking outside
+        SceneObject table = SceneObjects.getNearest("Table");
+        Position pos = table.getPosition();
+        pos = new Position(pos.getX() - Random.nextInt(1, 2), pos.getY() + Random.nextInt(4, 5));
+        return Movement.setWalkFlagWithConfirm(pos);//More accurate, less chance of walking outside
        //return WalkTo.execute(CHICKEN_AREA.getCenter());
     }
 
     private boolean attackChicken() {
         Npc chicken = Npcs.getNearest("Chicken");
         if (chicken != null && Magic.cast(Spell.Modern.WIND_STRIKE, chicken)) {
-            Time.sleepUntil(() -> getProgress() != 650, 3000, 600);
+            Time.sleepUntil(() -> getProgress() != 650, 300, 6000);
             return true;
         }
         return false;

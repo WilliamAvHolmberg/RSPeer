@@ -1,6 +1,7 @@
 package com.nex.script.banking;
 
 import com.nex.communication.message.request.RequestAccountInfo;
+import com.nex.script.Nex;
 import org.rspeer.runetek.adapter.component.Item;
 import org.rspeer.runetek.api.commons.Time;
 import org.rspeer.runetek.api.commons.math.Random;
@@ -62,7 +63,7 @@ public class WithdrawItemEvent extends BankEvent {
 
 	public void execute() {
 		if (Bank.isOpen()) {
-			Time.sleepUntil(()->Bank.contains(id), Random.low(1000, 3000));
+			Time.sleepUntil(()->Bank.contains(id), 100, Random.low(1000, 3000));
 			if (Bank.getCount(id) >= amount) {
 				if(amount > 28 && Bank.getWithdrawMode() != Bank.WithdrawMode.NOTE){
 					Bank.setWithdrawMode(Bank.WithdrawMode.NOTE);
@@ -72,12 +73,12 @@ public class WithdrawItemEvent extends BankEvent {
 				Bank.withdraw(id, amount);
 				Time.sleepUntil(() -> Inventory.contains(id), 5000);
 			} else if (id == 995) {
-				if(amount < 10000) {
-					amount = 10000;
+				if(amount < Nex.MIN_WITHDRAW) {
+					amount = Nex.MIN_WITHDRAW;
 				}
-				if(RequestAccountInfo.account_type == "MULE") {
-					if(amount < 200000)
-						amount = 200000;
+				if("MULE".equalsIgnoreCase(RequestAccountInfo.account_type)) {
+					if(amount < 100_000)
+						amount = 100_000;
 				}else if(amount > 30000) {
 					System.exit(1);
 				}

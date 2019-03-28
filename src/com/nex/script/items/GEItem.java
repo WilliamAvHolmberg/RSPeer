@@ -11,6 +11,12 @@ public class GEItem extends RequiredItem {
 	public GEItem(RequiredItem requiredItem) {
 		super(requiredItem.getItemID(), requiredItem.getAmount(), requiredItem.getBuyAmount(), requiredItem.getItemName());
 		setItemPrice(Exchange.getPrice(getItemID()));
+		if(getBuyAmount() < 5) {
+			if(itemPrice < 10)
+				itemPrice += 5;
+			else
+				itemPrice += 100;
+		}
 	}
 	@Override
 	public boolean equals(Object obj) {

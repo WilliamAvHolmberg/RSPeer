@@ -1,6 +1,8 @@
 package com.nex.task.quests.tutorial.sections;
 
+import com.nex.script.Nex;
 import com.nex.task.CombatTask;
+import com.nex.task.quests.tutorial.TutorialIsland;
 import org.rspeer.runetek.adapter.component.InterfaceComponent;
 import org.rspeer.runetek.adapter.scene.Npc;
 import org.rspeer.runetek.adapter.scene.Pickable;
@@ -57,6 +59,8 @@ public final class NoobSection extends TutorialSection {
         else if(Pickup("Bones", 1))
             return;
         else if(Pickup("Feather", 0))
+            return;
+        else if(Pickup("Goblin mail", 8))
             return;
         else if(Inventory.contains("Bones"))
             Inventory.getFirst("Bones").interact("Bury");
@@ -125,5 +129,12 @@ public final class NoobSection extends TutorialSection {
         if (QuestAction.interactInventory("Wield", name)) {
             Time.sleepUntil(() -> Equipment.contains(name), 800,2500);
         }
+    }
+
+    public static boolean isFinished(){
+        if (!TutorialIsland.DO_NOOB_FIGHTING)
+            return true;
+        int reqLvl = Math.max(3, 6 - (int)Math.floor(Nex.timeSinceBanWave()));
+        return Skills.getCurrentLevel(Skill.ATTACK) > reqLvl || Skills.getCurrentLevel(Skill.STRENGTH) > reqLvl || Skills.getCurrentLevel(Skill.DEFENCE) > reqLvl || Skills.getCurrentLevel(Skill.WOODCUTTING) > reqLvl;
     }
 }

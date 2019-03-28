@@ -27,7 +27,7 @@ public class EnableFixedModeEvent {
 			if (QuestAction.interactButton("Options")) {
 				Time.sleepUntil(() -> QuestAction.isVisible("Display"), 3000);
 			}
-		} 
+		}
 
 		if (isFixedModeEnabled() && EXIT_ON_CREATE) {
 			System.exit(1);
