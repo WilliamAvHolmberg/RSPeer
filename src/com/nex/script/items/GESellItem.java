@@ -29,7 +29,7 @@ public class GESellItem {
 				sellCheap = false;
 		}
 		if(sellCheap)
-			setItemPrice(itemPrice);
+			setItemPrice(1);
 		else
 			setItemPrice(Exchange.getPrice(item.getId()));
 	}

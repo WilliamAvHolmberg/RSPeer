@@ -69,13 +69,15 @@ public class InteractionHelper {
             if (!Time.sleepUntil(()->WorldHopper.isOpen(), 2000))
                 return false;
         }
-        if(hasSwappedWorld()) return true;
+        //if(hasSwappedWorld()) return true;
         RSWorld curWorld = Worlds.get(Worlds.getCurrent());
         boolean members = curWorld.isMembers();
         boolean deadman = curWorld.isDeadman();
-        if(WorldHopper.randomHop( (w)->w.isMembers() == members && w.isDeadman() == deadman )){
-            Time.sleepWhile(()->Worlds.getCurrent() == curWorld.getId(), 800, 5000);
-            if(hasSwappedWorld()) return true;
+        boolean pvp = curWorld.isPVP();
+        if(WorldHopper.randomHop( (w)->w.isMembers() == members && w.isPVP() == pvp && w.isDeadman() == deadman )){
+            Time.sleepWhile(()->Worlds.getCurrent() == curWorld.getId(), 800, 60000);
+            return true;
+            //if(hasSwappedWorld()) return true;
         }
         return false;
     }
@@ -85,9 +87,11 @@ public class InteractionHelper {
     }
     static RSWorld targetWorld;
     static boolean DoHop(){
+        if(Dialog.isOpen()) {
+            Dialog.processContinue();
+            Dialog.process("Yes");
+        }
         if(!WorldHopper.isOpen()) {
-            if(Dialog.isOpen())
-                Dialog.processContinue();
             WorldHopper.open();
             if (!Time.sleepUntil(()->WorldHopper.isOpen(), 2000))
                 return false;
@@ -110,8 +114,9 @@ public class InteractionHelper {
         RSWorld curWorld = Worlds.get(Worlds.getCurrent());
         boolean members = curWorld.isMembers();
         boolean deadman = curWorld.isDeadman();
+        boolean pvp = curWorld.isPVP();
         RSWorld[] popularWorlds = Stream.of(Worlds.getLoaded())
-                .filter((w)->w.isMembers() == members && w.isDeadman() == deadman)
+                .filter((w)->w.isMembers() == members && w.isPVP() == pvp && w.isDeadman() == deadman)
                 .sorted((w1, w2) -> Integer.compare(w2.getPopulation(), w1.getPopulation()))
                 .limit(4)
                 .toArray(RSWorld[]::new);
@@ -119,8 +124,13 @@ public class InteractionHelper {
     }
 
     static boolean hasSwappedWorld(){
+        if(targetWorld == null) return false;
         int curWorldIndex = Worlds.getCurrent();
-        return curWorldIndex == targetWorld.getId();
+        if(curWorldIndex == targetWorld.getId()) {
+            targetWorld = null;
+            return true;
+        }
+        return false;
     }
 
 }

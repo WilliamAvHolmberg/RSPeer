@@ -24,6 +24,9 @@ public class Gear {
 	public void addGear(EquipmentSlot slot, GearItem equipment) {	
 		gear.put(slot, equipment);
 	}
+	public void clearSlot(EquipmentSlot slot) {
+		gear.remove(slot);
+	}
 	
 	public void addGear(EquipmentSlot slot, RSItem equipment) {	
 		gear.put(slot, new GearItem(slot,equipment));

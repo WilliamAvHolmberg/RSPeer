@@ -65,7 +65,7 @@ public class TanningTask extends SkillTask implements ImageObserver {
             if(task.validate())
                 return task.execute();
         }
-        return 0;
+        return 600;
     }
 
     @Override

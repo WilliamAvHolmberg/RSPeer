@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.TimeZone;
 
 import com.nex.communication.message.request.RequestAccountInfo;
+import com.nex.script.Exchange;
 import org.rspeer.runetek.adapter.component.Item;
 import org.rspeer.runetek.api.commons.Time;
 import org.rspeer.runetek.api.component.Bank;
@@ -41,6 +42,11 @@ public class CheckIfWeShallSellItems extends Action {
 				Bank.depositInventory();
 			} else {
 				ArrayList<SellItemEvent> itemsToSell = new ArrayList<SellItemEvent>();
+				ArrayList<Integer> bankContents = new ArrayList<>();
+				for (Item item : Bank.getItems()) {
+					bankContents.add(item.getId());
+				}
+				Exchange.preCache(bankContents);
 				for (Item item : Bank.getItems()) {
 					if(item.getId() == 995) {
 						totalPrice += Bank.getCount(995);
@@ -56,10 +62,8 @@ public class CheckIfWeShallSellItems extends Action {
 				}
 
 				Log.fine("TOTAL PRICE:" + totalPrice);
-				int muleThreshold = Nex.MULE_THRESHOLD;
-				if(approachingBan())
-					muleThreshold *= 0.33;
-				if(totalPrice > muleThreshold) {
+				int muleThreshold = Nex.MULE_THRESHOLD_NOW();
+				if(totalPrice - Nex.MONEY_NEEDED > muleThreshold) {
 					itemsToSell.forEach(event ->{
 						SellItemHandler.addItem(event);
 					});
@@ -74,20 +78,13 @@ public class CheckIfWeShallSellItems extends Action {
 
 	}
 
-	public static boolean approachingBan(){
-		SimpleDateFormat gmtDateFormat = new SimpleDateFormat("HHmm");
-		gmtDateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
-		int currentHourGMT = Integer.parseInt(gmtDateFormat.format(new Date()));
-		return (currentHourGMT > 645 && currentHourGMT < 740);
-	}
-
 	public static long getNextCheckInMilli() {
 		return ((last_check + 1800 * 1000));
 	}
 
 	public static boolean dontSell = false;
 	public static long getTimeTilNextCheckInMinutes() {
-		if (dontSell || RequestAccountInfo.account_type == "MASTER_MULE")
+		if (dontSell || "MASTER_MULE".equalsIgnoreCase(RequestAccountInfo.account_type))
 			return 120000;
 		return (getNextCheckInMilli() - System.currentTimeMillis()) / 60000;
 	}

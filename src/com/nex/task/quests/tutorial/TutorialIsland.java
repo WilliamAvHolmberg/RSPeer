@@ -34,7 +34,8 @@ public final class TutorialIsland extends QuestTask {
 
     public static boolean DO_NOOB_FIGHTING = false;
 
-	static Area WHOLE_ISLAND_AREA = Area.rectangular(3048, 3145, 3165, 3040);
+    static Area LUMBRIDGE = Area.rectangular(3135, 3134, 3261, 3236);
+	static Area WHOLE_ISLAND_AREA = Area.rectangular(3040, 3047, 3156, 3134);
 	static Area UNDERGROUND_ISLAND_AREA = Area.rectangular(3066, 9488, 3118, 9533);
     private final TutorialSection rsGuideSection = new RuneScapeGuideSection();
     private final TutorialSection survivalSection = new SurvivalSection();
@@ -50,7 +51,7 @@ public final class TutorialIsland extends QuestTask {
     public int loop(){
     	Log.fine("we are in tut");
     	 if (pendingContinue()) {
-    		 Log.fine("lets cotinue");
+    		 Log.fine("lets continue");
              selectContinue();
              return 0;
          }
@@ -101,7 +102,7 @@ public final class TutorialIsland extends QuestTask {
             	wizardSection.onLoop();
             	break;
         }
-        return Random.mid(100, 300);
+        return Random.mid(50, 200);
     }
 
     private int getTutorialSection() {
@@ -110,8 +111,11 @@ public final class TutorialIsland extends QuestTask {
     
 
     public static boolean isTutorialIslandCompleted() {
+        boolean inLumbridge = LUMBRIDGE.contains(Players.getLocal());
+        if (!DO_NOOB_FIGHTING && inLumbridge)
+            return true;
         return !(WHOLE_ISLAND_AREA.contains(Players.getLocal()) || UNDERGROUND_ISLAND_AREA.contains(Players.getLocal())) && getWidgetContainingText("Tutorial Island Progress") == null &&
-                (!DO_NOOB_FIGHTING || Skills.getCurrentLevel(Skill.ATTACK) > 2 || Skills.getCurrentLevel(Skill.STRENGTH) > 2 || Skills.getCurrentLevel(Skill.DEFENCE) > 2 || Skills.getCurrentLevel(Skill.WOODCUTTING) > 2);//Lets do some basic training
+                (!DO_NOOB_FIGHTING || NoobSection.isFinished());//Lets do some basic training
     }
     public boolean isFinished() {
     	return isTutorialIslandCompleted();

@@ -3,11 +3,13 @@ import java.awt.event.KeyEvent;
 import java.util.Arrays;
 
 
+import com.nex.script.grandexchange.BuyItemHandler;
 import org.rspeer.runetek.adapter.component.InterfaceComponent;
 import org.rspeer.runetek.adapter.scene.Npc;
 import org.rspeer.runetek.adapter.scene.SceneObject;
 import org.rspeer.runetek.api.Game;
 import org.rspeer.runetek.api.Varps;
+import org.rspeer.runetek.api.commons.BankLocation;
 import org.rspeer.runetek.api.commons.Time;
 import org.rspeer.runetek.api.commons.math.Random;
 import org.rspeer.runetek.api.component.Dialog;
@@ -73,10 +75,12 @@ public abstract class QuestTask extends NexTask {
 	
 	
 
-	protected void talkToNpc(String name) {
+	protected boolean talkToNpc(String name) {
 		if (getNpc(name) != null && getNpc(name).interact("Talk-to")) {
-			Time.sleepUntil(this::pendingContinue, 5000, 600);
+			Time.sleepUntil(this::pendingContinue, 500, 5000);
+			return true;
 		}
+		return false;
 	}
 	
 	public void walkAndTalkTo(Position position,String name) {
@@ -87,7 +91,6 @@ public abstract class QuestTask extends NexTask {
 		}else if(!Dialog.isOpen()) {
 			talkToNpc(name);
 		}
-		
 	}
 	
 	public void walkAndTalkTo(Position position,String name, String... options) {
@@ -121,7 +124,7 @@ public abstract class QuestTask extends NexTask {
 		if(getItemToWithdraw(requiredInventory) != null) {
 			BankHandler.addBankEvent(new WithdrawItemEvent(getItemToWithdraw(requiredInventory)));
 		}else if(getNpc(name) == null) {
-			Log.fine("lets walk to ");
+			Log.fine("lets walk to " + name);
 			walkEvent.execute();
 		}else if(pendingContinue()) {
 			selectContinue();
@@ -134,7 +137,7 @@ public abstract class QuestTask extends NexTask {
 	}
 	public void walkAndTalkTo(Position position,String name, NexInventory requiredInventory, String... options) {
 		if(getItemToWithdraw(requiredInventory) != null) {
-			BankHandler.addBankEvent(new WithdrawItemEvent(getItemToWithdraw(requiredInventory)));
+			BankHandler.addBankEvent(new WithdrawItemEvent(getItemToWithdraw(requiredInventory)).setBankArea(BuyItemHandler.getGEArea()));
 		}else if(getNpc(name) == null) {
 			Log.fine("lets walk to ");
 			walkTo(position);
@@ -178,8 +181,7 @@ public abstract class QuestTask extends NexTask {
 	}
 
 	protected boolean pendingContinue() {
-
-		return getContinueWidget() != null ||Dialog.canContinue();
+		return getContinueWidget() != null || Dialog.canContinue();
 	}
 	
 
@@ -195,19 +197,23 @@ public abstract class QuestTask extends NexTask {
 
 
 	protected boolean selectContinue() {
-		InterfaceComponent con = getContinueWidget();
-		InterfaceComponent cantReach = Interfaces.getFirst(p-> p.getText().contains("reach that"));
-		if(cantReach != null && cantReach.isVisible()) {
-			Mouse.click(371,426);
-		}else if(con != null) {
-			Log.fine("con exist..." + con.getX() +  "   " + con.getY());
-			Log.fine(Mouse.getX());
-			Mouse.click(con.getX(),con.getY());
-			return true;
-		}else {
-			Log.fine("not visible");
+
+		InterfaceComponent cantReach = Interfaces.getFirst(p -> p.getText().contains("reach that") || p.getText().contains("fighting that"));
+		if (cantReach != null && cantReach.isVisible()) {
+			Log.fine("Fire event 299");
+			Game.getClient().fireScriptEvent(299, 1, 1);
 		}
-		return Dialog.processContinue();
+
+		boolean wasSuccessful = false;
+		for(int i = 0; i < 10 && (Dialog.canContinue() || Dialog.isProcessing()); i++) {
+			Time.sleepWhile(Dialog::isProcessing, 100, 1000);
+			if(Dialog.canContinue()) {
+				Dialog.processContinue();
+				continue;
+			}
+			break;
+		}
+		return wasSuccessful;
 	}
 
 

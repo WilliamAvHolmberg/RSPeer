@@ -4,6 +4,8 @@ package com.nex.task.quests.tutorial.sections;
 import java.util.Arrays;
 import java.util.List;
 
+import org.rspeer.runetek.adapter.scene.Npc;
+import org.rspeer.runetek.adapter.scene.SceneObject;
 import org.rspeer.runetek.api.commons.Time;
 import org.rspeer.runetek.api.component.tab.Inventory;
 import com.nex.script.walking.WalkTo;
@@ -31,7 +33,8 @@ public class CookingSection extends TutorialSection {
         }
         switch (getProgress()) {
             case 130:
-                if (!COOK_BUILDING.contains(Players.getLocal())) {
+                Npc instructor = getInstructor();
+                if (!COOK_BUILDING.contains(Players.getLocal()) && (instructor == null || !instructor.isPositionInteractable())) {
                 	WalkTo.execute(COOK_BUILDING.getCenter());
                 }
                 break;

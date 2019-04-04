@@ -1,7 +1,10 @@
 package com.nex.script;
 
 import java.awt.Graphics;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.TimeZone;
 import java.util.logging.Logger;
 
 import javax.security.auth.login.LoginContext;
@@ -87,7 +90,43 @@ public class Nex extends Script
 	public static boolean SHOULD_RUN = true;
 	public static String USERNAME;
 	public static int MULE_THRESHOLD = 50000;
+	public static int MONEY_NEEDED = 0;
+	public static int MIN_WITHDRAW = 10000;
 	NexHelper nexHelper;
+
+	static float banWaveTime = 7.5f;
+	public static boolean approachingBan(){
+		float timeSinceBanWave = timeSinceBanWave();
+		return (timeSinceBanWave > 23.25f && timeSinceBanWave < 0.16f);
+	}
+	public static boolean isHoursAfterBan(){
+		float timeSinceBanWave = timeSinceBanWave();
+		return timeSinceBanWave < 5;
+	}
+	static long lastCheckedTimeSinceBan = 0;
+	static float lastTimeSinceBan = 0;
+	public static float timeSinceBanWave(){
+		if(System.currentTimeMillis() - lastCheckedTimeSinceBan < 30_000)
+			return lastTimeSinceBan;
+		SimpleDateFormat gmtDateFormatHH = new SimpleDateFormat("HH");
+		SimpleDateFormat gmtDateFormatmm = new SimpleDateFormat("mm");
+		gmtDateFormatHH.setTimeZone(TimeZone.getTimeZone("GMT"));
+		gmtDateFormatmm.setTimeZone(TimeZone.getTimeZone("GMT"));
+		int currentHourGMT = Integer.parseInt(gmtDateFormatHH.format(new Date()));
+		float currentMinGMT = Integer.parseInt(gmtDateFormatmm.format(new Date())) / 60.0f;
+		float time = currentHourGMT + currentMinGMT;
+		if (currentHourGMT < banWaveTime) {
+			return lastTimeSinceBan = currentHourGMT + (24 - banWaveTime);
+		}
+		return lastTimeSinceBan = currentHourGMT - banWaveTime;
+	}
+
+	public static int MULE_THRESHOLD_NOW(){
+		int muleThreshold = Nex.MULE_THRESHOLD;
+		if(approachingBan())
+			muleThreshold *= 0.33;
+		return muleThreshold;
+	}
 
 	Area barbMine = Area.rectangular(3077, 3424, 3086, 3416);
 	public static int failedWalk = 0;
@@ -112,11 +151,9 @@ public class Nex extends Script
 			Log.fine("lets quit");
 			System.exit(1);
 		}
+		//Log.fine("Nex Loop");
 		if (loggedIn()) {
-			if(stuckInGoblinDiplomacy()) {
-				Log.fine("stuck");
-				WalkTo.execute(Players.getLocal().getPosition().randomize(3));
-			}else if (taskIsCompleted()) {
+			if (taskIsCompleted()) {
 				TaskHandler.removeTask();
 			}else if(shouldDoHandler()) {
 				//command query separation.. none for me. Fix this in a better way. for now. Handle like this
@@ -126,16 +163,12 @@ public class Nex extends Script
 			} else if (RandomHandler.handleRandom()) {
 				return Random.nextInt(100, 500);
 			} else {
-				TaskHandler.getCurrentTask().loop();
+				return TaskHandler.getCurrentTask().loop();
 			}
 		} else {
 			login();
 		}
 		return 600;
-	}
-	
-	private boolean stuckInGoblinDiplomacy() {
-		return GoblinDiplomacyQuest.getThisQuest().isCompleted() && Game.isInCutscene() && SceneObjects.getNearest(16560) != null;
 	}
 
 
@@ -161,7 +194,7 @@ public class Nex extends Script
 		}else if (TaskHandler.getCurrentTask() != null && TaskHandler.getCurrentTask() instanceof WithdrawFromPlayerTask) {
 			TaskHandler.getCurrentTask().loop();
 			return true;
-		}  else if (depositEvent != null) {
+		} else if (depositEvent != null) {
 			BankHandler.executeEvent(depositEvent);
 			return true;
 		} else if (buyItemEvent != null) {
@@ -216,7 +249,7 @@ public class Nex extends Script
 		Graphics g = event.getSource();
 		g.drawString("IP:" + NexHelper.getIP(), 200,50);
 		g.drawString("LAST LOG:" + NexHelper.secondsSinceLastLog(), 200,75);
-		g.drawString("BREAK AFTER 40", 200,100);
+//		g.drawString("BREAK AFTER 40", 200,100);
 		int y = 200;
 		NexTask curTask = TaskHandler.getCurrentTask();
 		if (curTask != null) {

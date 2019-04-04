@@ -84,7 +84,7 @@ public final class MiningSection extends TutorialSection {
 			if (daggerWidgetOpt != null) {
 				Log.fine("lets click");
 				if (daggerWidgetOpt.click()) {
-					Time.sleepUntil(() -> Inventory.contains("Bronze dagger"), 6000, 600);
+					Time.sleepUntil(() -> Inventory.contains("Bronze dagger"), 600, 6000);
 				}
 			} else {
 				smith();
@@ -102,7 +102,7 @@ public final class MiningSection extends TutorialSection {
 		} else if (Inventory.getSelectedItem() == null) {
 			QuestAction.interactInventory("Use", "Bronze bar");
 		} else if (SceneObjects.getNearest("Anvil").interact("Use")) {
-			Time.sleepUntil(() -> getDaggerWidget() != null, 5000, 600);
+			Time.sleepUntil(() -> getDaggerWidget() != null, 500, 6000);
 		}
 	}
 
@@ -114,7 +114,7 @@ public final class MiningSection extends TutorialSection {
 		if (Inventory.getSelectedItem() == null) {
 			QuestAction.interactInventory("Use", "Tin ore");
 		} else if (SceneObjects.getNearest("Furnace").interact("Use")) {
-			Time.sleepUntil(() -> Inventory.contains("Bronze bar"), 800, 30000);
+			Time.sleepUntil(() -> Inventory.contains("Bronze bar") || Production.isOpen(), 800, 30000);
 			if(Production.isOpen()) {
 				Production.initiate();
 				Time.sleepUntil(() -> Inventory.contains("Bronze bar"), 800, 30000);

@@ -66,7 +66,7 @@ public class SellItemEvent implements IHandlerTask {
 				List<RSGrandExchangeOffer> offers = getNonEmptyOffers();
 				if(offers != null && !offers.isEmpty()) {
 					handleExistingOffers(offers);
-				}else if(Inventory.isEmpty()) {
+				}else if(!Inventory.contains(item.getItemName())) {
 					finished = true;
 					SellItemHandler.removeItem(this);
 				}else {
@@ -85,8 +85,10 @@ public class SellItemEvent implements IHandlerTask {
 	private void sellItem() {
 		if(GrandExchangeSetup.isOpen()) {
 			GrandExchangeSetup.setItem(getID(item));
-			Time.sleepUntil(() ->GrandExchangeSetup.getItem() != null, 500, 1500);
-	        GrandExchangeSetup.setPrice(1);
+			Time.sleepUntil(() ->GrandExchangeSetup.getItem() != null, 500, 3500);
+			Time.sleepUntil(() ->GrandExchangeSetup.getPricePerItem() > 0, 500, 3500);
+			int price = (int)(Math.max(1, GrandExchangeSetup.getPricePerItem() * 0.15));
+	        GrandExchangeSetup.setPrice(price);
 			Time.sleepUntil(() ->GrandExchangeSetup.getPricePerItem() == 1, 500, 1500);
 			GrandExchangeSetup.confirm();
 		}else {
@@ -96,6 +98,11 @@ public class SellItemEvent implements IHandlerTask {
 	}
 
 	private void handleExistingOffers(List<RSGrandExchangeOffer> offers) {
+		int waitTime = 19000;
+		if(offers.stream().anyMatch(offer-> offer.getProgress() == Progress.IN_PROGRESS)) {
+			Time.sleepUntil(()-> GrandExchange.getOffers(offer->offer.getProgress() == Progress.FINISHED).length > 0, 1000, waitTime);
+			offers = getNonEmptyOffers();
+		}
 		for(RSGrandExchangeOffer offer :offers) {
 			if(offer.getProgress() == Progress.IN_PROGRESS) {
 				offer.abort();
@@ -107,10 +114,15 @@ public class SellItemEvent implements IHandlerTask {
 	}
 
 	private void withdrawItem() {
+		if(Inventory.isFull()){
+			Bank.depositAllExcept("Coins");
+			if (!Time.sleepWhile(Inventory::isFull, 200, 2000))
+				return;
+		}
 		if(Bank.getWithdrawMode() == WithdrawMode.NOTE) {
 			Bank.withdrawAll(item.getItemID());
 			Time.sleepUntil(() ->!Bank.contains(item.getItemID()), 500, 1500);
-		}else {
+		} else {
 			Bank.setWithdrawMode(WithdrawMode.NOTE);
 			Time.sleepUntil(() ->Bank.getWithdrawMode() == WithdrawMode.NOTE, 500, 1500);
 		}

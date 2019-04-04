@@ -64,6 +64,9 @@ public abstract class SkillTask extends NexTask {
 		}
 		return 0;
 	}
+	public int getMoneyPerHour() {
+		return 0;
+	}
 	
 	@Override
 	public String getLog() {

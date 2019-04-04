@@ -38,6 +38,13 @@ public class BankHandler {
 			TaskHandler.addHandler(event);
 		}
 	}
+	public static void removeBankEvent(BankEvent event) {
+		if (bankEvents.contains(event)) {
+			Log.fine("Bank event force removed");
+			bankEvents.remove(event);//Push adds to the end, and will be the next to be retrieved
+			TaskHandler.removeHandler(event);
+		}
+	}
 
 	private static boolean playerInBank(BankEvent bankEvent) {
 		if (bankEvent.getBankArea() != null && bankEvent.getBankArea().contains(Players.getLocal())) {

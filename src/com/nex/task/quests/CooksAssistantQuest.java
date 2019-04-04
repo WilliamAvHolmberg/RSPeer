@@ -5,8 +5,10 @@ import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import com.nex.script.grandexchange.BuyItemHandler;
 import com.nex.task.SkillTask;
 import org.rspeer.runetek.api.component.Dialog;
+import org.rspeer.runetek.api.component.GrandExchange;
 import org.rspeer.runetek.api.movement.position.Area;
 import org.rspeer.runetek.event.types.ChatMessageEvent;
 import org.rspeer.runetek.event.types.ObjectSpawnEvent;
@@ -35,7 +37,7 @@ public class CooksAssistantQuest extends QuestTask {
 	public int loop() {
 		
 		if (getCurrentSection() == 0 && getItemToWithdraw(requiredInventory) != null) {
-			BankHandler.addBankEvent(new WithdrawItemEvent(getItemToWithdraw(requiredInventory)));
+			BankHandler.addBankEvent(new WithdrawItemEvent(getItemToWithdraw(requiredInventory)).setBankArea(BuyItemHandler.getGEArea()));
 		} else if (!inArea(cookArea)) {
 			walkTo(cookArea);
 		} else if (pendingOption()) {
@@ -45,7 +47,6 @@ public class CooksAssistantQuest extends QuestTask {
 		} else if(!Dialog.isOpen()) {
 			talkToNpc("Cook");
 		}
-
 
 		return 200;
 	}

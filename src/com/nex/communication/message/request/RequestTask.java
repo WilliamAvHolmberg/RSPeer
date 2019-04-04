@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 import com.nex.communication.message.respond.*;
+import com.nex.script.Nex;
 import com.nex.script.handler.TaskHandler;
 import com.nex.task.actions.mule.CheckIfWeShallSellItems;
 import com.nex.task.mule.PrepareForMuleDepositTask;
@@ -33,6 +34,7 @@ public class RequestTask extends NexRequest {
 			if (level > 1 || !alreadySent)
 				string += skill + "," + level + ";";
 		}
+		string += "QP" + "," + Quest.getQuestPoints() + ";";
 		String quests = "quests;";
 		for (Quest quest : Quest.values()) {
 			quests += quest.name() + "," + quest.isCompleted() + ";";
@@ -54,7 +56,7 @@ public class RequestTask extends NexRequest {
 				int coins = Inventory.getCount(true, 995);
 				if(RequestAccountInfo.account_type != null && RequestAccountInfo.account_type.equals("MULE") && coins > 100000 && TaskHandler.available_tasks.isEmpty()) {
 					Log.fine("Idle Mule");
-					if (coins > 4_000_000 || (CheckIfWeShallSellItems.approachingBan() && coins > 2_000_000)) {
+					if (coins > Nex.MULE_THRESHOLD_NOW()) {
 						TaskHandler.addTaskAndResetStack(new PrepareForMuleDepositTask());
 						return;
 					}
@@ -64,7 +66,7 @@ public class RequestTask extends NexRequest {
 					timeAskedToDC = System.currentTimeMillis();
 					return;
 				}
-				else if(System.currentTimeMillis() - timeAskedToDC < 120000) {
+				else if(System.currentTimeMillis() - timeAskedToDC < 3 * 60 * 1000) {
 					Time.sleep(10000);
 					return;
 				}

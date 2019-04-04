@@ -1,6 +1,7 @@
 package com.nex.script.inventory;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 
 
@@ -73,6 +74,7 @@ public class NexInventory {
 	
 	public NexInventory setItems(ArrayList<InventoryItem> arrayList) {
 		items = arrayList;
+		Collections.shuffle(items);
 		return this;
 	}
 

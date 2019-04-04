@@ -4,6 +4,7 @@ import java.awt.Graphics;
 import java.util.Arrays;
 import java.util.List;
 
+import com.nex.communication.NexHelper;
 import org.rspeer.runetek.adapter.scene.SceneObject;
 import org.rspeer.runetek.api.component.tab.Equipment;
 import org.rspeer.runetek.api.component.tab.Inventory;
@@ -74,7 +75,7 @@ public class MiningTask extends SkillTask implements ChatMessageListener {
 		} else {
 			MineOreAction.execute(actionArea, rocks);
 		}
-		return 0;
+		return 600;
 	}
 
 	private boolean playerNeedAxe() {
@@ -120,21 +121,21 @@ public class MiningTask extends SkillTask implements ChatMessageListener {
 		if(event.getType() == ChatMessageType.FILTERED &&
 				event.getMessage().contains("You manage to")) {
 			oresMined ++;
-			
+			NexHelper.clearWatchdog();
 		}
 		
 	}
 
 	@Override
 	public void notify(ObjectSpawnEvent spawnEvent) {
-		CutTreeAction.get().notify(spawnEvent);
+		//CutTreeAction.get().notify(spawnEvent);
 	}
 	
 	@Override
 	public void notify(RenderEvent event) {
 		Graphics g = event.getSource();
 		g.drawString("Current Task: " + getSkill() + "->" + getWantedLevel(), 300, 300);
-		g.drawString("Ran for: " + getTimeRanMS(), 300, 375);
+		g.drawString("Ran for: " + getTimeRanString(), 300, 375);
 		g.drawString("Ores per hour: " + getPerHour(oresMined), 300, 400);
 		g.drawString("Money per hour: " + getPerHour(oresMined) * orePrice, 300, 425);
 	}

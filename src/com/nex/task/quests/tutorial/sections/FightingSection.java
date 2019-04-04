@@ -66,18 +66,41 @@ public final class FightingSection extends TutorialSection {
 			Tabs.open(Tab.COMBAT);
 			break;
 		case 440:
+			//doDefault();
+			if(!inRatCage()){
+				SceneObject gate = SceneObjects.getNearest("Gate");
+				if (gate != null && gate.distance(INSIDE_RAT_CAGE_GATE_AREA.getCenter()) < 10) {
+					if (gate.interact("Open")) {
+						Time.sleepWhile(() -> Players.getLocal().isMoving() || Players.getLocal().isAnimating(), 300, 6000);
+					}
+				}
+			}
 			WalkTo.execute(INSIDE_RAT_CAGE_GATE_AREA.getCenter());
 			break;
 		case 450:
 		case 460:
+			//doDefault();
 			if (!inRatCage()) {
+				SceneObject gate = SceneObjects.getNearest("Gate");
+				if (gate != null && gate.distance(INSIDE_RAT_CAGE_GATE_AREA.getCenter()) < 10) {
+					if (gate.interact("Open")) {
+						Time.sleepWhile(() -> Players.getLocal().isMoving() || Players.getLocal().isAnimating(), 300, 6000);
+					}
+				}
 				WalkTo.execute(INSIDE_RAT_CAGE_GATE_AREA.getCenter());
 			} else if (!isAttackingRat()) {
 				attackRat();
 			}
 			break;
 		case 470:
+			//doDefault();
 			if (inRatCage()) {
+				SceneObject gate = SceneObjects.getNearest("Gate");
+				if (gate != null && gate.distance(INSIDE_RAT_CAGE_GATE_AREA.getCenter()) < 10) {
+					if (gate.interact("Open")) {
+						Time.sleepWhile(() -> Players.getLocal().isMoving() || Players.getLocal().isAnimating(), 300, 6000);
+					}
+				}
 				WalkTo.execute(OUTSIDE_RAT_CAGE_GATE_AREA.getCenter());
 			} else {
 				talkToInstructor();

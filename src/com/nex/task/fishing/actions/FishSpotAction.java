@@ -15,17 +15,15 @@ import org.rspeer.runetek.api.scene.Players;
 import org.rspeer.script.task.Task;
 import org.rspeer.ui.Log;
 
+import java.util.Arrays;
+
 public class FishSpotAction extends Action {
 
     public static int fish(Fish fish) {
 
-        Log.info(fish.getAction());
         if (Dialog.canContinue()) {
-            if (Dialog.processContinue()) {
-                Time.sleep(1000, 1200);
-            }
+            Dialog.processContinue();
         }
-        Npc fishSpot = Npcs.getNearest(fish.getSpot());
 
         if (Inventory.isFull()) {
             for (Item item : Inventory.getItems()) {
@@ -40,8 +38,13 @@ public class FishSpotAction extends Action {
                     Time.sleep(Random.low(150, 250));
                 }
             }
-        } else {
-            if (fishSpot != null && !Players.getLocal().isAnimating()) {
+        } else if(!Players.getLocal().isAnimating()) {
+            final String spotName = fish.getSpot();
+            final String fishAction = fish.getAction();
+            Log.fine("Looking for " +  fishAction + " " + spotName);
+            Npc fishSpot = Npcs.getNearest(o-> o.getName().contains(spotName) && Arrays.stream(o.getActions()).anyMatch((s)->s.contains(fishAction)));
+            if (fishSpot != null) {
+                Log.fine(fishSpot.getName() + "->" + fish.getAction());
                 fishSpot.interact(fish.getAction());
                 Time.sleepUntil(() -> Players.getLocal().isAnimating() || Dialog.isOpen(), 200, 1000);
             }

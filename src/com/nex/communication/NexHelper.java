@@ -9,10 +9,16 @@ import java.net.Socket;
 import java.net.URL;
 import java.util.Stack;
 
+import com.nex.communication.message.request.RequestAccountInfo;
 import com.nex.task.NexTask;
+import org.rspeer.runetek.adapter.scene.Player;
 import org.rspeer.runetek.api.Game;
 import org.rspeer.runetek.api.Worlds;
+import org.rspeer.runetek.api.commons.BankLocation;
 import org.rspeer.runetek.api.commons.Time;
+import org.rspeer.runetek.api.commons.math.Random;
+import org.rspeer.runetek.api.component.GrandExchange;
+import org.rspeer.runetek.api.movement.position.Position;
 import org.rspeer.runetek.api.scene.Players;
 import org.rspeer.runetek.providers.subclass.GameCanvas;
 import org.rspeer.ui.Log;
@@ -74,14 +80,16 @@ public class NexHelper implements Runnable {
 	@Override
 	public void run() {
 		Log.fine("started NexHelper 2.0 with selenium support");
-		for(int retry = 0; retry < 6; retry++) {
+		for(int retry = 0; retry < 200; retry++) {
 			try {
-				Socket socket = new Socket(ip, port);
+				int tmp_port = port + Random.nextInt(0, 3);
+				Log.fine("Connecting port " + tmp_port);
+				Socket socket = new Socket(ip, tmp_port);
 				PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
 				BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 				BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));
 				Log.fine("CONNECTED!");
-				System.out.println("SCRIPT CONNECTED TO NEX");
+				System.out.println("SCRIPT CONNECTED TO NEX");//Used to tell Nexus Desktop the script has launched
 				System.out.println(mail);
 				for (int i = 0; i < 10; i++) {
 					if (Game.isLoggedIn() || !messageQueue.empty()) {//If we have messages to send, lets send them. Especially if its a ban message
@@ -89,16 +97,17 @@ public class NexHelper implements Runnable {
 					}
 					Thread.sleep(1000);
 				}
-				retry = 0;
 				initialized = initializeContactToSocket(out, in);
+				retry = 0;
+				lastLog = System.currentTimeMillis();//Reset timeout
 				whileShouldRun(out, in); // main loop, always run while script should be running
-
 			} catch (Exception e) {
 				e.printStackTrace();//These saved my life
+				Log.severe(e);
 				Log.info("FAILED TO INITIALIZE: LETS TRY AGAIN");
 			}
 			try {
-				Thread.sleep(2000);
+				Thread.sleep(5000);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -123,11 +132,37 @@ public class NexHelper implements Runnable {
 				handleMessageQueue(out, in);
 				if(emptyNow) continue;
 			}
+			checkStuck();
 			emptyNow = false;
 			Thread.sleep(1000);
 		}
 		//Nex.SHOULD_RUN = false;
 		
+	}
+
+	long loggedOutSince = 0;
+	static long lastSetCurPos = 0;
+	long posTimeout = 10 * 60 * 1000;
+	Position lastPos;
+	void checkStuck(){
+		if (!Game.isLoggedIn()){
+			if(loggedOutSince == 0) loggedOutSince = System.currentTimeMillis();
+			if(System.currentTimeMillis() - loggedOutSince > (4 * 60 * 1000))
+				NexHelper.pushMessage(new DisconnectMessage("Been logged out for too long"));
+		} else {
+			loggedOutSince = 0;
+			Player player = Players.getLocal();
+			Position pos = player.getPosition();
+			if (lastPos == null || lastPos.distance(pos) > 3 || pos.distance(BankLocation.GRAND_EXCHANGE.getPosition()) < 15) {
+				lastPos = pos;
+				clearWatchdog();
+			}
+			if (lastSetCurPos != 0 && (System.currentTimeMillis() - lastSetCurPos) > posTimeout)
+				System.exit(1);
+		}
+	}
+	public static void clearWatchdog(){
+		lastSetCurPos = System.currentTimeMillis();
 	}
 
 	private void handleMessageQueue(PrintWriter out, BufferedReader in) throws InterruptedException, IOException {
@@ -199,6 +234,8 @@ public class NexHelper implements Runnable {
 		out.println(log);
 		respond = in.readLine();
 		Log.fine((respond));
+		if (respond.contains("DISCONNECT"))
+			NexHelper.pushMessage(new DisconnectMessage("Told to Disconnect"));
 		lastLog = System.currentTimeMillis();
 	}
 
@@ -220,7 +257,7 @@ public class NexHelper implements Runnable {
 
 	public static String getIP() {
 		if(myIP != null) {
-			return myIP.toString();
+			return myIP;
 		}
 		try {
 			URL url = new URL("http://checkip.amazonaws.com/");

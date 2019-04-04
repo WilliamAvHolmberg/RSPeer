@@ -8,11 +8,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.WeakHashMap;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -56,9 +52,34 @@ public class Exchange {
 		ids.put(name, item);
 		return name;
 	}
+	public static void preCache(ArrayList<Integer> itemIDs){
+		itemIDs.removeIf((id)->prices.containsKey(id));
+		if(itemIDs.size() == 0) return;
+		int price = 0;
+		try {
+			JsonObject priceJSON = getJSON();
+			Iterator<Member> iterator = priceJSON.iterator();
+
+			while (iterator.hasNext()) {
+				JsonObject itemJSON = priceJSON.get(iterator.next().getName()).asObject();
+				Integer itemID = itemJSON.get("id").asInt();
+				if (itemIDs.contains(itemID)) {
+					String itemName = itemJSON.get("name").asString();
+					names.put(itemID, itemName);
+					price = itemJSON.get("buy_average").asInt();
+					if (price == 0) {
+						price = getRealPrice(itemName);
+					}
+					prices.put(itemID, price);
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 
 	public static int getID(String itemName){
-		if(itemName == "Coins") return 995;
+		if(itemName.equals("Coins")) return 995;
 		int itemID = 0;
 		if (ids.containsValue(itemName)) {
 			return ids.get(itemName);
