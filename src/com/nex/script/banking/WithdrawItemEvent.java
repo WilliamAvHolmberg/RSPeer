@@ -70,7 +70,7 @@ public class WithdrawItemEvent extends BankEvent {
 			}
 			Time.sleepUntil(()->Bank.contains(id), 100, Random.low(1000, 3000));
 			if (Bank.getCount(id) >= amount) {
-				if(amount > 28 && Bank.getWithdrawMode() != Bank.WithdrawMode.NOTE){
+				if(amount > 28 && id != 995 && Bank.getWithdrawMode() != Bank.WithdrawMode.NOTE){
 					Bank.setWithdrawMode(Bank.WithdrawMode.NOTE);
 					if (!Time.sleepUntil(()->Bank.getWithdrawMode() == Bank.WithdrawMode.NOTE, 3000))
 						return;

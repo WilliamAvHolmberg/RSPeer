@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.TimeZone;
 
 import com.nex.communication.message.request.RequestAccountInfo;
+import com.nex.script.Exchange;
 import org.rspeer.runetek.adapter.component.Item;
 import org.rspeer.runetek.api.commons.Time;
 import org.rspeer.runetek.api.component.Bank;
@@ -41,6 +42,11 @@ public class CheckIfWeShallSellItems extends Action {
 				Bank.depositInventory();
 			} else {
 				ArrayList<SellItemEvent> itemsToSell = new ArrayList<SellItemEvent>();
+				ArrayList<Integer> bankContents = new ArrayList<>();
+				for (Item item : Bank.getItems()) {
+					bankContents.add(item.getId());
+				}
+				Exchange.preCache(bankContents);
 				for (Item item : Bank.getItems()) {
 					if(item.getId() == 995) {
 						totalPrice += Bank.getCount(995);

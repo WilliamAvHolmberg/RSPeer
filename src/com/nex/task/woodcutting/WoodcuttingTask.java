@@ -3,6 +3,7 @@ package com.nex.task.woodcutting;
 import java.awt.Graphics;
 import java.util.List;
 
+import com.nex.communication.NexHelper;
 import com.nex.task.helper.InteractionHelper;
 import org.rspeer.runetek.adapter.scene.Player;
 import org.rspeer.runetek.adapter.scene.SceneObject;
@@ -67,9 +68,11 @@ public class WoodcuttingTask extends SkillTask implements ChatMessageListener, I
 		if(itemToEquip != null) {
 			GearHandler.addItem(itemToEquip);
 		} else if (playerNeedAxe()) {
+			Nex.MONEY_NEEDED = (int)(Exchange.getPrice(axe.getId()) * 1.5f); //Pre-emptively set how much money we need to keep, in-case it does a mule deposit
 			BankHandler.addBankEvent(new WithdrawItemEvent(new WithdrawItem(axe, 1,1)).setBankArea(bankArea));
 		}
 		else if (Inventory.isFull()) {
+			Nex.MONEY_NEEDED = 0;
 			BankHandler.addBankEvent(new DepositAllExcept(axe.getName()).setBankArea(bankArea));
 		} else if(checkChangeWorld()) {
 		}
@@ -150,6 +153,7 @@ public class WoodcuttingTask extends SkillTask implements ChatMessageListener, I
 		if(event.getType() == ChatMessageType.FILTERED &&
 				event.getMessage().contains("You get")) {
 			Log.fine("We get log");
+			NexHelper.clearWatchdog();
 			logsChopped ++;
 		}
 	}

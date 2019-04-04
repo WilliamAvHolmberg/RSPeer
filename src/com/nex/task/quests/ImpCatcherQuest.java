@@ -40,7 +40,7 @@ public class ImpCatcherQuest extends QuestTask {
     private final Area entireTower = Area.rectangular(3102, 3153, 3115, 3171);
     private final Area wizardTowerOutside = Area.rectangular(3106, 3165, 3112, 3171, 0);
     private final Area wizardTowerLobby = Area.rectangular(3105, 3161, 3109, 3165, 0);
-    private final Area wizardTowerLobby2 = Area.rectangular(3103, 3159, 3106, 3161, 0);
+    private final Area wizardTowerLobby2 = Area.rectangular(3103, 3159, 3106, 3160, 0);
     private final Area wizardTowerFloor1 = Area.rectangular(3103, 3159, 3106, 3162, 1);
     private final Area wizardTowerFloor2 = Area.rectangular(3101, 3159, 3107, 3165, 2);
 
@@ -63,21 +63,22 @@ public class ImpCatcherQuest extends QuestTask {
     public int loop() {
         if(Game.isInCutscene())
             return 600;
+        else if (pendingOption()) {
+            selectOption("please", "I'll try.");
+        } else if (pendingContinue()) {
+            selectContinue();
+        }
         else if(getQuest().isCompleted() && entireTower.contains(Players.getLocal())){
             if(!Tabs.open(Tab.MAGIC))
                 Tabs.open(Tab.MAGIC);
             if (Magic.cast(Spell.Modern.HOME_TELEPORT))
                 Time.sleepUntil(()-> !entireTower.contains(Players.getLocal()), 1000, 60000);
         }
-        else if (getCurrentSection() == 0 && getItemToWithdraw(requiredInventory) != null) {
+        else if (!entireTower.contains(Players.getLocal()) && getItemToWithdraw(requiredInventory) != null) {
             BankHandler.addBankEvent(new WithdrawItemEvent(getItemToWithdraw(requiredInventory)));
         } else if (walkToWizard()) {
             return 600;
-        } else if (pendingOption()) {
-            selectOption("please", "I'll try.");
-        } else if (pendingContinue()) {
-            selectContinue();
-        } else if(!Dialog.isOpen()) {
+        }else if(!Dialog.isOpen()) {
             talkToNpc("Wizard Mizgog");
         }
 

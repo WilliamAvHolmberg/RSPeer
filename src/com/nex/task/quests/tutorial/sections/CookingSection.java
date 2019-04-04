@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.rspeer.runetek.adapter.scene.Npc;
+import org.rspeer.runetek.adapter.scene.SceneObject;
 import org.rspeer.runetek.api.commons.Time;
 import org.rspeer.runetek.api.component.tab.Inventory;
 import com.nex.script.walking.WalkTo;

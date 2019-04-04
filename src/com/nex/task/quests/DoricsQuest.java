@@ -5,10 +5,13 @@ import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import com.nex.script.grandexchange.BuyItemHandler;
 import com.nex.task.SkillTask;
+import com.nex.task.helper.InteractionHelper;
 import org.rspeer.runetek.adapter.scene.SceneObject;
 import org.rspeer.runetek.api.commons.Time;
 import org.rspeer.runetek.api.component.Dialog;
+import org.rspeer.runetek.api.component.WorldHopper;
 import org.rspeer.runetek.api.movement.position.Area;
 import org.rspeer.runetek.api.scene.Players;
 import org.rspeer.runetek.api.scene.SceneObjects;
@@ -28,7 +31,7 @@ import com.nex.task.QuestTask;
 
 public class DoricsQuest extends QuestTask {
 
-    private final Area doricsArea = Area.rectangular(2950, 3449, 2953, 3452);
+    private final Area doricsArea = Area.rectangular(2950, 3449, 2952, 3452);
     private final InventoryItem clay = new InventoryItem(6, new RSItem("Clay", 434), 6);
     private final InventoryItem ironOre = new InventoryItem(2, new RSItem("Iron ore", 440), 2);
     private final InventoryItem copperOre = new InventoryItem(4, new RSItem("Copper ore", 436), 4);
@@ -37,21 +40,25 @@ public class DoricsQuest extends QuestTask {
 
 
     public int loop() {
-        if (getCurrentSection() == 0 && getItemToWithdraw(requiredInventory) != null) {
-            BankHandler.addBankEvent(new WithdrawItemEvent(getItemToWithdraw(requiredInventory)));
-        } else if (!inArea(doricsArea)) {
-            walkTo(doricsArea);
-            if(doricsArea.getCenter().distance() < 5){
-                SceneObject door = SceneObjects.getNearest("Door");
-                if(door != null && door.interact("Open"))
-                    Time.sleepUntil(()-> !Players.getLocal().isMoving() && !Players.getLocal().isAnimating(), 200, 1000);
-            }
-        } else if (pendingOption()) {
+        if (pendingOption()) {
             selectOption("anvil", "material", "right back");
         } else if (pendingContinue()) {
             selectContinue();
-        } else if(!Dialog.isOpen()) {
-            talkToNpc("Doric");
+        }
+        else if (getItemToWithdraw(requiredInventory) != null) {
+            BankHandler.addBankEvent(new WithdrawItemEvent(getItemToWithdraw(requiredInventory)).setBankArea(BuyItemHandler.getGEArea()));
+            return 500;
+        }
+        else if (!inArea(doricsArea)) {
+            walkTo(doricsArea);
+            if(doricsArea.getCenter().distance() < 10){
+                SceneObject door = SceneObjects.getNearest(so->so.getName() == "Door" && so.isPositionInteractable());
+                if(door != null && door.interact("Open"))
+                    Time.sleepWhile(()-> Players.getLocal().isMoving() || Players.getLocal().isAnimating(), 200, 3000);
+            }
+        }else if(!Dialog.isOpen()) {
+            if(!talkToNpc("Doric"))
+                InteractionHelper.HopRandomWorld();
         }
 
         return 200;

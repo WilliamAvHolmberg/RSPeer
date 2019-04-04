@@ -4,6 +4,7 @@ import java.awt.Graphics;
 import java.util.Arrays;
 import java.util.List;
 
+import com.nex.communication.NexHelper;
 import org.rspeer.runetek.adapter.scene.SceneObject;
 import org.rspeer.runetek.api.component.tab.Equipment;
 import org.rspeer.runetek.api.component.tab.Inventory;
@@ -120,7 +121,7 @@ public class MiningTask extends SkillTask implements ChatMessageListener {
 		if(event.getType() == ChatMessageType.FILTERED &&
 				event.getMessage().contains("You manage to")) {
 			oresMined ++;
-			
+			NexHelper.clearWatchdog();
 		}
 		
 	}

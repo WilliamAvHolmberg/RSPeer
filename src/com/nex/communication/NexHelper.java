@@ -9,12 +9,14 @@ import java.net.Socket;
 import java.net.URL;
 import java.util.Stack;
 
+import com.nex.communication.message.request.RequestAccountInfo;
 import com.nex.task.NexTask;
 import org.rspeer.runetek.adapter.scene.Player;
 import org.rspeer.runetek.api.Game;
 import org.rspeer.runetek.api.Worlds;
 import org.rspeer.runetek.api.commons.BankLocation;
 import org.rspeer.runetek.api.commons.Time;
+import org.rspeer.runetek.api.commons.math.Random;
 import org.rspeer.runetek.api.component.GrandExchange;
 import org.rspeer.runetek.api.movement.position.Position;
 import org.rspeer.runetek.api.scene.Players;
@@ -78,9 +80,11 @@ public class NexHelper implements Runnable {
 	@Override
 	public void run() {
 		Log.fine("started NexHelper 2.0 with selenium support");
-		for(int retry = 0; retry < 10; retry++) {
+		for(int retry = 0; retry < 200; retry++) {
 			try {
-				Socket socket = new Socket(ip, port);
+				int tmp_port = port + Random.nextInt(0, 3);
+				Log.fine("Connecting port " + tmp_port);
+				Socket socket = new Socket(ip, tmp_port);
 				PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
 				BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 				BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));
@@ -95,15 +99,15 @@ public class NexHelper implements Runnable {
 				}
 				initialized = initializeContactToSocket(out, in);
 				retry = 0;
+				lastLog = System.currentTimeMillis();//Reset timeout
 				whileShouldRun(out, in); // main loop, always run while script should be running
-
 			} catch (Exception e) {
 				e.printStackTrace();//These saved my life
 				Log.severe(e);
 				Log.info("FAILED TO INITIALIZE: LETS TRY AGAIN");
 			}
 			try {
-				Thread.sleep(2000);
+				Thread.sleep(5000);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -137,7 +141,7 @@ public class NexHelper implements Runnable {
 	}
 
 	long loggedOutSince = 0;
-	long lastSetCurPos = 0;
+	static long lastSetCurPos = 0;
 	long posTimeout = 10 * 60 * 1000;
 	Position lastPos;
 	void checkStuck(){
@@ -151,13 +155,15 @@ public class NexHelper implements Runnable {
 			Position pos = player.getPosition();
 			if (lastPos == null || lastPos.distance(pos) > 3 || pos.distance(BankLocation.GRAND_EXCHANGE.getPosition()) < 15) {
 				lastPos = pos;
-				lastSetCurPos = System.currentTimeMillis();
+				clearWatchdog();
 			}
 			if (lastSetCurPos != 0 && (System.currentTimeMillis() - lastSetCurPos) > posTimeout)
 				System.exit(1);
 		}
 	}
-
+	public static void clearWatchdog(){
+		lastSetCurPos = System.currentTimeMillis();
+	}
 
 	private void handleMessageQueue(PrintWriter out, BufferedReader in) throws InterruptedException, IOException {
 		nextRequest = messageQueue.pop();

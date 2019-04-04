@@ -66,7 +66,7 @@ public class RequestTask extends NexRequest {
 					timeAskedToDC = System.currentTimeMillis();
 					return;
 				}
-				else if(System.currentTimeMillis() - timeAskedToDC < 120000) {
+				else if(System.currentTimeMillis() - timeAskedToDC < 3 * 60 * 1000) {
 					Time.sleep(10000);
 					return;
 				}

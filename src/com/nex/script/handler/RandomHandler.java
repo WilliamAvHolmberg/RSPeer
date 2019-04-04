@@ -22,14 +22,33 @@ public class RandomHandler {
             return false;
         if(checkLamp())
             return true;
+
+        Npc frogPrinceStuck = Npcs.getNearest(npc -> npc.getName() == "Frog" && npc.getId() == 5431);
         Npc event = Npcs.getNearest(npc -> npc.containsAction("Dismiss") && npc.getTarget() == Players.getLocal());
-        if(event == null) {
+        if(event == null && frogPrinceStuck == null) {
             lastCheckedRandoms = System.currentTimeMillis();
             return false;
         }
 
         String eventName = event.getName();
-        if ((eventName.equals("Genie") || eventName.equals("Drunken Dwarf") || eventName.equals("Dr Jekyll") || eventName.equals("Rick Turpentine")) && event.isPositionWalkable()) {
+        if(frogPrinceStuck != null){
+            if (!Dialog.isOpen()) {
+                event.interact(x -> true);
+                Time.sleepUntil(Dialog::isOpen, 1000, 10000);
+            }
+            for(int i = 0; i < 10 && Dialog.isOpen(); i++) {
+                while (Dialog.canContinue()) {
+                    Dialog.processContinue();
+                    Time.sleepWhile(() -> Dialog.isOpen() || Dialog.isProcessing(), 1000);
+                }
+                if (Dialog.isViewingChatOptions()) {
+                    if (!Dialog.process("sorry", "please"))
+                        Dialog.process(0);
+                    Time.sleepWhile(() -> Dialog.isOpen() || Dialog.isProcessing(), 1000);
+                }
+            }
+        }
+        else if ((eventName.equals("Genie") || eventName.equals("Drunken Dwarf") || eventName.equals("Dr Jekyll") || eventName.equals("Rick Turpentine")) && event.isPositionWalkable()) {
             if (!Dialog.isOpen()) {
                 event.interact(x -> true);
                 Time.sleepUntil(Dialog::isOpen, 1000, 10000);

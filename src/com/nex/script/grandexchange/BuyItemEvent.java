@@ -125,6 +125,37 @@ public class BuyItemEvent implements IHandlerTask {
 
 	private void buyItem() {
 
+		try {
+			if(item.getItemPrice() > 1000) {
+				Log.fine("Item is expensive - Num Tasks:" + TaskHandler.available_tasks.size());
+				NexTask task = TaskHandler.getCurrentTask();
+				Log.fine("Task is " + task.getClass());
+				if (task != null && task instanceof WoodcuttingTask) {
+					Gear gear = task.getGear();
+					if (gear != null) {
+						for (GearItem gearItem : gear.getGear().values()) {
+							if (gearItem == null || gearItem.getItem() == null) continue;
+							//Log.fine("is " + gearItem.getItem().getName() + " = " + item.getItemName());
+							if (gearItem.getItem().getId() == item.getItemID() ||
+									gearItem.getItem().getName() == item.getItemName()) {
+								Log.fine("YES! Lets not buy " + item.getItemName());
+								gear.clearSlot(gearItem.getSlot());
+								finished = true;
+								BuyItemHandler.removeItem(this);
+								GearHandler.removeItem(gearItem);
+								WithdrawItemEvent withdrawEvent = (WithdrawItemEvent)BankHandler.getWithdrawEvent();
+								if(withdrawEvent != null && withdrawEvent.getRequiredItem().getItemID() == item.getItemID())
+									BankHandler.removeBankEvent(withdrawEvent);
+								return;
+							}
+						}
+					}
+				}
+			}
+		}catch (Exception ex){
+			Log.severe(ex);
+		}
+
 		if (Inventory.getCount(true, 995) < item.getTotalPrice()) {
 			Log.fine(item.getTotalPrice());
 			withdrawnMoney = false;

@@ -149,7 +149,7 @@ public class DepositToPlayerTask extends Mule {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
+	
 	@Override
 	public void removeTask() {
 		// TODO send mule done with info
@@ -166,17 +166,17 @@ public class DepositToPlayerTask extends Mule {
 			Log.fine("ACCEPTED TRADDDDDDDDDDDDDDDDDDDDE");
 			tradeIsCompleted = true;
 		}
-
+		
 	}
 	@Override
 	public void notify(ObjectSpawnEvent arg0) {
 		// TODO Auto-generated method stub
-
+		
 	}
 
 
 
-
+	
 
 
 

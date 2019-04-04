@@ -6,15 +6,13 @@ import java.io.PrintWriter;
 import java.util.Stack;
 import java.util.function.BooleanSupplier;
 
+import com.nex.task.quests.*;
 import org.rspeer.ui.Log;
 
 import com.nex.communication.message.NexMessage;
 import com.nex.script.Quest;
 import com.nex.script.handler.TaskHandler;
 import com.nex.task.NexTask;
-import com.nex.task.quests.CooksAssistantQuest;
-import com.nex.task.quests.GoblinDiplomacyQuest;
-import com.nex.task.quests.RomeoAndJulietQuest;
 
 public class QuestRespond extends TaskRespond {
 
@@ -35,6 +33,10 @@ public class QuestRespond extends TaskRespond {
 			newTask = new RomeoAndJulietQuest();
 		} else if (questName.contains(Quest.COOKS_ASSISTANT.name())) {
 			newTask = new CooksAssistantQuest();
+		} else if (questName.contains(Quest.IMP_CATCHER.name())) {
+			newTask = new ImpCatcherQuest();
+		} else if (questName.contains(Quest.DORICS_QUEST.name())) {
+			newTask = new DoricsQuest();
 		} else {
 
 		}

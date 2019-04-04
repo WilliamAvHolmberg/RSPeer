@@ -194,7 +194,7 @@ public class Nex extends Script
 		}else if (TaskHandler.getCurrentTask() != null && TaskHandler.getCurrentTask() instanceof WithdrawFromPlayerTask) {
 			TaskHandler.getCurrentTask().loop();
 			return true;
-		}  else if (depositEvent != null) {
+		} else if (depositEvent != null) {
 			BankHandler.executeEvent(depositEvent);
 			return true;
 		} else if (buyItemEvent != null) {

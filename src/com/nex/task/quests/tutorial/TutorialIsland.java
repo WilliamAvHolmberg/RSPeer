@@ -51,7 +51,7 @@ public final class TutorialIsland extends QuestTask {
     public int loop(){
     	Log.fine("we are in tut");
     	 if (pendingContinue()) {
-    		 Log.fine("lets cotinue");
+    		 Log.fine("lets continue");
              selectContinue();
              return 0;
          }
@@ -102,7 +102,7 @@ public final class TutorialIsland extends QuestTask {
             	wizardSection.onLoop();
             	break;
         }
-        return Random.mid(100, 300);
+        return Random.mid(50, 200);
     }
 
     private int getTutorialSection() {
@@ -111,7 +111,8 @@ public final class TutorialIsland extends QuestTask {
     
 
     public static boolean isTutorialIslandCompleted() {
-        if (!DO_NOOB_FIGHTING && LUMBRIDGE.contains(Players.getLocal()))
+        boolean inLumbridge = LUMBRIDGE.contains(Players.getLocal());
+        if (!DO_NOOB_FIGHTING && inLumbridge)
             return true;
         return !(WHOLE_ISLAND_AREA.contains(Players.getLocal()) || UNDERGROUND_ISLAND_AREA.contains(Players.getLocal())) && getWidgetContainingText("Tutorial Island Progress") == null &&
                 (!DO_NOOB_FIGHTING || NoobSection.isFinished());//Lets do some basic training

@@ -48,14 +48,14 @@ public final class NoobSection extends TutorialSection {
             selectContinue();
             return;
         }
+        if(isAttacking())
+            return;
         if(ranged)
             equipRanged();
         else
             equipMelee();
 
-        if(isAttacking())
-            return;
-        else if(!chosenArea.contains(Players.getLocal()))
+        if(!chosenArea.contains(Players.getLocal()))
             WalkTo.execute(chosenArea);
         else if(Pickup("Bones", 1))
             return;
@@ -135,7 +135,11 @@ public final class NoobSection extends TutorialSection {
     public static boolean isFinished(){
         if (!TutorialIsland.DO_NOOB_FIGHTING)
             return true;
-        int reqLvl = Math.max(3, 6 - (int)Math.floor(Nex.timeSinceBanWave()));
+        if(Inventory.getCount(true, 995) > 100) {
+            TutorialIsland.DO_NOOB_FIGHTING = false;
+            return true;
+        }
+        int reqLvl = Math.max(2, 5 - (int)Math.floor(Nex.timeSinceBanWave()));
         return Skills.getCurrentLevel(Skill.ATTACK) > reqLvl || Skills.getCurrentLevel(Skill.STRENGTH) > reqLvl || Skills.getCurrentLevel(Skill.DEFENCE) > reqLvl || Skills.getCurrentLevel(Skill.WOODCUTTING) > reqLvl;
     }
 }

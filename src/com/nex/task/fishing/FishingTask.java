@@ -4,26 +4,20 @@ package com.nex.task.fishing;
 
 import java.awt.*;
 import java.util.HashSet;
-import java.util.List;
 
+import com.nex.communication.NexHelper;
+import com.nex.script.Nex;
 import com.nex.script.inventory.InventoryItem;
-import com.nex.task.fishing.Fish;
 import com.nex.task.fishing.actions.FishSpotAction;
-import com.nex.task.helper.InteractionHelper;
-import org.rspeer.runetek.adapter.component.InterfaceComponent;
 import org.rspeer.runetek.adapter.component.Item;
 import org.rspeer.runetek.adapter.scene.Npc;
-import org.rspeer.runetek.adapter.scene.Player;
 import org.rspeer.runetek.adapter.scene.SceneObject;
 import org.rspeer.runetek.api.Game;
-import org.rspeer.runetek.api.Worlds;
 import org.rspeer.runetek.api.commons.BankLocation;
 import org.rspeer.runetek.api.commons.Time;
 import org.rspeer.runetek.api.commons.math.Random;
+import org.rspeer.runetek.api.component.DepositBox;
 import org.rspeer.runetek.api.component.Dialog;
-import org.rspeer.runetek.api.component.InterfaceOptions;
-import org.rspeer.runetek.api.component.WorldHopper;
-import org.rspeer.runetek.api.component.tab.Equipment;
 import org.rspeer.runetek.api.component.tab.Inventory;
 import org.rspeer.runetek.api.component.tab.Skill;
 import org.rspeer.runetek.api.component.tab.Skills;
@@ -41,17 +35,13 @@ import org.rspeer.ui.Log;
 import com.nex.handler.gear.GearHandler;
 import com.nex.handler.gear.GearItem;
 import com.nex.script.Exchange;
-import com.nex.script.Nex;
 import com.nex.script.banking.BankHandler;
-import com.nex.script.banking.DepositAll;
 import com.nex.script.banking.DepositAllExcept;
 import com.nex.script.banking.WithdrawItemEvent;
 import com.nex.script.items.RSItem;
-import com.nex.script.items.RequiredItem;
 import com.nex.script.items.WithdrawItem;
 import com.nex.task.IMoneyTask;
 import com.nex.task.SkillTask;
-import com.nex.task.woodcutting.actions.CutTreeAction;
 
 public class FishingTask extends SkillTask implements ChatMessageListener, IMoneyTask, SkillListener {
 
@@ -78,15 +68,18 @@ public class FishingTask extends SkillTask implements ChatMessageListener, IMone
             selectedFish = Fish.SHRIMP;
             setActionArea(Area.rectangular(3242, 3150, 3247, 3159));
             setBankArea(Area.surrounding(BankLocation.GRAND_EXCHANGE.getPosition(), 10));
-        }else if(fishLvl < 40){
+        }
+        else if(fishLvl < 40){
             powerFish = true;
             selectedFish = Fish.TROUT;
             setActionArea(Area.rectangular(3099, 3422, 3112, 3435));
             setBankArea(Area.surrounding(BankLocation.GRAND_EXCHANGE.getPosition(), 10));
-        }else if(fishLvl < 60){
+        }
+        else if(fishLvl < 60){
+            Nex.MONEY_NEEDED = 400;
             powerFish = false;
             selectedFish = Fish.LOBSTER;
-            setActionArea(Area.rectangular(2922, 3174, 2927, 3181));
+            setActionArea(Area.rectangular(2922, 3172, 2927, 3181));
             setBankArea(Area.surrounding(BankLocation.PORT_SARIM_DB.getPosition(), 10));
         }
         else if(fishLvl <= 99){
@@ -133,9 +126,71 @@ public class FishingTask extends SkillTask implements ChatMessageListener, IMone
         compileData();
     }
 
-    static final Area PortSarim = Area.rectangular(3023, 3212, 3033, 3222);
+    void openSarimDepositBox(){
+        if (DepositBox.isOpen()) {
+            if (bait == null)
+                DepositBox.depositAllExcept("Coins", equipment.getName());
+            else
+                DepositBox.depositAllExcept("Coins", equipment.getName(), bait.getName());
+            Time.sleepWhile(Inventory::isFull, 100, 2000);
+        } else {
+            SceneObject depositBox = SceneObjects.getNearest("Bank deposit box");
+            if (depositBox != null) {
+                if (depositBox.interact("Deposit"))
+                    Time.sleepWhile(DepositBox::isOpen, 300, 1200);
+            } else {
+                if(PortSarimDocks.contains(Players.getLocal())){
+                    WalkTo.execute(sarimToDB);
+                }else {
+                    DepositBox.open(BankLocation.PORT_SARIM_DB);
+                    Log.info("Opening stuff");
+                    Time.sleepWhile(() -> Players.getLocal().isMoving() && !DepositBox.isOpen(), 200, 800);
+                }
+            }
+        }
+    }
+
+    Position[] sarimToDB = {
+            new Position(3027, 3218, 0),
+            new Position(3027, 3227, 0),
+            new Position(3027, 3235, 0),
+            new Position(3037, 3235, 0),
+            new Position(3044, 3235, 0)
+    };
+    Position[] LeaveSarim = {
+            new Position(3026, 3218, 0),
+            new Position(3027, 3227, 0),
+            new Position(3027, 3234, 0),
+            new Position(3028, 3240, 0),
+            new Position(3041, 3248, 0),
+            new Position(3048, 3253, 0),
+            new Position(3053, 3253, 0),
+            new Position(3061, 3255, 0),
+            new Position(3064, 3262, 0),
+            new Position(3069, 3277, 0)
+    };
+    Position[] boatToJetti = {
+            new Position(2953, 3146, 0),
+            new Position(2953, 3146, 0),
+            new Position(2947, 3146, 0),
+            new Position(2941, 3146, 0),
+            new Position(2935, 3146, 0),
+            new Position(2929, 3148, 0),
+            new Position(2923, 3149, 0),
+            new Position(2917, 3152, 0),
+            new Position(2918, 3158, 0),
+            new Position(2920, 3164, 0),
+            new Position(2920, 3170, 0),
+            new Position(2924, 3174, 0),
+            new Position(2924, 3176, 0)
+    };
+    Position[] jettiToBoat = WalkTo.createReverse(boatToJetti);
+
+    static final Area PortSarimDocks = Area.rectangular(3018, 3193, 3062, 3249);
+    static final Area PortSarimSailors = Area.rectangular(3023, 3212, 3033, 3222);
     static final Area KaramjaPort = Area.rectangular(2953, 3145, 2960, 3147);
     static final Area KaramjaIsland = Area.rectangular(2881, 3132, 2964, 3195);
+
     // TODO - More generic. Do not check if player is in area all the time.
     @Override
     public int loop() {
@@ -144,28 +199,47 @@ public class FishingTask extends SkillTask implements ChatMessageListener, IMone
         if( itemToEquip != null) {
             GearHandler.addItem(itemToEquip);
         } else if (Inventory.isFull() && !powerFish) {
-            if(bait == null)
-                BankHandler.addBankEvent(new DepositAllExcept(equipment.getName()).setBankArea(bankArea));
-            else
-                BankHandler.addBankEvent(new DepositAllExcept(equipment.getName(), bait.getName()).setBankArea(bankArea));
+            if(PortSarimDocks.contains(Players.getLocal())){
+                openSarimDepositBox();
+            }
+            else if (KaramjaIsland.contains(Players.getLocal()) || Players.getLocal().getFloorLevel() > 0){
+                handleBoatToGetTo(bankArea);
+            }
+            else {
+                if (bait == null)
+                    BankHandler.addBankEvent(new DepositAllExcept(equipment.getName()).setBankArea(bankArea));
+                else
+                    BankHandler.addBankEvent(new DepositAllExcept(equipment.getName(), bait.getName()).setBankArea(bankArea));
+            }
         } else if (playerNeedEquipment() || playerNeedsBait() || playerNeedsMoney()) {
             Area bank = bankArea;
-            if (bankArea.contains(BankLocation.PORT_SARIM_DB.getPosition()))
-                bank = Area.surrounding(BankLocation.DRAYNOR.getPosition(), 5);
-            if (playerNeedEquipment()) {
-                BankHandler.addBankEvent(new WithdrawItemEvent(new WithdrawItem(equipment, 1,1)).setBankArea(bank));
+            if(PortSarimDocks.contains(Players.getLocal())){
+                WalkTo.execute(LeaveSarim);
             }
-            if (playerNeedsBait()) {
-                BankHandler.addBankEvent(new WithdrawItemEvent(item).setBankArea(bank));
+            else if (KaramjaIsland.contains(Players.getLocal()) || Players.getLocal().getFloorLevel() > 0){
+                handleBoatToGetTo(bankArea);
             }
-            if (playerNeedsMoney()) {
-                BankHandler.addBankEvent(new WithdrawItemEvent(new WithdrawItem(new RSItem("Coins", 995), 1200,1200)).setBankArea(bank));
+            else {
+                if (bankArea.contains(BankLocation.PORT_SARIM_DB.getPosition()))
+                    bank = Area.surrounding(BankLocation.DRAYNOR.getPosition(), 5);
+                if (playerNeedEquipment()) {
+                    BankHandler.addBankEvent(new WithdrawItemEvent(new WithdrawItem(equipment, 1, 1)).setBankArea(bank));
+                }
+                if (playerNeedsBait()) {
+                    BankHandler.addBankEvent(new WithdrawItemEvent(item).setBankArea(bank));
+                }
+                if (playerNeedsMoney()) {
+                    BankHandler.addBankEvent(new WithdrawItemEvent(new WithdrawItem(new RSItem("Coins", 995), 400, 400)).setBankArea(bank));
+                }
             }
         }
-        else if(!actionArea.contains(Players.getLocal()) && !Players.getLocal().isAnimating()) {
-            if(HandlePortSarimTo(actionArea))
+        else if(!actionArea.contains(Players.getLocal())) {
+            if(handleBoatToGetTo(actionArea))
                 return Random.low(400, 800);
-            WalkTo.execute(actionArea.getCenter());
+            if (KaramjaIsland.contains(Players.getLocal()))
+                WalkTo.execute(boatToJetti);
+            else
+                WalkTo.execute(actionArea.getCenter());
             return Random.low(600, 1500);
         }
         else {
@@ -189,7 +263,7 @@ public class FishingTask extends SkillTask implements ChatMessageListener, IMone
         }
         return false;
     }
-    boolean HandlePortSarimTo(Area area){
+    boolean handleBoatToGetTo(Area area){
         getOffBoat();
         KaramjaIsland.setIgnoreFloorLevel(true);
         Position curPos = Players.getLocal().getPosition();
@@ -198,7 +272,7 @@ public class FishingTask extends SkillTask implements ChatMessageListener, IMone
         if(imOnIsland == targetOnIsland)
             return false;
         if(KaramjaIsland.contains(area.getCenter())){//Is our target on the island
-            InteractWithSailor(PortSarim, "Seaman Lorris", "Captain Tobias", "Seaman Thresnor");
+            InteractWithSailor(PortSarimSailors, "Seaman Lorris", "Captain Tobias", "Seaman Thresnor");
         }
         else {//Target is on the mainland
             InteractWithSailor(KaramjaPort, "Customs officer");
@@ -208,7 +282,10 @@ public class FishingTask extends SkillTask implements ChatMessageListener, IMone
     boolean InteractWithSailor(Area area, String ... names){
         Npc sailor = Npcs.getNearest(names);
         if(sailor == null) {
-            WalkTo.execute(area);
+            if (KaramjaIsland.contains(Players.getLocal()))
+                WalkTo.execute(jettiToBoat);
+            else
+                WalkTo.execute(area);
             return true;
         }
         if(!sailor.interact("Pay-fare"))
@@ -221,13 +298,8 @@ public class FishingTask extends SkillTask implements ChatMessageListener, IMone
             if(Dialog.isProcessing()){}
             else if(Dialog.canContinue()) Dialog.processContinue();
             else if(Dialog.getChatOptions().length > 0) {
-                InterfaceComponent yes = Dialog.getChatOption(
-                        option -> option.contains("Yes") ||
-                                option.contains("this ship") ||
-                                option.contains("Search away")  ||
-                                option.contains("Ok"));
-                if(yes == null) yes = Dialog.getChatOptions()[0];
-                yes.click();
+                if(!Dialog.process("Yes", "this ship", "Search away", "Ok"))
+                    Dialog.process(0);
             }
             Time.sleepWhile(()->Dialog.isOpen() && Dialog.isProcessing(), 300,2000);
         }
@@ -245,7 +317,7 @@ public class FishingTask extends SkillTask implements ChatMessageListener, IMone
             return false;
         if(selectedFish != Fish.LOBSTER && selectedFish != Fish.SWORDFISH)
             return false;
-        if(Inventory.getCount(true, 995) > 30)
+        if(Inventory.getCount(true, 995) > 60)
             return false;
         return true;
     }
@@ -263,10 +335,11 @@ public class FishingTask extends SkillTask implements ChatMessageListener, IMone
     public void notify(ChatMessageEvent event) {
         if(event.getType() == ChatMessageType.FILTERED &&
                 event.getMessage().contains("You catch")) {
-            Log.fine("We got a fish");
+            NexHelper.clearWatchdog();
             fishCaught ++;
             Item latestFish = Inventory.getLast(i->i.getName().startsWith("Raw"));
             if(latestFish != null) {
+                Log.fine("We caught a " + latestFish.getName());
                 priceEa = Exchange.getPrice(latestFish.getId());
                 profit += priceEa;
             }
