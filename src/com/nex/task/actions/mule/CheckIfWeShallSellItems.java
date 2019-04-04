@@ -29,7 +29,7 @@ import com.nex.task.quests.tutorial.sections.QuestSection;
 public class CheckIfWeShallSellItems extends Action {
 
 	public static ArrayList<String> untradeableItems = new ArrayList<String>(
-			Arrays.asList("Oak logs", "Yew logs", "Shrimps", "Mind rune", "Air rune", "Fire rune", "Water rune", "Earth rune", "Feather", "Raw shrimps"));
+			Arrays.asList("Cowhide", "Oak logs", "Yew logs", "Shrimps", "Mind rune", "Air rune", "Fire rune", "Water rune", "Earth rune", "Feather", "Raw shrimps"));
 
 	// used to check when last time we checked items was
 	public static long last_check = 0;

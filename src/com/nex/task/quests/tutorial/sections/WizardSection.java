@@ -67,7 +67,11 @@ public final class WizardSection extends TutorialSection {
                 break;
             case 650:
                 if (!CHICKEN_AREA.contains(Players.getLocal().getPosition())) {
-                    walkToChickenArea();
+                	if(!Players.getLocal().isMoving()) {
+                		walkToChickenArea();
+                	}else {
+                		Log.fine("ALREADY MOVING TOWARDS CHICKENS");
+                	}
                 } else {
                     attackChicken();
                 }

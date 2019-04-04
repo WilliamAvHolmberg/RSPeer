@@ -78,14 +78,12 @@ public class FishingTask extends SkillTask implements ChatMessageListener, IMone
             selectedFish = Fish.SHRIMP;
             setActionArea(Area.rectangular(3242, 3150, 3247, 3159));
             setBankArea(Area.surrounding(BankLocation.GRAND_EXCHANGE.getPosition(), 10));
-        }
-        else if(fishLvl < 40){
+        }else if(fishLvl < 40){
             powerFish = true;
             selectedFish = Fish.TROUT;
             setActionArea(Area.rectangular(3099, 3422, 3112, 3435));
             setBankArea(Area.surrounding(BankLocation.GRAND_EXCHANGE.getPosition(), 10));
-        }
-        else if(fishLvl < 60){
+        }else if(fishLvl < 60){
             powerFish = false;
             selectedFish = Fish.LOBSTER;
             setActionArea(Area.rectangular(2922, 3174, 2927, 3181));
@@ -164,7 +162,7 @@ public class FishingTask extends SkillTask implements ChatMessageListener, IMone
                 BankHandler.addBankEvent(new WithdrawItemEvent(new WithdrawItem(new RSItem("Coins", 995), 1200,1200)).setBankArea(bank));
             }
         }
-        else if(!actionArea.contains(Players.getLocal())) {
+        else if(!actionArea.contains(Players.getLocal()) && !Players.getLocal().isAnimating()) {
             if(HandlePortSarimTo(actionArea))
                 return Random.low(400, 800);
             WalkTo.execute(actionArea.getCenter());

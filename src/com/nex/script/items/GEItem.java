@@ -1,5 +1,7 @@
 package com.nex.script.items;
 
+import org.rspeer.ui.Log;
+
 import com.nex.script.Exchange;
 
 public class GEItem extends RequiredItem {
@@ -25,12 +27,16 @@ public class GEItem extends RequiredItem {
 
 	private void setItemPrice(int price) {
 		this.itemPrice = price;
+		if(this.itemPrice < 5000 && getAmount() == 1) { //added to make it faster to buy items such as gear etc. 
+			this.itemPrice = this.itemPrice * 2;
+		}
 		if(originalItemPrice == 0)
 			originalItemPrice = price;
+
 	}
 	
 	public int getTotalPrice() {
-		return (int) (getItemPrice() * getAmount() * 1.3);
+		return (int) (getItemPrice() * getBuyAmount() * 1.3);
 	}
 	
 	public int getItemPrice() {
@@ -47,8 +53,13 @@ public class GEItem extends RequiredItem {
 	}
 
 	public void raiseItemPrice() {
+		if(this.itemPrice > this.originalItemPrice * 10) {
+			timesRaised++;
+			Log.fine("Item price is fucked up. lets not raise more");
+			return;
+		}
 		this.itemPrice = (int) (this.itemPrice * 1.25) + 1;
-		timesRaised++;
+	
 	}
 
 	

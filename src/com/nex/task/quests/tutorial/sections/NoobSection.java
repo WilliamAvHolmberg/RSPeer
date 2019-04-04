@@ -19,6 +19,7 @@ import org.rspeer.runetek.api.scene.Players;
 import org.rspeer.runetek.api.scene.SceneObjects;
 
 import com.nex.task.action.QuestAction;
+import com.nex.task.combat.CombatTask;
 
 public final class NoobSection extends TutorialSection {
 

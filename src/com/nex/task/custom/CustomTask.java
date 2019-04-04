@@ -116,8 +116,4 @@ public class CustomTask extends SkillTask implements RenderListener, ChatMessage
         return (int) (getPerHour(profit));
     }
 
-    @Override
-    public void notify(ObjectSpawnEvent objectSpawnEvent) {
-
-    }
 }

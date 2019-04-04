@@ -9,7 +9,6 @@ import java.net.Socket;
 import java.net.URL;
 import java.util.Stack;
 
-import com.nex.communication.message.request.RequestAccountInfo;
 import com.nex.task.NexTask;
 import org.rspeer.runetek.adapter.scene.Player;
 import org.rspeer.runetek.api.Game;
@@ -24,6 +23,7 @@ import org.rspeer.ui.Log;
 
 import com.nex.communication.message.DisconnectMessage;
 import com.nex.communication.message.NexMessage;
+import com.nex.communication.message.request.RequestAccountInfo;
 import com.nex.communication.message.request.RequestTask;
 import com.nex.script.Nex;
 import com.nex.script.handler.TaskHandler;

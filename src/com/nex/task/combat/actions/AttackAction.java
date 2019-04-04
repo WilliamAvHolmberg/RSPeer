@@ -8,6 +8,7 @@ import org.rspeer.runetek.api.scene.Npcs;
 import org.rspeer.runetek.api.scene.Players;
 import org.rspeer.ui.Log;
 
+import com.nex.script.walking.WalkTo;
 import com.nex.task.action.Action;
 
 public class AttackAction {
@@ -15,12 +16,20 @@ public class AttackAction {
 	public static void execute(String monsterName, Area area) {
 		if(getAttackingNpc(monsterName, area) != null && !playerIsAttacking()) {
 			Log.fine("we have to attack npc that is attacking us");
+			Npc npc = getAttackingNpc(monsterName, area);
+			npc.interact("Attack");
+			Time.sleepUntil(()-> npc.getHealthPercent() == 0, 1000);
 		}else if(!playerIsAttacking()) {
 			Npc npc = getAvailableNpc(monsterName, area);
-			if(npc != null) {
-			npc.interact("Attack");
-			Log.fine("health: " + npc.getHealthPercent());
-			Time.sleepUntil(()-> npc.getHealthPercent() == 0, 1000);
+			if(npc == null) {
+				Log.fine("No Npc available..");
+			}else if(!npc.getPosition().isPositionInteractable()) {
+				Log.fine("Cannot reach NPC. Lets do obstacle.");
+				WalkTo.execute(npc.getPosition());
+			}else {
+				npc.interact("Attack");
+				Log.fine("health: " + npc.getHealthPercent());
+				Time.sleepUntil(()-> npc.getHealthPercent() == 0, 1000);
 			}
 		}else {
 			Log.fine("all good. we are in combat");
@@ -31,7 +40,7 @@ public class AttackAction {
 	}
 	
 	public static Npc getAvailableNpc(String monsterName, Area area) {
-		return Npcs.getNearest(p-> area.contains(p) && p.getPosition().isPositionInteractable() && p.getPosition().isPositionWalkable() && p.getName().contains(monsterName) && p.getTarget() == null);
+		return Npcs.getNearest(p-> area.contains(p) && p.getPosition().isPositionWalkable() && p.getName().contains(monsterName) && p.getTarget() == null);
 	}
 	public static boolean playerIsAttacking() {
 		return Players.getLocal().getTarget() != null;
