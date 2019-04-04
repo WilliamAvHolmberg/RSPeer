@@ -77,7 +77,7 @@ public class BuyItemEvent implements IHandlerTask {
 				List<RSGrandExchangeOffer> offers = getNonEmptyOffers();
 				if (offers != null && !offers.isEmpty()) {
 					handleExistingOffers(offers);
-				} else if (Inventory.contains(item.getItemID()) || Inventory.contains(item.getItemName())) {
+				} else if (Inventory.getCount(true, item.getItemID()) >= item.getBuyAmount() || Inventory.getCount(true, item.getItemName()) >= item.getBuyAmount()) {
 					exchangeIfNoted(item);
 					finished = true;
 					BuyItemHandler.removeItem(this);
@@ -116,7 +116,9 @@ public class BuyItemEvent implements IHandlerTask {
 	}
 
 	private void buyItem() {
+		Log.fine(item.getTotalPrice());
 		if (Inventory.getCount(true, 995) < item.getTotalPrice()) {
+			Log.fine(item.getTotalPrice());
 			withdrawnMoney = false;
 		} else if (GrandExchangeSetup.isOpen()) {
 			int freeSlots = Inventory.getFreeSlots();

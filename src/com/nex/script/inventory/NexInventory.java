@@ -92,10 +92,14 @@ public class NexInventory {
 	
 	public Item getItemToDeposit() {
 		for(Item item :Inventory.getItems()) {
-			if(items == null || !getItemIds().contains(item.getId())) {
+			if(items == null || !getItemIds().contains(item.getId()) || hasTooManyOfItem(item)) {
 				return item;
 			}
 		}
 		return null;
+	}
+	
+	public boolean hasTooManyOfItem(Item item) {
+		return find(item.getId()) != null && Inventory.getCount(true, item.getId()) > find(item.getId()).getAmount();
 	}
 }

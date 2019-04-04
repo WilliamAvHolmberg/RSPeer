@@ -32,7 +32,8 @@ public class WalkTo {
 	}
 	public static boolean execute(Position position, int random) {
 		position = position.randomize(random);
-
+		if(Players.getLocal().isMoving())
+			return true;
 		if(executor == null)
 			executor = new PathExecutor();
 		else if(lastPosition == null || lastPosition.distance(position) > 5)

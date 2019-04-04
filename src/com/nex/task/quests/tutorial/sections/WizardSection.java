@@ -18,6 +18,7 @@ import org.rspeer.runetek.api.movement.position.Area;
 import org.rspeer.runetek.api.movement.position.Position;
 import org.rspeer.runetek.api.scene.Npcs;
 import org.rspeer.runetek.api.scene.Players;
+import org.rspeer.ui.Log;
 
 public final class WizardSection extends TutorialSection {
 
@@ -64,7 +65,11 @@ public final class WizardSection extends TutorialSection {
                 break;
             case 650:
                 if (!CHICKEN_AREA.contains(Players.getLocal().getPosition())) {
-                    walkToChickenArea();
+                	if(!Players.getLocal().isMoving()) {
+                		walkToChickenArea();
+                	}else {
+                		Log.fine("ALREADY MOVING TOWARDS CHICKENS");
+                	}
                 } else {
                     attackChicken();
                 }

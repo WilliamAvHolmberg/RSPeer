@@ -16,6 +16,8 @@ import com.nex.task.IHandlerTask;
 import com.nex.task.boredmule.BoredMuleTask;
 import com.nex.task.mule.DepositToPlayerTask;
 import com.nex.task.mule.PrepareForMuleDepositTask;
+import com.nex.task.mule.WithdrawFromPlayerTask;
+
 import org.rspeer.RSPeer;
 import org.rspeer.runetek.adapter.Positionable;
 import org.rspeer.runetek.adapter.scene.Player;
@@ -78,7 +80,7 @@ import com.nex.task.quests.RomeoAndJulietQuest;
 import com.nex.task.quests.tutorial.TutorialIsland;
 import com.nex.task.woodcutting.WoodcuttingTask;
 
-@ScriptMeta(desc = "Nex 2.2 - DEBUG", developer = "William", name = "nex")
+@ScriptMeta(desc = "Nex 2.4 - DEBUG", developer = "William", name = "nex")
 public class Nex extends Script
 		implements RenderListener, ChatMessageListener, ObjectSpawnListener, LoginResponseListener {
 
@@ -156,10 +158,10 @@ public class Nex extends Script
 		if (sellItemEvent != null) {
 			SellItemHandler.execute(sellItemEvent);
 			return true;
-		} else if (TaskHandler.getCurrentTask() != null && TaskHandler.getCurrentTask() instanceof Mule) {
+		}else if (TaskHandler.getCurrentTask() != null && TaskHandler.getCurrentTask() instanceof WithdrawFromPlayerTask) {
 			TaskHandler.getCurrentTask().loop();
 			return true;
-		} else if (depositEvent != null) {
+		}  else if (depositEvent != null) {
 			BankHandler.executeEvent(depositEvent);
 			return true;
 		} else if (buyItemEvent != null) {

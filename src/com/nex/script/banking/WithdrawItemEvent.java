@@ -17,6 +17,7 @@ import com.nex.script.grandexchange.BuyItemHandler;
 import com.nex.script.handler.TaskHandler;
 import com.nex.script.inventory.InventoryItem;
 import com.nex.script.items.GEItem;
+import com.nex.script.items.RSItem;
 import com.nex.script.items.RequiredItem;
 import com.nex.script.items.WithdrawItem;
 import com.nex.task.mule.WithdrawFromPlayerTask;
@@ -62,6 +63,10 @@ public class WithdrawItemEvent extends BankEvent {
 
 	public void execute() {
 		if (Bank.isOpen()) {
+			Item notedItem = Inventory.getFirst(id+1);
+			if(notedItem != null && notedItem.isNoted()) {
+				Bank.deposit(notedItem.getId(), notedItem.getStackSize());
+			}
 			Time.sleepUntil(()->Bank.contains(id), Random.low(1000, 3000));
 			if (Bank.getCount(id) >= amount) {
 				if(amount > 28 && Bank.getWithdrawMode() != Bank.WithdrawMode.NOTE){

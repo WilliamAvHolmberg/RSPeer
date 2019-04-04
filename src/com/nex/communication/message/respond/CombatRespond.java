@@ -15,8 +15,8 @@ import com.nex.script.WebBank;
 import com.nex.script.handler.TaskHandler;
 import com.nex.script.inventory.NexInventory;
 import com.nex.script.items.RSItem;
-import com.nex.task.CombatTask;
 import com.nex.task.NexTask;
+import com.nex.task.combat.CombatTask;
 
 public class CombatRespond extends TaskRespond {
 

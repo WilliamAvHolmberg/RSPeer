@@ -1,6 +1,5 @@
 package com.nex.task.quests.tutorial.sections;
 
-import com.nex.task.CombatTask;
 import org.rspeer.runetek.adapter.component.InterfaceComponent;
 import org.rspeer.runetek.adapter.scene.Npc;
 import org.rspeer.runetek.adapter.scene.Pickable;
@@ -17,6 +16,7 @@ import org.rspeer.runetek.api.scene.Players;
 import org.rspeer.runetek.api.scene.SceneObjects;
 
 import com.nex.task.action.QuestAction;
+import com.nex.task.combat.CombatTask;
 
 public final class NoobSection extends TutorialSection {
 
