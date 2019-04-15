@@ -62,27 +62,38 @@ public class CombatTask extends SkillTask implements IMoneyTask {
 
 	@Override
 	public int loop() {
+		Log.fine("IN COMBAT");
 		if(Movement.getRunEnergy() > 20 && !Movement.isRunEnabled()) {
+			Log.fine("Energy");
 			Movement.toggleRun(true);
+			
 		}else if (!AttackStyleAction.isCorrect(skill)) {
+			Log.fine("AttackStyle");
 			AttackStyleAction.execute(skill);
 		} else if (getGear().getItemToEquip() != null) {
+			Log.fine("Add item to equip");
 			GearHandler.addItem(getGear().getItemToEquip());
 		} else if (shallDepositItem()) {
+			Log.fine("Deposit item");
 			BankHandler.addBankEvent(new DepositAllOfItem(getRequiredInventory().getItemToDeposit().getId()));
 		} else if (shallWithdrawItem()) {
+			Log.fine("withdraw item");
 			BankHandler.addBankEvent(new WithdrawItemEvent(getRequiredInventory().getItemToWithdraw()));
 		} else if (EatAction.shallEat()) {
+			Log.fine("Shall eat");
 			if (Inventory.contains(food.getId())) {
 				int hp = Players.getLocal().getHealthPercent();
 				Inventory.getFirst(food.getId()).interact("Eat");
 				Time.sleepUntil(()-> Players.getLocal().getHealthPercent() > hp, 3000);
 			} else {
-				WalkTo.execute(getBankArea());
+				Log.fine("OUT OF FOOD");
+				BankHandler.addBankEvent(new WithdrawItemEvent(getRequiredInventory().getItemToWithdraw()));
 			}
-		} else if (!AreaHelper.inArea(actionArea) && !Players.getLocal().isAnimating() && !Players.getLocal().isMoving()) {
+		} else if (!AreaHelper.inArea(actionArea)) {
+			Log.fine("LETS WALK TO ACTION AREA");
 			WalkTo.execute(actionArea);
 		} else if(lootAction.shouldLoot() && !AttackAction.playerIsAttacking() ){
+			Log.fine("loot");
 			if(Inventory.isFull() && Inventory.contains(food.getId())) {
 				Inventory.getFirst(food.getId()).interact("Eat");
 				Time.sleepUntil(()-> !Inventory.isFull(), 3000);
@@ -90,6 +101,7 @@ public class CombatTask extends SkillTask implements IMoneyTask {
 				lootAction.execute();	
 			}
 		}else {
+			Log.fine("EXECUTE ATTACK");
 			AttackAction.execute(monsterName, actionArea);
 		}
 		// loot

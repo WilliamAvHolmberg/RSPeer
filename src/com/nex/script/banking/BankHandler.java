@@ -21,7 +21,7 @@ public class BankHandler {
 		if(bankEvent.isFinished()) {
 			bankEvents.remove(bankEvent);
 			TaskHandler.removeHandler(bankEvent);
-		}else if(!playerInBank(bankEvent) && Movement.buildPath(bankEvent.getBankArea().getCenter()) != null) {
+		}else if(!playerInBank(bankEvent)) {
 			WalkTo.execute(bankEvent.getBankArea().getCenter());
 			Log.fine("lets walk");
 		}else if(CheckIfWeShallSellItems.getTimeTilNextCheckInMinutes() <= 0) {

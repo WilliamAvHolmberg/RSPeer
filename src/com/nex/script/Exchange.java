@@ -66,7 +66,7 @@ public class Exchange {
 				if (itemIDs.contains(itemID)) {
 					String itemName = itemJSON.get("name").asString();
 					names.put(itemID, itemName);
-					price = itemJSON.get("buy_average").asInt();
+					price = itemJSON.get("overall_average").asInt();
 					if (price == 0) {
 						price = getRealPrice(itemName);
 					}

@@ -1,7 +1,8 @@
 package com.nex.script.walking;
 
 import com.nex.script.grandexchange.BuyItemHandler;
-import javafx.geometry.Pos;
+
+import org.rspeer.runetek.adapter.component.Item;
 import org.rspeer.runetek.adapter.scene.SceneObject;
 import org.rspeer.runetek.api.commons.Time;
 import com.nex.script.walking.WalkTo;
@@ -21,19 +22,60 @@ import org.rspeer.ui.Log;
 public class WalkTo {
 
 	public static void execute(Area area) {
-		execute(area.getCenter());
+		execute(area.getCenter(),4);
 	}
 
 	static Area lumbrdigeCastle = Area.rectangular(3204, 3228, 3216, 3207);
+	static Area lumbridgeGoblin =Area.rectangular(3265, 3264, 3239, 3216);
 	static Area cowfield =  Area.rectangular(3135, 3310, 3204, 3339);
 	static Area Alkharid = Area.rectangular(3266, 3144, 3341, 3322);
-	static Area Riverbank = Area.rectangular(3105, 3338, 3151, 3402);
+	static Area Riverbank = Area.rectangular(3105, 3338, 3151, 3390);
 	static Area FaladorSouthWall = Area.rectangular(3006, 3316, 3035, 3331);
 	static Area DraynorManorBotLeft = Area.rectangular(3080, 3326, 3117, 3342);
 	static Area DraynorManorHouse = Area.rectangular(3091, 3352, 3126, 3374);
 	static Area KaramjaIsland = Area.rectangular(2881, 3132, 2964, 3195);
 	static Area Varrock = Area.rectangular(3140, 3395, 3286, 3518);
+	static Area taverleyDungeon = Area.polygonal(
+		    new Position[] {
+		            new Position(2803, 9858, 0),
+		            new Position(2965, 9861, 0),
+		            new Position(2961, 9799, 0),
+		            new Position(2990, 9791, 0),
+		            new Position(2957, 9709, 0),
+		            new Position(2910, 9659, 0),
+		            new Position(2790, 9689, 0)
+		        }
+		    );
+	
+	static Area taverleyStairsUpside = Area.rectangular(2880, 3400, 2888, 3392);
+	
+	static Position[] GoblinToLumbridgeCastle = {
+		    new Position(3256, 3240, 0),
+		    new Position(3257, 3238, 0),
+		    new Position(3258, 3233, 0),
+		    new Position(3259, 3232, 0),
+		    new Position(3259, 3229, 0),
+		    new Position(3256, 3226, 0),
+		    new Position(3251, 3225, 0),
+		    new Position(3246, 3225, 0),
+		    new Position(3242, 3225, 0),
+		    new Position(3237, 3225, 0)
+		};
 
+		static Position[] GoblinToVarrock = {
+		    new Position(3255, 3224, 0),
+		    new Position(3257, 3227, 0),
+		    new Position(3259, 3227, 0),
+		    new Position(3259, 3230, 0),
+		    new Position(3259, 3232, 0),
+		    new Position(3259, 3235, 0),
+		    new Position(3259, 3239, 0),
+		    new Position(3257, 3244, 0),
+		    new Position(3254, 3248, 0),
+		    new Position(3248, 3254, 0),
+		    new Position(3248, 3254, 0),
+		    new Position(3249, 3262, 0)
+		};
 	static Position[] LumbridgeToChickenCoop = {
 			new Position(3207, 3210, 0),
 			new Position(3207, 3210, 0),
@@ -64,7 +106,24 @@ public class WalkTo {
 	}
 	public static boolean execute(Position position, int random) {
 
+		if(Players.getLocal().isMoving()) {
+			Log.fine("WALKING");
+			return true;
+		}
+		
 		Position curPos = Players.getLocal().getPosition();
+		
+	  if(taverleyDungeon.contains(position) && !taverleyDungeon.contains(curPos)) {
+		  Log.fine("TO TAVERLEY");
+		  return walkToTaverleyDungeon(position);
+		}
+	  
+	  if(!taverleyDungeon.contains(position) && taverleyDungeon.contains(curPos)) {
+		  Log.fine("FROM TAVERLEY");
+			return walkFromTaverleyDungeon(position);
+		}
+	  
+	  
 		lumbrdigeCastle.setIgnoreFloorLevel(true);
 		while (curPos.getFloorLevel() > 0 && position.getFloorLevel() == 0 && lumbrdigeCastle.contains(curPos)){
 			SceneObject stairs = SceneObjects.getNearest("Staircase");
@@ -75,6 +134,13 @@ public class WalkTo {
 				Time.sleepWhile(()->Players.getLocal().getFloorLevel() == curFloor, 10000);
 			Time.sleep(200, 400);
 			curPos = Players.getLocal().getPosition();
+		}
+		
+		if(lumbridgeGoblin.contains(curPos) && lumbridgeGoblin.contains(position)&& position.getY() > 3255){
+			return execute(GoblinToVarrock);
+		}else if(lumbridgeGoblin.contains(curPos) && !lumbridgeGoblin.contains(position) && position.getY() < 3255){
+			return execute(GoblinToLumbridgeCastle);
+
 		}
 		if(Varrock.contains(position) && LumbrdigeToChickenArea.contains(curPos)){
 			return execute(LumbridgeToChickenCoop);
@@ -143,6 +209,42 @@ public class WalkTo {
 		if(!result)
 			Log.fine("Failed to walk...");
 		return result;
+	}
+
+	
+	private static boolean walkFromTaverleyDungeon(Position position) {
+		Item faladorTeleport = Inventory.getFirst("Falador teleport");
+		if(faladorTeleport != null) {
+			Position myPos = Players.getLocal().getPosition();
+			faladorTeleport.click();
+			Time.sleepUntil(() -> !taverleyDungeon.contains(Players.getLocal()), 10000);
+			return true;
+		}else {
+			Log.fine("NO TELEPORT");
+		}return false;
+	}
+
+	static Area taverleyAgilityShortcut = Area.rectangular(2936, 3356, 2939, 3353);
+	private static boolean walkToTaverleyDungeon(Position position) {
+		Position myPos = Players.getLocal().getPosition();
+		if(taverleyStairsUpside.contains(myPos)) {
+			SceneObject obstacle = SceneObjects.getNearest("Ladder");
+			if(obstacle != null) {
+				obstacle.interact("Climb-down");
+				return true;
+			}
+		}else if(myPos.getX() < 2935) {
+		  return execute(taverleyStairsUpside.getCenter());
+		}else if(taverleyAgilityShortcut.contains(myPos)) {
+			SceneObject obstacle = SceneObjects.getNearest("Crumbling Wall");
+			if(obstacle != null) {
+				obstacle.interact("Climb-over");
+				return true;
+			}
+		}else {
+			return execute(taverleyAgilityShortcut.getCenter());
+		}
+		return true;
 	}
 
 	static int run_at = Random.nextInt(9,16);

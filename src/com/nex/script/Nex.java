@@ -26,6 +26,7 @@ import org.rspeer.runetek.adapter.Positionable;
 import org.rspeer.runetek.adapter.scene.Player;
 import org.rspeer.runetek.api.Game;
 import org.rspeer.runetek.api.Login;
+import org.rspeer.runetek.api.Worlds;
 import org.rspeer.runetek.api.commons.BankLocation;
 import org.rspeer.runetek.api.commons.Time;
 import org.rspeer.runetek.api.commons.math.Random;
@@ -49,6 +50,7 @@ import org.rspeer.runetek.event.types.ObjectSpawnEvent;
 import org.rspeer.runetek.event.types.RenderEvent;
 import org.rspeer.runetek.providers.RSGrandExchangeOffer.Type;
 import org.rspeer.runetek.providers.RSProvider;
+import org.rspeer.runetek.providers.RSWorld;
 import org.rspeer.script.Script;
 import org.rspeer.script.ScriptMeta;
 import org.rspeer.script.events.LoginScreen;
@@ -83,7 +85,7 @@ import com.nex.task.quests.RomeoAndJulietQuest;
 import com.nex.task.quests.tutorial.TutorialIsland;
 import com.nex.task.woodcutting.WoodcuttingTask;
 
-@ScriptMeta(desc = "Nex 2.4 - DEBUG", developer = "William", name = "nex")
+@ScriptMeta(desc = "Nex 2.5 - DEBUG", developer = "William", name = "nex")
 public class Nex extends Script
 		implements RenderListener, ChatMessageListener, ObjectSpawnListener, LoginResponseListener {
 
@@ -93,6 +95,7 @@ public class Nex extends Script
 	public static int MONEY_NEEDED = 0;
 	public static int MIN_WITHDRAW = 10000;
 	NexHelper nexHelper;
+	boolean initialized = false;
 
 	static float banWaveTime = 7.5f;
 	public static boolean approachingBan(){
@@ -130,6 +133,7 @@ public class Nex extends Script
 
 	Area barbMine = Area.rectangular(3077, 3424, 3086, 3416);
 	public static int failedWalk = 0;
+	public static boolean IS_MEMBER = false;
 	@Override
 	public void onStart() {
 		nexHelper = new NexHelper(getAccount().getUsername(), getAccount().getPassword());
@@ -170,6 +174,7 @@ public class Nex extends Script
 		}
 		return 600;
 	}
+
 
 
 	BoredMuleTask boredMuleTask = null;

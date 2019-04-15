@@ -22,6 +22,7 @@ public class RequestAccountInfo extends NexRequest {
     public static String account_type;
     public static String schema_name;
     public static String computer_name;
+    public static String is_member;
     public static ZonedDateTime created_at;
 
     public RequestAccountInfo() {
@@ -46,6 +47,7 @@ public class RequestAccountInfo extends NexRequest {
         account_type = parsedRespond[2];
         schema_name = parsedRespond[3];
         computer_name = parsedRespond[4];
+        is_member = parsedRespond[6];
         Log.fine("Account ID: " + account_id);
         Log.fine("Account Type: " + account_type);
         Log.fine("Account Schema: " + schema_name);
@@ -79,6 +81,10 @@ public class RequestAccountInfo extends NexRequest {
             // Williams settings here :)
             RandomHandler.ENABLED = false;
             TutorialIsland.DO_NOOB_FIGHTING = false;
+        }
+        if(is_member.equalsIgnoreCase("true")){
+        	Nex.IS_MEMBER = true;
+        	Nex.MULE_THRESHOLD = 100000000; //"DEBUG
         }
     }
 

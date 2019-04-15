@@ -1,5 +1,7 @@
 package com.nex.script.items;
 
+import java.util.Random;
+
 import org.rspeer.ui.Log;
 
 import com.nex.script.Exchange;
@@ -18,6 +20,10 @@ public class GEItem extends RequiredItem {
 				itemPrice += 5;
 			else
 				itemPrice += 100;
+		}
+		if(getBuyAmount() < 5 && itemPrice < 100) {
+			itemPrice += 500 + org.rspeer.runetek.api.commons.math.Random.nextInt(200); //hardcoded because of bugs trying to buy item for 1gp
+			originalItemPrice = itemPrice;
 		}
 	}
 	@Override

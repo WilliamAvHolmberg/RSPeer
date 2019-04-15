@@ -6,7 +6,7 @@ import org.rspeer.runetek.api.scene.Players;
 public class EatAction {
 	
 	public static boolean shallEat() {
-		return Players.getLocal().getHealthPercent() < 50;
+		return Players.getLocal().getHealthPercent() < 70;
 	}
 
 }

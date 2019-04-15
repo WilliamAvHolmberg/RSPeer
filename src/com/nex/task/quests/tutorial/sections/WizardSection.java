@@ -21,6 +21,7 @@ import org.rspeer.runetek.api.movement.position.Position;
 import org.rspeer.runetek.api.scene.Npcs;
 import org.rspeer.runetek.api.scene.Players;
 import org.rspeer.runetek.api.scene.SceneObjects;
+import org.rspeer.ui.Log;
 
 public final class WizardSection extends TutorialSection {
 

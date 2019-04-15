@@ -1,7 +1,6 @@
 package com.nex.task.quests.tutorial.sections;
 
 import com.nex.script.Nex;
-import com.nex.task.CombatTask;
 import com.nex.task.quests.tutorial.TutorialIsland;
 import org.rspeer.runetek.adapter.component.InterfaceComponent;
 import org.rspeer.runetek.adapter.scene.Npc;

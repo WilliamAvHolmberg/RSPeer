@@ -212,6 +212,9 @@ public class BuyItemEvent implements IHandlerTask {
 					item.raiseItemPrice();
 					withdrawnMoney = false;
 					offer.abort();
+				}else {
+					offer.abort();
+					Time.sleep(1500);
 				}
 			}
 		}

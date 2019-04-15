@@ -86,7 +86,7 @@ public class CustomTask extends SkillTask implements RenderListener, ChatMessage
 
     @Override
     public void notify(ObjectSpawnEvent spawnEvent) {
-        CutTreeAction.get().notify(spawnEvent);
+        //CutTreeAction.get().notify(spawnEvent);
     }
 
     @Override

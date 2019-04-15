@@ -82,9 +82,9 @@ public class NexHelper implements Runnable {
 		Log.fine("started NexHelper 2.0 with selenium support");
 		for(int retry = 0; retry < 200; retry++) {
 			try {
-				int tmp_port = port + Random.nextInt(0, 3);
-				Log.fine("Connecting port " + tmp_port);
-				Socket socket = new Socket(ip, tmp_port);
+				//int tmp_port = port + Random.nextInt(0, 3);
+				//Log.fine("Connecting port " + tmp_port);
+				Socket socket = new Socket(ip, port);
 				PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
 				BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 				BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));
