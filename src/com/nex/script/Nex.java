@@ -245,6 +245,7 @@ public class Nex extends Script
 
 	private void login() {
 		Log.fine("Is not logged in");
+		Log.fine("lets login with " + getAccount().getUsername() + ":" + getAccount().getPassword());
 		Login.enterCredentials(getAccount().getUsername(), getAccount().getPassword());
 		Mouse.click(279, 301);
 	}

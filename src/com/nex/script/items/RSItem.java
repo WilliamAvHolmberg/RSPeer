@@ -3,8 +3,11 @@ package com.nex.script.items;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.rspeer.ui.Log;
+
 import com.nex.script.Exchange;
 import com.nex.script.banking.WithdrawItemEvent;
+import com.nex.utils.json.JsonObject;
 
 public class RSItem {
 	public static List<RSItem> cachedItems = new ArrayList<RSItem>();
@@ -15,6 +18,13 @@ public class RSItem {
 		this.setName(name);
 		this.setId(id);
 		cachedItems.add(this);
+	}
+	public RSItem(JsonObject jsonAxe) {
+		this.setName(jsonAxe.get("name").asString());
+		this.setId(jsonAxe.get("id").asInt());
+		cachedItems.add(this);
+		Log.fine(name);
+		Log.fine(id);
 	}
 	public static RSItem fromName(String name){
 		return new RSItem(name, Exchange.getID(name));

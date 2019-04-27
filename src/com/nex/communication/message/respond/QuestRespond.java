@@ -7,6 +7,8 @@ import java.util.Stack;
 import java.util.function.BooleanSupplier;
 
 import com.nex.task.quests.*;
+import com.nex.utils.json.JsonObject;
+
 import org.rspeer.ui.Log;
 
 import com.nex.communication.message.NexMessage;
@@ -24,9 +26,10 @@ public class QuestRespond extends TaskRespond {
 	@Override
 	public void execute(PrintWriter out, BufferedReader in) throws IOException {
 		NexTask newTask = null;
-		String[] parsed = respond.split(":");
-		String currentTaskID = parsed[3];
-		String questName = parsed[4];
+		JsonObject jsonRespond = JsonObject.readFrom(respond);
+		String currentTaskID = jsonRespond.get("task_id").toString();
+		String questName = jsonRespond.get("quest_name").asString();
+		
 		if (questName.contains(Quest.GOBLIN_DIPLOMACY.name())) {
 			newTask = new GoblinDiplomacyQuest();
 		} else if (questName.contains(Quest.ROMEO_JULIET.name())) {

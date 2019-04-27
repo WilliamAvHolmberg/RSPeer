@@ -66,8 +66,10 @@ public class WoodcuttingTask extends SkillTask implements ChatMessageListener, I
 	public int loop() {
 		GearItem itemToEquip = requiredGear.getItemToEquip();
 		if(itemToEquip != null) {
+			Log.fine("NEED ITEM");
 			GearHandler.addItem(itemToEquip);
 		} else if (playerNeedAxe()) {
+			Log.fine("NEED AXE");
 			Nex.MONEY_NEEDED = (int)(Exchange.getPrice(axe.getId()) * 1.5f); //Pre-emptively set how much money we need to keep, in-case it does a mule deposit
 			BankHandler.addBankEvent(new WithdrawItemEvent(new WithdrawItem(axe, 1,1)).setBankArea(bankArea));
 		}
@@ -107,7 +109,7 @@ public class WoodcuttingTask extends SkillTask implements ChatMessageListener, I
 	}
 
 	private boolean playerNeedAxe() {
-		return !Inventory.contains(getAxe().getName()) && !Equipment.contains(getAxe().getName());
+		return !Inventory.contains(getAxe().getId()) && !Equipment.contains(getAxe().getId());
 	}
 
 

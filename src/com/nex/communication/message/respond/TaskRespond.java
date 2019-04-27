@@ -17,13 +17,15 @@ import com.nex.script.inventory.InventoryItem;
 import com.nex.script.inventory.NexInventory;
 import com.nex.script.items.RSItem;
 import com.nex.task.SkillTask;
+import com.nex.utils.json.JsonObject;
+import com.nex.utils.json.JsonValue;
 
 public abstract class TaskRespond extends NexMessage {
 
 	protected long currentTime;
 	
 	public TaskRespond(String respond) {
-		super( respond);
+		super(respond);
 	}
 	/*
 	public NexInventory getInventory(String parsedInventory) {
@@ -56,6 +58,20 @@ public abstract class TaskRespond extends NexMessage {
 		
 	}
 	
+	public void setBreakConditions(SkillTask newTask, JsonObject jsonBreakCondition) {
+		String type = jsonBreakCondition.get("type").asString();
+		int breakAfter = jsonBreakCondition.get("task_duration").asInt();
+		int wantedLevel = jsonBreakCondition.get("level_goal").asInt();
+		if(type.toLowerCase().contains("time_or_level")) {
+			newTask.setBreakAfterTime(5 + breakAfter);
+			newTask.setWantedLevel(wantedLevel);
+		}else if(type.toLowerCase().contains("time")) {
+			newTask.setBreakAfterTime(5 + (breakAfter));
+		}else if(type.toLowerCase().contains("level")) {
+			newTask.setWantedLevel(wantedLevel);
+		}
+		
+	}
 	public NexInventory getInventory(String parsedInventory) {
 		NexInventory inv = new NexInventory();
 		for(String parsedInvItem : parsedInventory.split(";")) {
@@ -71,6 +87,26 @@ public abstract class TaskRespond extends NexMessage {
 		}
 		return inv;
 	}
+	
+	protected Gear getGear(JsonObject jsonGear) {
+		Gear gear = new Gear();
+		JsonValue unParsedItem;
+		String itemName;
+		int itemID;
+		for(int i = 0; i < EquipmentSlot.values().length; i++) {
+			String equipmentSlot = EquipmentSlot.values()[i].toString().toLowerCase();
+			Log.fine(equipmentSlot);
+			unParsedItem = jsonGear.get(equipmentSlot);
+			if(unParsedItem.asString() != null && !unParsedItem.asString().toLowerCase().equals("none")) {
+				itemName = unParsedItem.readFrom("name").asString();
+				itemID = unParsedItem.readFrom("id").asInt();
+				Log.fine("slot:" + EquipmentSlot.values()[i] + "   itemName:" + itemName + "    itemID:" + itemID);
+				gear.addGear(EquipmentSlot.values()[i], new RSItem(itemName, itemID));
+			}
+		}
+		return gear;	
+	}
+
 	
 	protected Gear getGear(String[] parsed, ArrayList<String> listOfParsedGear) {
 		Gear gear = new Gear();

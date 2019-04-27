@@ -19,6 +19,8 @@ import com.nex.script.handler.TaskHandler;
 import com.nex.script.items.RSItem;
 import com.nex.task.SkillTask;
 import com.nex.task.woodcutting.WoodcuttingTask;
+import com.nex.utils.json.JsonObject;
+import com.nex.utils.json.JsonValue;
 
 public class WoodcuttingRespond extends TaskRespond {
 
@@ -28,59 +30,33 @@ public class WoodcuttingRespond extends TaskRespond {
 
 	@Override
 	public void execute(PrintWriter out, BufferedReader in) throws IOException {
-		if(respond != null) {
-		}else {
-		}
-		String[] parsed = respond.split(":");
-		String currentTaskID = parsed[3];
-		String parsedBankArea = parsed[4];
-		String parsedActionArea = parsed[5];
-		String parsedAxeID = parsed[6];
-		String axeName = parsed[7];
-		String treeName = parsed[8];
-		String parsedBreakCondition = parsed[9];
-		String breakAfter = parsed[10];
-		String parsedLevelGoal = parsed[11];
-		ArrayList<String> listOfParsedGear = new ArrayList<String>();
-		String parsedHelm = parsed[12];
-		String parsedCape = parsed[13];
-		String parsedAmulet = parsed[14];
-		String parsedWeapon = parsed[15];
-		String parsedChest = parsed[16];
-		String parsedShield = parsed[17];
-		String parsedLegs = parsed[18];
-		String parsedGloves = parsed[19];
-		String parsedBoots = parsed[20];
-		String parsedRing = parsed[21];
-		String parsedAmmo = parsed[22];
-		listOfParsedGear.add(parsedHelm);
-		listOfParsedGear.add(parsedCape);
-		listOfParsedGear.add(parsedAmulet);
-		listOfParsedGear.add(parsedWeapon);
-		listOfParsedGear.add(parsedChest);
-		listOfParsedGear.add(parsedShield);
-		listOfParsedGear.add(parsedLegs);
-		listOfParsedGear.add(parsedGloves);
-		listOfParsedGear.add(parsedBoots);
-		listOfParsedGear.add(parsedRing);
-		listOfParsedGear.add(parsedAmmo);
+			JsonObject jsonRespond = JsonObject.readFrom(respond);
+			JsonObject jsonAxe = jsonRespond.get("axe").asObject();
+			JsonObject parsedBreakCondition = jsonRespond.get("break_condition").asObject();
+			JsonObject jsonGear = jsonRespond.get("gear").asObject();
+			
+			
+			String currentTaskID = jsonRespond.get("task_id").toString();
+			String parsedBankArea = jsonRespond.get("bank_area").asString();
+			String parsedActionArea = jsonRespond.get("action_area").asString();
+			String treeName = jsonRespond.get("tree_name").asString();
+			
+			Gear gear = getGear(jsonGear);
+			RSItem axe = new RSItem(jsonAxe);
+			Area actionArea = WebBank.parseCoordinates(parsedActionArea);
+			Area bankArea = null;
 		
-		Gear gear = getGear(parsed, listOfParsedGear);
-		Area actionArea = WebBank.parseCoordinates(parsedActionArea);
-		Area bankArea = null;
-		if (!parsedBankArea.equals("none")) {
-			bankArea = WebBank.parseCoordinates(parsedBankArea);
-		}
 		
-		int axeID = Integer.parseInt(parsedAxeID);
-		RSItem axe = new RSItem(axeName, axeID);
+			if (!parsedBankArea.equals("none")) {
+				bankArea = WebBank.parseCoordinates(parsedBankArea);
+			}
+			
 
-		SkillTask newTask = new WoodcuttingTask(actionArea, bankArea, treeName, axe);
-		newTask.setGear(gear);
-		newTask.setTaskID(currentTaskID);
-		setBreakConditions(newTask, parsedBreakCondition, breakAfter, parsedLevelGoal);
-		TaskHandler.addPrioritizedTask(newTask);
+			SkillTask newTask = new WoodcuttingTask(actionArea, bankArea, treeName, axe);
+			newTask.setGear(gear);
+			newTask.setTaskID(currentTaskID);
+			setBreakConditions(newTask, parsedBreakCondition);
+			TaskHandler.addPrioritizedTask(newTask);	
 	}
-	
- 
+
 }

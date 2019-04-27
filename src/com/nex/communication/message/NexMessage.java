@@ -7,6 +7,8 @@ import java.util.Stack;
 
 import org.rspeer.ui.Log;
 
+import com.nex.utils.json.JsonObject;
+
 public abstract class NexMessage {
 	
 

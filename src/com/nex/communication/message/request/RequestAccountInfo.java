@@ -41,6 +41,7 @@ public class RequestAccountInfo extends NexRequest {
     static long timeAskedToDC = 0;
     static String lastTask;
     private void handleRespond(String respond) {
+    	if(respond != null && respond.length() > 2) {
         String[] parsedRespond = respond.split(":");
 
         account_id = parsedRespond[1];
@@ -86,6 +87,7 @@ public class RequestAccountInfo extends NexRequest {
         	Nex.IS_MEMBER = true;
         	Nex.MULE_THRESHOLD = 100000000; //"DEBUG
         }
+    	}
     }
 
 }

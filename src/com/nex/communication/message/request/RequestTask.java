@@ -9,6 +9,11 @@ import com.nex.script.Nex;
 import com.nex.script.handler.TaskHandler;
 import com.nex.task.actions.mule.CheckIfWeShallSellItems;
 import com.nex.task.mule.PrepareForMuleDepositTask;
+import com.nex.utils.json.Json;
+import com.nex.utils.json.JsonObject;
+import com.nex.utils.json.JsonParser;
+import com.nex.utils.json.JsonValue;
+
 import org.rspeer.runetek.api.commons.Time;
 import org.rspeer.runetek.api.component.tab.Inventory;
 import org.rspeer.runetek.api.component.tab.Skill;
@@ -76,25 +81,27 @@ public class RequestTask extends NexRequest {
 			else
 				NexHelper.pushMessage(new DisconnectMessage("No task supplied"));
 		} else {
+			Log.fine("in resp");
 			timeAskedToDC = 0;
-			String[] parsedRespond = respond.split(":");
-			String taskType = parsedRespond[2];
+			String parsedJson = respond;
+			JsonObject jsonRespond = JsonObject.readFrom(parsedJson);
+			String taskType = jsonRespond.get("task_type").asString();
+			Log.fine(taskType);
 			lastTask = taskType;
 			switch (taskType) {
 			case "MINING":
 				NexHelper.pushMessage(new MiningRespond(respond));
 				break;
 			case "WOODCUTTING":
-				NexHelper.pushMessage(new WoodcuttingRespond(respond));
+				Log.fine("HELLO");
+				NexHelper.pushMessage(new WoodcuttingRespond(parsedJson));
 				break;
 			case "COMBAT":
 				NexHelper.pushMessage(new CombatRespond(respond));
 				break;
 			case "MULE_WITHDRAW":
-				NexHelper.pushMessage(new MuleRespond(respond));
-				break;
 			case "MULE_DEPOSIT":
-				NexHelper.pushMessage(new MuleRespond(respond));
+				NexHelper.pushMessage(new MuleRespond(parsedJson));
 				break;
 			case "TANNER":
 				NexHelper.pushMessage(new TannerRespond(respond));
@@ -106,7 +113,7 @@ public class RequestTask extends NexRequest {
 				NexHelper.pushMessage(new CustomTaskRespond(respond));
 				break;
 			case "QUEST":
-				NexHelper.pushMessage(new QuestRespond(respond));
+				NexHelper.pushMessage(new QuestRespond(parsedJson));
 			break;
 			}
 		}

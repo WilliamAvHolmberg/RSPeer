@@ -18,6 +18,7 @@ import com.nex.task.NexTask;
 import com.nex.task.mule.DepositToPlayerTask;
 
 import com.nex.task.mule.WithdrawFromPlayerTask;
+import com.nex.utils.json.JsonObject;
 
 public class MuleRespond extends TaskRespond {
 
@@ -27,12 +28,12 @@ public class MuleRespond extends TaskRespond {
 
 	@Override
 	public void execute(PrintWriter out, BufferedReader in) throws IOException {
-		String[] parsed = respond.split(":");
-		String muleType = parsed[2];
-		String tradeName = parsed[3];
-		int world = Integer.parseInt(parsed[4]);
-		int itemID = Integer.parseInt(parsed[5]);
-		int itemAmount = Integer.parseInt(parsed[6]);
+		JsonObject jsonRespond = JsonObject.readFrom(respond);
+		String muleType = jsonRespond.get("task_type").asString();
+		String tradeName = jsonRespond.get("slave_name").asString();
+		int world = Integer.parseInt(jsonRespond.get("world").asString());
+		int itemID = Integer.parseInt(jsonRespond.get("item_id").asString());
+		int itemAmount = Integer.parseInt(jsonRespond.get("item_amount").asString());
 
 		Area actionArea = null;
 //		if(parsed.length >= 8) {//Is there a player position attached to this message?
