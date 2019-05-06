@@ -97,14 +97,40 @@ public abstract class TaskRespond extends NexMessage {
 			String equipmentSlot = EquipmentSlot.values()[i].toString().toLowerCase();
 			Log.fine(equipmentSlot);
 			unParsedItem = jsonGear.get(equipmentSlot);
-			if(unParsedItem.asString() != null && !unParsedItem.asString().toLowerCase().equals("none")) {
-				itemName = unParsedItem.readFrom("name").asString();
-				itemID = unParsedItem.readFrom("id").asInt();
+			Log.fine(unParsedItem);
+			if(unParsedItem.isObject()) {
+				JsonObject object = unParsedItem.asObject();
+				itemName = object.get("name").asString();
+				itemID = object.get("id").asInt();
 				Log.fine("slot:" + EquipmentSlot.values()[i] + "   itemName:" + itemName + "    itemID:" + itemID);
 				gear.addGear(EquipmentSlot.values()[i], new RSItem(itemName, itemID));
 			}
 		}
 		return gear;	
+	}
+	
+	protected NexInventory getInventory(JsonObject jsonInventory) {
+		NexInventory inv = new NexInventory();
+		JsonValue unParsedItem;
+		int itemID;
+		int amount;
+		int buyAmount;
+
+			for(int i = 0; i < jsonInventory.names().size(); i++) {
+			String itemName = jsonInventory.names().get(i);
+			Log.fine(itemName);
+			unParsedItem = jsonInventory.get(itemName);
+			if(unParsedItem.isObject()) {
+				JsonObject object = unParsedItem.asObject();
+				amount = object.get("amount").asInt();
+				buyAmount = object.get("buy_amount").asInt();
+				itemID = object.get("id").asInt();
+				Log.fine("slot:" + EquipmentSlot.values()[i] + "   itemName:" + itemName + "    itemID:" + itemID);
+				InventoryItem newItem = new InventoryItem(amount, new RSItem(itemName, itemID), buyAmount);
+				inv.addItem(newItem);
+			}
+		}
+		return inv;	
 	}
 
 	
