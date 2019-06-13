@@ -49,7 +49,7 @@ public final class TutorialIsland extends QuestTask {
     private final TutorialSection noobSection = new NoobSection();
 
     public int loop(){
-    	Log.fine("we are in tut");
+    	Log.fine("we are in tut..");
     	 if (pendingContinue()) {
     		 Log.fine("lets continue");
              selectContinue();
