@@ -6,6 +6,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="lib" path="/Users/williamholmberg/RSPeer/cache/rspeer.jar"/>
+	<classpathentry kind="lib" path="C:/Users/William Holmberg/Documents/RSPeer/cache/rspeer.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
