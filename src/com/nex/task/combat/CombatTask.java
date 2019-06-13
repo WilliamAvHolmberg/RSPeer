@@ -66,20 +66,34 @@ public class CombatTask extends SkillTask implements IMoneyTask {
 		if(Movement.getRunEnergy() > 20 && !Movement.isRunEnabled()) {
 			Log.fine("Energy");
 			Movement.toggleRun(true);
-			
-		}else if (!AttackStyleAction.isCorrect(skill)) {
+			return 600;
+		}
+		Log.fine("NOT ENERGY");
+		if (!AttackStyleAction.isCorrect(skill)) {
 			Log.fine("AttackStyle");
 			AttackStyleAction.execute(skill);
-		} else if (getGear().getItemToEquip() != null) {
+			return 600;
+		}
+		Log.fine("NOT ATTACK STYLE");
+		if (getGear().getItemToEquip() != null) {
 			Log.fine("Add item to equip");
 			GearHandler.addItem(getGear().getItemToEquip());
-		} else if (shallDepositItem()) {
+			return 600;
+		}
+		Log.fine("NOT ITEM TO EQUIP");
+		if (shallDepositItem()) {
 			Log.fine("Deposit item");
 			BankHandler.addBankEvent(new DepositAllOfItem(getRequiredInventory().getItemToDeposit().getId()));
-		} else if (shallWithdrawItem()) {
+			return 600;
+		}
+		Log.fine("NOT DEPOSIT ITEM");
+		if (shallWithdrawItem()) {
 			Log.fine("withdraw item");
 			BankHandler.addBankEvent(new WithdrawItemEvent(getRequiredInventory().getItemToWithdraw()));
-		} else if (EatAction.shallEat()) {
+			return 600;
+		}
+		Log.fine("NOT WITHDRAW ITEM");
+		if (EatAction.shallEat()) {
 			Log.fine("Shall eat");
 			if (Inventory.contains(food.getId())) {
 				int hp = Players.getLocal().getHealthPercent();
@@ -89,10 +103,20 @@ public class CombatTask extends SkillTask implements IMoneyTask {
 				Log.fine("OUT OF FOOD");
 				BankHandler.addBankEvent(new WithdrawItemEvent(getRequiredInventory().getItemToWithdraw()));
 			}
-		} else if (!AreaHelper.inArea(actionArea)) {
+			return 600;
+		}
+		
+		Log.fine("NOT EAT");
+		
+		if (!AreaHelper.inArea(actionArea)) {
 			Log.fine("LETS WALK TO ACTION AREA");
 			WalkTo.execute(actionArea);
-		} else if(lootAction.shouldLoot() && !AttackAction.playerIsAttacking() ){
+			return 600;
+		}
+		
+		Log.fine("NOT WALK TO ACTION");
+		
+		if(lootAction.shouldLoot() && !AttackAction.playerIsAttacking() ){
 			Log.fine("loot");
 			if(Inventory.isFull() && Inventory.contains(food.getId())) {
 				Inventory.getFirst(food.getId()).interact("Eat");
@@ -100,15 +124,13 @@ public class CombatTask extends SkillTask implements IMoneyTask {
 			}else {
 				lootAction.execute();	
 			}
-		}else {
-			Log.fine("EXECUTE ATTACK");
-			AttackAction.execute(monsterName, actionArea);
+			return 600;
 		}
-		// loot
-		// food support
-		// player has gear
-		// player has inv
-		Log.fine("in combatloop");
+		
+		
+		Log.fine("EXECUTE ATTACK");
+		AttackAction.execute(monsterName, actionArea);
+		
 		return 600;
 	}
 
