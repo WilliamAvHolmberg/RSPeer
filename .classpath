@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
+<<<<<<< HEAD
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="C:/Users/William Holmberg/.rspeer/1.82.jar"/>
+=======
+	<classpathentry kind="lib" path="/Users/williamholmberg/RSPeer/cache/rspeer.jar"/>
+>>>>>>> parent of 8ba5de1... Updated server address
 	<classpathentry kind="output" path="bin"/>
 </classpath>

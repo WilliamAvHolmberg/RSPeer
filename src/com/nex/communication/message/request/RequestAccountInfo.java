@@ -26,8 +26,6 @@ public class RequestAccountInfo extends NexRequest {
     public static String computer_name;
     public static boolean is_member;
     public static ZonedDateTime created_at;
-    public static ZonedDateTime login_time;
-    public static ZonedDateTime logout_time;
 
     public RequestAccountInfo() {
         super("account_info:1");
@@ -52,10 +50,7 @@ public class RequestAccountInfo extends NexRequest {
         schema_name = jsonRespond.get("schema_name").asString();
         computer_name = jsonRespond.get("computer_name").asString();
         String parsed_created_at = jsonRespond.get("created_at").asString();
-        String parsed_login_time = jsonRespond.get("created_at").asString();
-        String parsed_logout_time = jsonRespond.get("created_at").asString();
         is_member = jsonRespond.get("member").asBoolean();
-        
         Log.fine("Account ID: " + account_id);
         Log.fine("Account Type: " + account_type);
         Log.fine("Account Schema: " + schema_name);
@@ -68,7 +63,6 @@ public class RequestAccountInfo extends NexRequest {
         }catch (Exception ex){
             Log.severe(ex);
         }
-        
 
         boolean isMule = "MULE".equalsIgnoreCase(account_type);
         boolean isSlave = "SLAVE".equalsIgnoreCase(account_type);
@@ -96,8 +90,6 @@ public class RequestAccountInfo extends NexRequest {
         	Nex.IS_MEMBER = true;
         	Nex.MULE_THRESHOLD = 100000000; //"DEBUG
         }
-        
-        
     	}
     }
 
