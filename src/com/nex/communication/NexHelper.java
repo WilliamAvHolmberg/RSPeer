@@ -31,10 +31,7 @@ import com.nex.script.Nex;
 import com.nex.script.handler.TaskHandler;
 
 public class NexHelper implements Runnable {
-	// private String ip = "192.168.10.127";
-	private String ip = "oxnetserver.ddns.net";
-	//private String ip = "oxnetdebug.ddns.net";
-	//private String ip = "nexus.no-ip.org";
+	private String ip = "nexus.myftp.biz";
 	private int port = 43594;
 	public static long lastLog = System.currentTimeMillis();
 
